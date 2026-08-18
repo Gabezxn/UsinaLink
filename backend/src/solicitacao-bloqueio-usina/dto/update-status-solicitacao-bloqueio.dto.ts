@@ -1,7 +1,10 @@
+import { IsIn, IsOptional, IsString } from 'class-validator';
 import { SolicitacaoBloqueioStatus } from '../solicitacao-bloqueio-usina.entity';
 
+const STATUS: SolicitacaoBloqueioStatus[] = ['pendente', 'em_analise', 'aprovada', 'rejeitada', 'cancelada'];
+
 export class UpdateStatusSolicitacaoBloqueioDto {
-  status: SolicitacaoBloqueioStatus;
-  respostaModeracao?: string;
-  analisadoPor?: string;
+  @IsIn(STATUS, { message: 'Status invalido.' }) status: SolicitacaoBloqueioStatus;
+  @IsOptional() @IsString() respostaModeracao?: string;
+  @IsOptional() @IsString() analisadoPor?: string;
 }

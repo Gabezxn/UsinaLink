@@ -3,7 +3,8 @@
 
   function session() {
     try {
-      return JSON.parse(sessionStorage.getItem("usinalinkSession") || localStorage.getItem("usinalinkSession") || "null") || {};
+      const raw = JSON.parse(sessionStorage.getItem("usinalinkSession") || localStorage.getItem("usinalinkSession") || "null") || {};
+      return { empresaId: raw.empresaId, usinaId: raw.usinaId, tipo: raw.tipo };
     } catch {
       return {};
     }
@@ -27,6 +28,31 @@
   function notify(message, type = "info") {
     if (ui.showFeedback) ui.showFeedback(message, type);
     else if (window.showToast) window.showToast(message);
+  }
+
+  // A API devolve nomes com prefixo (idPedido, idUsina...); estas telas foram escritas
+  // esperando nomes genericos (pedidoId, usinaId...). As funcoes abaixo fazem essa ponte.
+  function normalizeReview(review) {
+    return { ...review, id: review.idAvaliacao, pedidoId: review.idPedido, notaGeral: review.nota };
+  }
+
+  function normalizeOrder(order) {
+    return { ...order, id: order.idPedido, empresaId: order.idEmpresaCompradora, peca: order.itens?.[0]?.nome || "" };
+  }
+
+  function normalizeProposal(proposal) {
+    return {
+      ...proposal,
+      id: proposal.idProposta,
+      pedidoId: proposal.idPedido,
+      usinaId: proposal.idUsina,
+      usina: proposal.usina?.nomeFantasia || proposal.usina?.razaoSocial || proposal.idUsina,
+      peca: proposal.pedido?.itens?.[0]?.nome || "",
+    };
+  }
+
+  function normalizeRequest(request) {
+    return { ...request, id: request.idSolicitacao, usinaId: request.idUsina, pedidoId: request.idPedido };
   }
 
   function stars(value) {
@@ -75,17 +101,21 @@
     const select = document.querySelector("[data-review-order]");
     const list = document.querySelector("[data-review-list]");
     const state = session();
+    if (!state.empresaId) { root.innerHTML = '<div class="empty-state"><strong>Faca login como empresa</strong><span>Entre com uma conta de empresa para ver e enviar avaliacoes.</span></div>'; return; }
 
     try {
       root.dataset.state = "loading";
-      const empresaId = state.empresaId || "empresa-1";
-      const [reviews, orders, proposals] = await Promise.all([
-        apiGet(`/avaliacoes/empresa/${encodeURIComponent(empresaId)}`),
-        apiGet("/pedidos"),
-        apiGet("/propostas")
+      const [reviewsRaw, ordersRaw, proposalsRaw] = await Promise.all([
+        apiGet(`/avaliacoes/empresa/${encodeURIComponent(state.empresaId)}`),
+        apiGet("/pedidos/meus"),
+        apiGet("/propostas/recebidas")
       ]);
+      const reviews = reviewsRaw.map(normalizeReview);
+      const orders = ordersRaw.map(normalizeOrder);
+      const proposals = proposalsRaw.map(normalizeProposal);
       const reviewed = new Set(reviews.map(item => item.pedidoId));
-      const available = orders.filter(order => order.empresaId === empresaId && /conclu/i.test(order.status || "") && proposals.some(proposal => proposal.pedidoId === order.id && /aceita/i.test(proposal.status || "")) && !reviewed.has(order.id));
+      const STATUS_AVALIAVEIS = ["concluido", "concluida", "em_negociacao"];
+      const available = orders.filter(order => STATUS_AVALIAVEIS.includes(order.status) && proposals.some(proposal => proposal.pedidoId === order.id && proposal.status === "aceita") && !reviewed.has(order.id));
       if (select) {
         select.innerHTML = available.length
           ? `<option value="">Selecione um pedido concluido</option>${available.map(order => `<option value="${order.id}">${order.id} - ${order.peca}</option>`).join("")}`
@@ -135,12 +165,14 @@
     const root = document.querySelector("[data-plant-reviews]");
     if (!root) return;
     const state = session();
-    const usinaId = state.usinaId || "usina-1";
+    if (!state.usinaId) { root.innerHTML = '<div class="empty-state"><strong>Faca login como usina</strong><span>Entre com uma conta de usina para ver as avaliacoes recebidas.</span></div>'; return; }
+    const usinaId = state.usinaId;
     try {
-      const [summary, reviews] = await Promise.all([
+      const [summary, reviewsRaw] = await Promise.all([
         apiGet(`/avaliacoes/usina/${encodeURIComponent(usinaId)}/resumo`),
         apiGet(`/avaliacoes/usina/${encodeURIComponent(usinaId)}`)
       ]);
+      const reviews = reviewsRaw.map(normalizeReview);
       document.querySelector("[data-review-average]").textContent = summary.mediaGeral || "0";
       document.querySelector("[data-review-count]").textContent = summary.quantidade || "0";
       document.querySelector("[data-review-quality]").textContent = summary.mediaQualidade || "0";
@@ -152,7 +184,7 @@
           event.preventDefault();
           const card = form.closest("[data-review-id]");
           const data = new FormData(form);
-          await apiPost(`/avaliacoes/${card.dataset.reviewId}/resposta`, { usinaId, respostaDaUsina: data.get("respostaDaUsina") });
+          await apiPost(`/avaliacoes/${card.dataset.reviewId}/resposta`, { respostaDaUsina: data.get("respostaDaUsina") });
           notify("Resposta publicada.", "success");
           await loadPlantReviews();
         });
@@ -166,17 +198,19 @@
     const root = document.querySelector("[data-block-requests]");
     if (!root) return;
     const state = session();
-    const empresaId = state.empresaId || "empresa-1";
     const form = document.querySelector("[data-block-form]");
+    if (!state.empresaId) { root.innerHTML = '<div class="empty-state"><strong>Faca login como empresa</strong><span>Entre com uma conta de empresa para ver suas solicitacoes.</span></div>'; return; }
     try {
-      const [requests, proposals] = await Promise.all([
-        apiGet(`/solicitacoes-bloqueio-usina/minhas?empresaId=${encodeURIComponent(empresaId)}`),
+      const [requestsRaw, proposalsRaw] = await Promise.all([
+        apiGet(`/solicitacoes-bloqueio-usina/minhas`),
         apiGet(`/propostas/recebidas`)
       ]);
+      const requests = requestsRaw.map(normalizeRequest);
+      const proposals = proposalsRaw.map(normalizeProposal);
       const usinas = [...new Map(proposals.map(proposal => [proposal.usinaId, proposal])).values()];
       const usinaSelect = document.querySelector("[data-block-usina]");
       const pedidoSelect = document.querySelector("[data-block-pedido]");
-      if (usinaSelect) usinaSelect.innerHTML = usinas.length ? usinas.map(item => `<option value="${item.usinaId}">${item.usina || item.usinaId}</option>`).join("") : '<option value="usina-1">Usina Atlas Metais</option>';
+      if (usinaSelect) usinaSelect.innerHTML = usinas.length ? usinas.map(item => `<option value="${item.usinaId}">${item.usina || item.usinaId}</option>`).join("") : '<option value="">Nenhuma usina disponivel</option>';
       if (pedidoSelect) pedidoSelect.innerHTML = proposals.map(item => `<option value="${item.pedidoId}">${item.pedidoId} - ${item.peca}</option>`).join("");
       root.innerHTML = requests.length ? requests.map(request => `
         <article class="card block-request-card">
@@ -186,11 +220,11 @@
           ${request.status === "pendente" ? `<button class="table-action" type="button" data-cancel-block="${request.id}">Cancelar solicitacao</button>` : ""}
         </article>`).join("") : '<div class="empty-state"><strong>Nenhuma solicitacao aberta</strong><span>Use o formulario para enviar uma solicitacao de moderacao.</span></div>';
       root.querySelectorAll("[data-cancel-block]").forEach(button => button.addEventListener("click", async () => {
-        await apiPatch(`/solicitacoes-bloqueio-usina/${button.dataset.cancelBlock}/cancelar`, { empresaId });
+        await apiPatch(`/solicitacoes-bloqueio-usina/${button.dataset.cancelBlock}/cancelar`, {});
         notify("Solicitacao cancelada.", "success");
         await loadBlockRequests();
       }));
-      if (form) form.dataset.empresaId = empresaId;
+      if (form) form.hidden = false;
     } catch (error) {
       root.innerHTML = `<div class="empty-state"><strong>Falha ao carregar solicitacoes</strong><span>${error.message}</span></div>`;
     }
@@ -207,7 +241,6 @@
       button.textContent = "Enviando...";
       try {
         await apiPost("/solicitacoes-bloqueio-usina", {
-          empresaId: form.dataset.empresaId || session().empresaId || "empresa-1",
           usinaId: data.get("usinaId"),
           pedidoId: data.get("pedidoId") || undefined,
           motivo: data.get("motivo"),

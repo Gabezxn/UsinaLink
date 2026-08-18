@@ -1,8 +1,15 @@
 import { Global, Module } from '@nestjs/common';
-import { JsonDatabaseService } from './json-database.service';
-import { SeedDemoService } from './seed-demo';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
+import { Usuario, PessoaFisica, Empresa, Usina, Funcionario, Pedido, Proposta, AvaliacaoEntrega, Pagamento, Notificacao } from '../common/entities/core.entities';
+import { SeedService } from './seed.service';
 
 @Global()
-@Module({ imports: [AuthModule], providers: [JsonDatabaseService, SeedDemoService], exports: [JsonDatabaseService] })
+@Module({
+  imports: [
+    AuthModule,
+    TypeOrmModule.forFeature([Usuario, PessoaFisica, Empresa, Usina, Funcionario, Pedido, Proposta, AvaliacaoEntrega, Pagamento, Notificacao]),
+  ],
+  providers: [SeedService],
+})
 export class DatabaseModule {}

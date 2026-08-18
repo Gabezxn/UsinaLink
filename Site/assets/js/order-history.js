@@ -130,10 +130,16 @@
       if (!validatePayment(method)) return;
       button.disabled = true;
       button.textContent = "Processando...";
-      await new Promise(resolve => window.setTimeout(resolve, 900));
-      service.savePayment(order, method);
-      ui.showFeedback("Pagamento de teste confirmado.", "success");
-      window.location.href = `confirmacao-pedido.html?pedidoId=${encodeURIComponent(order.id)}`;
+      try {
+        await new Promise(resolve => window.setTimeout(resolve, 900));
+        await service.savePayment(order, method);
+        ui.showFeedback("Pagamento de teste confirmado.", "success");
+        window.location.href = `confirmacao-pedido.html?pedidoId=${encodeURIComponent(order.id)}`;
+      } catch (error) {
+        ui.showFeedback(error.message, "error");
+        button.disabled = false;
+        button.textContent = "Confirmar pagamento";
+      }
     });
   }
 
@@ -142,7 +148,7 @@
     if (!root) return;
     const order = await service.getOrder(params.get("pedidoId"));
     if (!order) return;
-    const payment = order.pagamento || service.savePayment(order, "PIX");
+    const payment = order.pagamento || await service.savePayment(order, "PIX");
     document.querySelectorAll("[data-order-number]").forEach(item => item.textContent = ui.orderNumber(order.id));
     document.querySelector("[data-receipt-date]").textContent = ui.formatDateTime(payment.createdAt);
     document.querySelector("[data-receipt-method]").textContent = payment.method;

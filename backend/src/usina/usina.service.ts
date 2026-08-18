@@ -1,2 +1,20 @@
-import { Injectable, NotFoundException } from '@nestjs/common';import { JsonDatabaseService } from '../database/json-database.service';
-@Injectable() export class UsinaService{constructor(private db:JsonDatabaseService){} async buscar(nome?:string,cnpj?:string){const rows=await this.db.readAll<any>('usinas'); if(cnpj)return rows.find(e=>e.cnpj===String(cnpj).replace(/\D/g,'')); const s=String(nome||'').toLowerCase(); return rows.find(e=>String(e.nomeFantasia||e.razaoSocial||'').toLowerCase().includes(s));} async porId(id:any){const r=await this.db.findOne<any>('usinas',u=>String(u.idUsina)===String(id)||String(u.id)===String(id));if(!r)throw new NotFoundException('Usina não encontrada.');return r}}
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Like, Repository } from 'typeorm';
+import { Usina } from '../common/entities/core.entities';
+
+@Injectable()
+export class UsinaService {
+  constructor(@InjectRepository(Usina) private readonly usinas: Repository<Usina>) {}
+
+  buscar(nome?: string, cnpj?: string) {
+    if (cnpj) return this.usinas.findOne({ where: { cnpj: String(cnpj).replace(/\D/g, '') } });
+    return this.usinas.findOne({ where: [{ nomeFantasia: Like(`%${nome || ''}%`) }, { razaoSocial: Like(`%${nome || ''}%`) }] });
+  }
+
+  async porId(id: number) {
+    const usina = await this.usinas.findOne({ where: { idUsina: id } });
+    if (!usina) throw new NotFoundException('Usina não encontrada.');
+    return usina;
+  }
+}

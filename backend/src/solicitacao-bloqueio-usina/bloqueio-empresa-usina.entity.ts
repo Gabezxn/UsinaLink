@@ -1,9 +1,1 @@
-export class BloqueioEmpresaUsina {
-  id: string;
-  empresaId: string;
-  usinaId: string;
-  solicitacaoId: string;
-  ativo: boolean;
-  criadoEm: string;
-  removidoEm?: string;
-}
+export { BloqueioUsina } from '../common/entities/core.entities';

@@ -1,2 +1,8 @@
-import { CreatePedidoDto } from './create-pedido.dto';
-export type UpdatePedidoDto = Partial<CreatePedidoDto>;
+import { IsOptional, IsString } from 'class-validator';
+
+export class UpdatePedidoDto {
+  @IsOptional() @IsString() urgencia?: string;
+  @IsOptional() @IsString() observacoes?: string;
+  @IsOptional() @IsString() status?: string;
+  @IsOptional() @IsString() prazoEntregaDias?: string;
+}

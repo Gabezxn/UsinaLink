@@ -1,5 +1,8 @@
 (function () {
-  const API_BASE_URL = 'http://localhost:3000/api';
+  // Troque pela URL do backend publicado (Render/Railway) quando for para producao.
+  const PROD_API_BASE_URL = 'https://SEU-BACKEND.onrender.com/api';
+  const isLocalHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+  const API_BASE_URL = isLocalHost ? 'http://localhost:3000/api' : PROD_API_BASE_URL;
 
   function buildUrl(endpoint) {
     const cleanEndpoint = String(endpoint || '').replace(/^\/api(?=\/|$)/, '').replace(/^\/?/, '/');
