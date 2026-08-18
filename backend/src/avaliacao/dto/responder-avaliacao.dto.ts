@@ -1,4 +1,6 @@
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+
 export class ResponderAvaliacaoDto {
-  respostaDaUsina: string;
-  usinaId?: string;
+  @IsNotEmpty({ message: 'Informe a resposta.' }) @IsString() respostaDaUsina: string;
+  @IsOptional() @IsString() usinaId?: string;
 }

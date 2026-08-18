@@ -1,8 +1,10 @@
+import { IsInt, IsOptional, IsString, Max, Min } from 'class-validator';
+
 export class UpdateAvaliacaoDto {
-  notaGeral?: number;
-  qualidade?: number;
-  prazo?: number;
-  comunicacao?: number;
-  comentario?: string;
-  empresaId?: string;
+  @IsOptional() @IsInt() @Min(1) @Max(5) notaGeral?: number;
+  @IsOptional() @IsInt() @Min(1) @Max(5) qualidade?: number;
+  @IsOptional() @IsInt() @Min(1) @Max(5) prazo?: number;
+  @IsOptional() @IsInt() @Min(1) @Max(5) comunicacao?: number;
+  @IsOptional() @IsString() comentario?: string;
+  @IsOptional() @IsString() empresaId?: string;
 }

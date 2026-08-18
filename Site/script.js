@@ -402,6 +402,12 @@ document.querySelectorAll(".js-login-form").forEach((form) => {
       localStorage.setItem("accessToken", result.accessToken || result.access_token);
       localStorage.setItem("tipoUsuario", result.tipoUsuario);
       localStorage.setItem("nome", result.nome || "");
+      localStorage.setItem("usinalinkSession", JSON.stringify({
+        tipo: result.tipoUsuario,
+        nome: result.nome || "",
+        empresaId: result.empresa?.idEmpresa,
+        usinaId: result.usina?.idUsina
+      }));
       sessionStorage.removeItem("usinalinkSession");
       showToast("Login realizado com sucesso");
       window.setTimeout(() => { window.location.href = redirect; }, 500);

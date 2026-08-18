@@ -1,2 +1,9 @@
-import { CreatePropostaDto } from './create-proposta.dto';
-export type UpdatePropostaDto = Partial<CreatePropostaDto> & { status?: string };
+import { IsOptional, IsString } from 'class-validator';
+
+export class UpdatePropostaDto {
+  @IsOptional() @IsString() valor?: string;
+  @IsOptional() @IsString() prazo?: string;
+  @IsOptional() @IsString() frete?: string;
+  @IsOptional() @IsString() observacao?: string;
+  @IsOptional() @IsString() status?: string;
+}

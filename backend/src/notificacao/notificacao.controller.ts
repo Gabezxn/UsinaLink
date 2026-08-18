@@ -1,2 +1,29 @@
-import { Controller, Get, Param, Patch, Req, UseGuards } from '@nestjs/common';import { JwtAuthGuard } from '../auth/jwt-auth.guard';import { JsonDatabaseService } from '../database/json-database.service';
-@Controller('api/notificacoes') @UseGuards(JwtAuthGuard) export class NotificacaoController{constructor(private db:JsonDatabaseService){} @Get() list(@Req()r:any){return this.db.filter<any>('notificacoes',n=>String(n.idUsuario)===String(r.user.sub)).then(rows=>rows.sort((a,b)=>String(b.dataCriacao||'').localeCompare(String(a.dataCriacao||''))))} @Patch(':id/ler') async ler(@Param('id')id:string,@Req()r:any){const n=await this.db.findById<any>('notificacoes',id); if(n&&String(n.idUsuario)===String(r.user.sub)) await this.db.update('notificacoes',id,{lida:true});return{ok:true}} @Patch('ler-todas') async todas(@Req()r:any){const rows=await this.db.readAll<any>('notificacoes'); for(const n of rows) if(String(n.idUsuario)===String(r.user.sub)) n.lida=true; await this.db.replaceAll('notificacoes',rows); return{ok:true}}}
+import { Controller, Get, Param, Patch, Req, UseGuards } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Notificacao } from '../common/entities/core.entities';
+
+@Controller('api/notificacoes')
+@UseGuards(JwtAuthGuard)
+export class NotificacaoController {
+  constructor(@InjectRepository(Notificacao) private readonly notificacoes: Repository<Notificacao>) {}
+
+  @Get()
+  list(@Req() r: any) {
+    return this.notificacoes.find({ where: { idUsuario: r.user.sub }, order: { dataCriacao: 'DESC' } });
+  }
+
+  @Patch(':id/ler')
+  async ler(@Param('id') id: string, @Req() r: any) {
+    const notificacao = await this.notificacoes.findOne({ where: { idNotificacao: +id } });
+    if (notificacao && notificacao.idUsuario === r.user.sub) await this.notificacoes.update({ idNotificacao: +id }, { lida: true });
+    return { ok: true };
+  }
+
+  @Patch('ler-todas')
+  async todas(@Req() r: any) {
+    await this.notificacoes.update({ idUsuario: r.user.sub }, { lida: true });
+    return { ok: true };
+  }
+}

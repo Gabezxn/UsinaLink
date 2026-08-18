@@ -1,13 +1,15 @@
+import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+
 export class CreatePedidoDto {
-  empresaId: string;
-  empresa: string;
-  peca: string;
-  categoria?: string;
-  material?: string;
-  quantidade?: string;
-  prazo?: string;
-  regiao?: string;
-  urgencia?: string;
-  descricao?: string;
-  arquivo?: string;
+  @IsOptional() @IsString() empresaId?: string;
+  @IsOptional() @IsString() empresa?: string;
+  @IsNotEmpty({ message: 'Informe a peca do pedido.' }) @IsString() peca: string;
+  @IsOptional() @IsString() categoria?: string;
+  @IsOptional() @IsString() material?: string;
+  @IsOptional() @IsString() quantidade?: string;
+  @IsOptional() @IsString() prazo?: string;
+  @IsOptional() @IsString() regiao?: string;
+  @IsOptional() @IsString() urgencia?: string;
+  @IsOptional() @IsString() descricao?: string;
+  @IsOptional() @IsString() arquivo?: string;
 }
