@@ -6,49 +6,61 @@ Ordem recomendada: **Supabase → GitHub → Render → Cloudflare Pages**. Cada
 
 > Usamos Cloudflare Pages em vez de Vercel, e Render em vez de Railway, porque Vercel e Railway podem pedir cartão de crédito dependendo da conta/região. Cloudflare Pages e Render têm planos gratuitos sem pedir cartão.
 
+Este guia já vem atualizado com os perrengues reais que apareceram na primeira vez que publicamos (principalmente a parte de conexão com o Supabase) — seguindo assim direto, ninguém mais precisa tropeçar neles.
+
 ---
 
 ## 1. Supabase (banco de dados)
 
-1. Crie uma conta em [supabase.com](https://supabase.com) e um novo projeto (escolha uma senha forte pro banco — anote ela).
+1. Crie uma conta em [supabase.com](https://supabase.com) e um novo projeto (escolha uma senha forte pro banco — anote ela, você vai precisar dela mais tarde e o Supabase não mostra ela de novo).
 2. Espere o projeto terminar de provisionar (leva ~2 minutos).
-3. Vá em **Project Settings → Database**. Copie:
-   - **Host** (algo como `db.xxxxxxxxxxxx.supabase.co`)
+3. No topo da página do projeto, clique no botão verde **Connect**.
+4. Em **Type**, deixe **URI**. Do lado tem instruções pra "Session pooler" e "Transaction pooler" — **use o Session pooler**, não a conexão direta.
+
+   > Por quê: a conexão direta do Supabase (`db.xxxxx.supabase.co`) só responde por IPv6, e serviços como o Render não conseguem se conectar por IPv6 no plano gratuito. Isso dá um erro de rede (`ENETUNREACH`) se você tentar. O "Session pooler" resolve isso porque aceita IPv4.
+
+5. Copie a string de conexão do Session pooler, algo como:
+   ```
+   postgresql://postgres.xxxxxxxxxxxx:[YOUR-PASSWORD]@aws-0-sa-east-1.pooler.supabase.com:5432/postgres
+   ```
+   Dela, você tira:
+   - **Host**: `aws-0-sa-east-1.pooler.supabase.com` (a região pode variar)
    - **Port**: `5432`
-   - **User**: `postgres`
-   - **Password**: a que você definiu
-   - **Database name**: `postgres`
-4. Guarde esses 5 valores — vai usar no passo do Render.
+   - **User**: `postgres.xxxxxxxxxxxx` (**importante**: leva o ID do projeto junto, com ponto — não é só `postgres`)
+   - **Password**: a senha que você definiu no passo 1 (troque o `[YOUR-PASSWORD]` por ela)
+   - **Database**: `postgres`
+6. Guarde esses 5 valores — vai usar no passo do Render.
+
+> Sobre o "Security Advisor" do Supabase avisando "RLS Disabled in Public" em todas as tabelas: é só um aviso genérico sobre a API própria do Supabase (PostgREST), que este projeto não usa — o backend se conecta direto no Postgres com usuário/senha próprios, e a segurança (login, permissões) já é feita no NestJS. Pode ignorar esse aviso.
 
 ## 2. GitHub (pra Render e Cloudflare conseguirem "puxar" o código)
 
 1. Crie uma conta em [github.com](https://github.com) se ainda não tiver.
-2. Crie um repositório novo (pode ser privado), sem adicionar README/gitignore (o projeto já tem).
-3. No seu PC, dentro da pasta do projeto (`UsinaLink-main-corrigido`), rode:
+2. Se o repositório do projeto for de outra pessoa da equipe e você não for admin dele, faça um **Fork** pra sua própria conta (botão "Fork" na página do repositório) — assim você vira dono de uma cópia e consegue conectar ela em qualquer serviço.
+3. Se for criar um repositório novo do zero, dentro da pasta do projeto rode:
    ```bash
    git remote add origin https://github.com/SEU-USUARIO/SEU-REPOSITORIO.git
    git branch -M main
    git push -u origin main
    ```
-   (o projeto já está com `git init` e os commits feitos — só falta esses três comandos)
 
 ## 3. Render (hospedar o backend NestJS)
 
 Por que Render e não Cloudflare pro backend? O backend é um servidor que fica ligado o tempo todo; hospedagem de site estático (Cloudflare Pages, Vercel, Netlify) é feita pra arquivos fixos, não pra rodar um servidor Node com banco de dados. Render roda o servidor do jeito que ele já é, e não pede cartão de crédito pro plano gratuito.
 
 1. Crie uma conta em [render.com](https://render.com) (dá pra entrar direto com GitHub).
-2. **New → Web Service**, conecte o repositório que você criou.
+2. **New → Web Service**, conecte o repositório (ou seu fork).
 3. Configure:
    - **Root Directory**: `backend`
    - **Build Command**: `npm install && npm run build`
    - **Start Command**: `npm run start:prod`
    - **Instance Type**: Free
-4. Em **Environment Variables**, adicione (usando os dados do Supabase que você guardou):
+4. Em **Environment Variables**, adicione (usando os dados do **Session pooler** do Supabase que você guardou no passo 1):
    ```
    DB_TYPE=postgres
-   DB_HOST=db.xxxxxxxxxxxx.supabase.co
+   DB_HOST=aws-0-sa-east-1.pooler.supabase.com
    DB_PORT=5432
-   DB_USERNAME=postgres
+   DB_USERNAME=postgres.xxxxxxxxxxxx
    DB_PASSWORD=a-senha-que-voce-definiu-no-supabase
    DB_NAME=postgres
    DB_SSL=true
@@ -67,15 +79,13 @@ Por que Render e não Cloudflare pro backend? O backend é um servidor que fica 
 
 1. Crie uma conta em [dash.cloudflare.com](https://dash.cloudflare.com) (gratuito, não pede cartão).
 2. No menu lateral, vá em **Workers & Pages → Create → Pages → Connect to Git**.
-3. Autorize o Cloudflare a acessar sua conta do GitHub e escolha o repositório (se o repositório não for seu, veja a nota sobre fork mais abaixo).
+3. Autorize o Cloudflare a acessar sua conta do GitHub e escolha o repositório (ou seu fork, se for o caso).
 4. Em **Set up builds and deployments**:
    - **Framework preset**: `None`
    - **Build command**: deixe em branco (é HTML puro, não precisa de build)
    - **Build output directory**: `Site`
    - Se aparecer um campo **Root directory** separado, deixe como `/` (a pasta é definida no "Build output directory" mesmo).
-5. Clique em **Save and Deploy**. No final, a Cloudflare te dá uma URL (pode terminar em `.pages.dev` ou `.workers.dev`, os dois são normais na plataforma nova da Cloudflare). Guarde essa URL.
-
-> Se o repositório não é seu (é de outra pessoa da equipe) e não aparece na lista pra conectar, faça um fork dele pra sua conta primeiro (`Fork` no GitHub) e conecte o fork.
+5. Clique em **Save and Deploy**. No final, a Cloudflare te dá uma URL — pode terminar em `.pages.dev` **ou** `.workers.dev`, os dois são normais na plataforma nova da Cloudflare (ela unificou Pages e Workers). Guarde essa URL.
 
 ## 5. Ligar as pontas
 
@@ -83,9 +93,9 @@ Agora que você tem as duas URLs (backend no Render, site na Cloudflare), faltam
 
 **a) No Render**, edite a variável `ALLOWED_ORIGINS` pra incluir o domínio da Cloudflare:
 ```
-ALLOWED_ORIGINS=https://usinalink-main.pages.dev
+ALLOWED_ORIGINS=https://usinalink.SEU-USUARIO.workers.dev
 ```
-Salve — o Render reinicia o servidor sozinho.
+(ou `.pages.dev`, o que a Cloudflare te deu). Salve — o Render reinicia o servidor sozinho.
 
 **b) No código**, edite `Site/assets/js/api.js` e troque a linha:
 ```js
@@ -107,9 +117,11 @@ Pra conferir o banco visualmente: no site do Supabase, vá em **Table Editor** �
 
 ---
 
-## Se algo der errado
+## Erros reais que já apareceram (e como resolvemos)
 
-- **Erro de CORS no console do navegador**: o domínio da Cloudflare não está (ainda) na `ALLOWED_ORIGINS` do Render, ou você esqueceu de salvar.
-- **"Nao foi possivel conectar ao servidor"**: o backend do Render ainda está "acordando" (plano free) — espere uns 40s e tente de novo, ou a `PROD_API_BASE_URL` está com a URL errada.
-- **Erro de conexão com banco no log do Render**: confira se `DB_SSL=true` está definido — o Supabase exige conexão criptografada.
+- **`Error: connect ENETUNREACH ...:5432` nos logs do Render** — a conexão direta do Supabase só tem endereço IPv6, e o Render não alcança IPv6. **Solução**: usar o Session pooler (host `aws-0-*.pooler.supabase.com`), como já descrito no passo 1.
+- **`password authentication failed for user "postgres"`** — o usuário do pooler precisa ser `postgres.SEU-PROJECT-ID`, não só `postgres`. Conferir a variável `DB_USERNAME` no Render.
+- **Aviso "RLS Disabled in Public" no Supabase (Security Advisor)** — não é erro, é um aviso genérico sobre a API própria do Supabase, que este projeto não usa. Pode ignorar.
+- **Erro de CORS no console do navegador** — o domínio da Cloudflare não está (ainda) na `ALLOWED_ORIGINS` do Render, ou esqueceu de salvar.
+- **"Nao foi possivel conectar ao servidor"** no site — o backend do Render ainda está "acordando" (plano free) — espere uns 40s e tente de novo, ou a `PROD_API_BASE_URL` está com a URL errada.
 - **Netlify como alternativa à Cloudflare**: se preferir, netlify.com também tem plano gratuito sem cartão e funciona do mesmo jeito (conectar repo, apontar "Base directory" pra `Site`, deploy).
