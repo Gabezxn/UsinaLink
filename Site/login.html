@@ -14,22 +14,14 @@
     </a>
     <section class="card auth-card">
       <h1>Entrar numa conta já registrada</h1>
-      <p>Acesse sua conta do UsinaLink.</p>
-      <form class="form js-login-form" data-login-type="pessoa_fisica" data-redirect="index.html" novalidate>
-        <label class="field">
-          <span>E-mail</span>
-          <div class="input-icon"><span>@</span><input id="login-pessoa-email" name="email" type="email" placeholder="usuario@email.com" required></div>
-        </label>
-        <label class="field">
-          <span>Senha</span>
-          <div class="input-icon"><span>*</span><input id="login-pessoa-senha" name="senha" type="password" placeholder="Digite sua senha" required></div>
-        </label>
-        <button class="btn full" type="submit">Entrar</button>
-      </form>
+      <p>Selecione o tipo da sua conta pra continuar.</p>
+      <div class="choice-grid" role="group" aria-label="Tipo de conta">
+        <a class="choice-card active" href="login-empresa.html"><span class="choice-icon">EMP</span><strong>Empresa</strong><small>Compras e solicitações</small></a>
+        <a class="choice-card blue" href="login-pessoa-fisica.html"><span class="choice-icon">PF</span><strong>Pessoa Física</strong><small>Acompanhamento individual</small></a>
+        <a class="choice-card orange" href="login-usina.html"><span class="choice-icon">USI</span><strong>Usina</strong><small>Orçamentos industriais</small></a>
+      </div>
       <a class="text-link centered" href="cadastro.html">Criar nova conta</a>
     </section>
   </main>
-  <script src="assets/js/api.js"></script>
-  <script src="script.js"></script>
 </body>
 </html>
