@@ -245,6 +245,25 @@ export class HistoricoStatusPedido {
   @CreateDateColumn({ name: 'data' }) data: Date;
 }
 
+@Entity({ name: 'solicitacao' })
+export class Solicitacao {
+  @PrimaryGeneratedColumn({ name: 'id_solicitacao' }) idSolicitacao: number;
+  @Column({ name: 'id_empresa' }) idEmpresa: number;
+  @Column({ name: 'peca' }) peca: string;
+  @Column({ nullable: true }) categoria?: string;
+  @Column({ nullable: true }) material?: string;
+  @Column({ nullable: true }) quantidade?: number;
+  @Column({ name: 'prazo_desejado', type: 'date', nullable: true }) prazoDesejado?: string;
+  @Column({ nullable: true }) urgencia?: string;
+  @Column({ name: 'local_entrega', nullable: true }) localEntrega?: string;
+  @Column({ type: 'text', nullable: true }) descricao?: string;
+  @Column({ name: 'arquivo_tecnico', type: 'text', nullable: true }) arquivoTecnico?: string;
+  @Column({ name: 'arquivo_tecnico_nome', nullable: true }) arquivoTecnicoNome?: string;
+  @Column({ default: 'aberta' }) status: string;
+  @CreateDateColumn({ name: 'data_criacao' }) criadoEm: Date;
+  @UpdateDateColumn({ name: 'data_atualizacao' }) atualizadoEm: Date;
+}
+
 @Entity({ name: 'modelo_contrato' })
 export class ModeloContrato {
   @PrimaryGeneratedColumn({ name: 'id_modelo' }) idModelo: number;
@@ -265,6 +284,6 @@ export class Notificacao {
 
 export const ENTITIES = [
   Usuario, PessoaFisica, Empresa, Usina, Funcionario, EnderecoEmpresa, EnderecoUsina, Peca,
-  Pedido, ItemPedido, ArquivoPedido, Proposta, Pagamento, AvaliacaoEntrega,
+  Pedido, ItemPedido, ArquivoPedido, Proposta, Pagamento, AvaliacaoEntrega, Solicitacao,
   SolicitacaoBloqueioUsina, BloqueioUsina, HistoricoStatusPedido, ModeloContrato, Notificacao,
 ];

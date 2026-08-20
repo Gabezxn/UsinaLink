@@ -32,19 +32,16 @@
         <div class="table-toolbar"><label class="search-box wide-search"><span>Buscar</span><input class="js-table-search" type="search" placeholder="Pe&ccedil;a, categoria, status ou prazo"></label></div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Nome da pe&ccedil;a</th><th>Categoria</th><th>Quantidade</th><th>Status</th><th>Propostas</th><th>Prazo</th><th>A&ccedil;&otilde;es</th></tr></thead>
-            <tbody>
-              <tr data-search-row><td>Eixo usinado</td><td>Usinagem</td><td>120</td><td><span class="badge info">Aberta</span></td><td>8</td><td>12/06/2026</td><td><button class="table-action js-alert" type="button">Ver</button></td></tr>
-              <tr data-search-row><td>Flange industrial</td><td>Caldeiraria</td><td>45</td><td><span class="badge warning">Em an&aacute;lise</span></td><td>5</td><td>18/06/2026</td><td><button class="table-action js-alert" type="button">Ver</button></td></tr>
-              <tr data-search-row><td>Engrenagem helicoidal</td><td>Transmiss&atilde;o</td><td>20</td><td><span class="badge success">Proposta aceita</span></td><td>11</td><td>25/06/2026</td><td><button class="table-action js-alert" type="button">Ver</button></td></tr>
-              <tr data-search-row><td>Suporte met&aacute;lico</td><td>Corte e dobra</td><td>300</td><td><span class="badge muted">Finalizada</span></td><td>6</td><td>02/07/2026</td><td><button class="table-action js-alert" type="button">Ver</button></td></tr>
-            </tbody>
+            <thead><tr><th>Nome da pe&ccedil;a</th><th>Categoria</th><th>Quantidade</th><th>Status</th><th>Prazo</th><th>A&ccedil;&otilde;es</th></tr></thead>
+            <tbody data-solicitacoes-body></tbody>
           </table>
         </div>
       </section>
     </main>
   </div>
+  <script src="assets/js/api.js"></script>
   <script src="assets/js/auth-guard.js"></script>
+  <script src="assets/js/solicitacoes.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

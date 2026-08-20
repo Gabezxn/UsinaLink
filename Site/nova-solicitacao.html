@@ -33,22 +33,24 @@
           <h2>Dados da solicita&ccedil;&atilde;o</h2>
           <p>Informe as especifica&ccedil;&otilde;es principais para receber propostas compar&aacute;veis.</p>
         </div>
-        <form class="form-grid request-form js-demo-form" data-redirect="solicitacoes.html" novalidate>
-          <label class="field"><span>Nome da pe&ccedil;a</span><div class="input-wrap"><span class="input-symbol">P</span><input type="text" placeholder="Ex.: Mancal de rolamento" required></div></label>
-          <label class="field"><span>Categoria</span><div class="input-wrap select-field"><span class="input-symbol">C</span><select required><option>Usinagem</option><option>Fundi&ccedil;&atilde;o</option><option>Caldeiraria</option><option>Corte e dobra</option></select></div></label>
-          <label class="field"><span>Material</span><div class="input-wrap"><span class="input-symbol">M</span><input type="text" placeholder="A&ccedil;o carbono SAE 1020"></div></label>
-          <label class="field"><span>Quantidade</span><div class="input-wrap"><span class="input-symbol">#</span><input type="number" placeholder="100" min="1"></div></label>
-          <label class="field"><span>Prazo desejado</span><div class="input-wrap"><span class="input-symbol">D</span><input type="date"></div></label>
-          <label class="field"><span>Urg&ecirc;ncia</span><div class="input-wrap select-field"><span class="input-symbol">!</span><select><option>Normal</option><option>Alta</option><option>Cr&iacute;tica</option></select></div></label>
-          <label class="field span-2"><span>Local de entrega</span><div class="input-wrap"><span class="input-symbol">L</span><input type="text" placeholder="Cidade, UF e endere&ccedil;o de entrega"></div></label>
-          <label class="field span-2"><span>Descri&ccedil;&atilde;o t&eacute;cnica</span><textarea rows="5" placeholder="Detalhe medidas, toler&acirc;ncias, acabamento, normas e observa&ccedil;&otilde;es relevantes."></textarea></label>
-          <label class="upload span-2"><input type="file"><span>UP</span><strong>Upload fict&iacute;cio de arquivo t&eacute;cnico</strong><small>PDF, DWG ou imagem t&eacute;cnica</small></label>
+        <form class="form-grid request-form js-solicitacao-form" data-redirect="solicitacoes.html" novalidate>
+          <label class="field"><span>Nome da pe&ccedil;a</span><div class="input-wrap"><span class="input-symbol">P</span><input name="peca" type="text" placeholder="Ex.: Mancal de rolamento" required></div></label>
+          <label class="field"><span>Categoria</span><div class="input-wrap select-field"><span class="input-symbol">C</span><select name="categoria" required><option value="">Selecione</option><option>Usinagem</option><option>Fundi&ccedil;&atilde;o</option><option>Caldeiraria</option><option>Corte e dobra</option></select></div></label>
+          <label class="field"><span>Material</span><div class="input-wrap"><span class="input-symbol">M</span><input name="material" type="text" placeholder="A&ccedil;o carbono SAE 1020"></div></label>
+          <label class="field"><span>Quantidade</span><div class="input-wrap"><span class="input-symbol">#</span><input name="quantidade" type="number" placeholder="100" min="1"></div></label>
+          <label class="field"><span>Prazo desejado</span><div class="input-wrap"><span class="input-symbol">D</span><input name="prazoDesejado" type="date"></div></label>
+          <label class="field"><span>Urg&ecirc;ncia</span><div class="input-wrap select-field"><span class="input-symbol">!</span><select name="urgencia"><option>Normal</option><option>Alta</option><option>Cr&iacute;tica</option></select></div></label>
+          <label class="field span-2"><span>Local de entrega</span><div class="input-wrap"><span class="input-symbol">L</span><input name="localEntrega" type="text" placeholder="Cidade, UF e endere&ccedil;o de entrega"></div></label>
+          <label class="field span-2"><span>Descri&ccedil;&atilde;o t&eacute;cnica</span><textarea name="descricao" rows="5" placeholder="Detalhe medidas, toler&acirc;ncias, acabamento, normas e observa&ccedil;&otilde;es relevantes."></textarea></label>
+          <label class="upload span-2"><input name="arquivo" type="file" accept=".pdf,.dwg,.png,.jpg,.jpeg"><span>UP</span><strong>Upload de arquivo t&eacute;cnico</strong><small>PDF, DWG ou imagem t&eacute;cnica (m&aacute;x. 5&nbsp;MB)</small></label>
           <div class="form-actions span-2"><a class="btn btn-ghost" href="solicitacoes.html">Cancelar</a><button class="btn btn-primary" type="submit">Publicar solicita&ccedil;&atilde;o</button></div>
         </form>
       </section>
     </main>
   </div>
+  <script src="assets/js/api.js"></script>
   <script src="assets/js/auth-guard.js"></script>
+  <script src="assets/js/solicitacoes.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
