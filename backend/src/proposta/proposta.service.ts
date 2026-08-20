@@ -42,6 +42,7 @@ export class PropostaService {
       idUsuarioResponsavel: user.sub,
       valor: Number(dto.valor),
       prazo: dto.prazo,
+      frete: dto.frete !== undefined && dto.frete !== '' ? Number(dto.frete) : undefined,
       observacao: dto.observacao,
       status: 'enviada',
     }));

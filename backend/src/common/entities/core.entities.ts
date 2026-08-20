@@ -173,6 +173,7 @@ export class Proposta {
   @Column({ name: 'id_usuario_responsavel', nullable: true }) idUsuarioResponsavel?: number;
   @Column({ type: 'numeric' }) valor: number;
   @Column({ nullable: true }) prazo?: string;
+  @Column({ type: 'numeric', nullable: true }) frete?: number;
   @Column({ type: 'text', nullable: true }) observacao?: string;
   @Column({ default: 'enviada' }) status: string;
   @CreateDateColumn({ name: 'data_envio' }) dataEnvio: Date;

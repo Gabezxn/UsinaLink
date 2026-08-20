@@ -733,25 +733,6 @@ async function loadEmployeesFromApi() {
   });
 }
 
-function proposalDetailFromCard(card) {
-  const facts = [...card.querySelectorAll("dl div")].reduce((acc, item) => {
-    acc[item.querySelector("dt")?.textContent.trim()] = item.querySelector("dd")?.textContent.trim();
-    return acc;
-  }, {});
-  return {
-    usina: card.querySelector("h2")?.textContent.trim(),
-    valor: card.querySelector(".price")?.textContent.trim(),
-    prazo: facts["Prazo de fabricacao"] || facts["Prazo de fabricação"] || "18 dias",
-    frete: facts.Frete || "R$ 950,00",
-    avaliacao: facts["Avaliacao"] || facts["Avaliação"] || "4,8/5",
-    observacao: card.querySelector("p")?.textContent.trim(),
-    peca: "Eixo estriado",
-    material: "Aco 4140 temperado",
-    quantidade: "60 unidades",
-    regiao: "Sudeste"
-  };
-}
-
 function renderProposalDetails(data, includeDecision = false) {
   return `
     <div class="proposal-detail-head">
@@ -829,20 +810,68 @@ function proposalRowMarkup(item) {
   return `<tr data-search-row data-proposal-id="${escapeHtml(item.id)}"><td>${escapeHtml(item.peca || "")}</td><td>${escapeHtml(item.cliente || "")}</td><td>${escapeHtml(item.valor || "")}</td><td>${escapeHtml(item.prazo || "")}</td><td><span class="badge ${badgeClass(status)}">${escapeHtml(status)}</span></td><td>${escapeHtml(item.dataEnvio || "")}</td><td>${proposalActionsMarkup(status)}</td></tr>`;
 }
 
+let ultimasPropostasRecebidas = [];
+
+function formatMoneyBR(value) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "A combinar";
+}
+
+function nomeUsinaProposta(usina) {
+  return usina?.nomeFantasia || usina?.razaoSocial || "Usina";
+}
+
+function statusPropostaLabel(status) {
+  const labels = { enviada: "Enviada", em_analise: "Em analise", aceita: "Aceita", recusada: "Recusada", cancelada: "Cancelada" };
+  return labels[status] || status || "Enviada";
+}
+
+function propostaEstaTravada(status) {
+  return !["enviada", "em_analise"].includes(status || "enviada");
+}
+
 function proposalCardMarkup(item, best) {
-  return `<article class="card proposal-card ${best ? "best" : ""}" data-search-row data-proposal-id="${escapeHtml(item.id)}">
-    ${best ? '<span class="best-label">Melhor proposta</span>' : ""}
-    <h2>${escapeHtml(item.usina || "Usina")}</h2>
-    <strong class="price">${escapeHtml(item.valor || "")}</strong>
-    <dl><div><dt>Prazo de fabricacao</dt><dd>${escapeHtml(item.prazo || "")}</dd></div><div><dt>Frete</dt><dd>${escapeHtml(item.frete || "")}</dd></div><div><dt>Avaliacao</dt><dd>${escapeHtml(item.avaliacao || "4,9/5")}</dd></div></dl>
-    <p>${escapeHtml(item.observacao || "")}</p>
-    <div class="card-actions"><button class="btn btn-ghost js-alert" type="button">Ver detalhes</button><button class="btn js-alert" type="button">Aceitar proposta</button></div>
+  const status = item.status || "enviada";
+  const aceita = status === "aceita";
+  const travada = propostaEstaTravada(status);
+  const decisaoBtn = aceita
+    ? '<button class="btn" type="button" disabled>Proposta aceita</button>'
+    : travada
+      ? `<button class="btn btn-ghost" type="button" disabled>${escapeHtml(statusPropostaLabel(status))}</button>`
+      : '<button class="btn js-alert" type="button">Aceitar proposta</button>';
+  return `<article class="card proposal-card ${best && !travada ? "best" : ""} ${aceita ? "accepted" : ""}" data-search-row data-proposal-id="${escapeHtml(item.idProposta)}">
+    ${best && !travada ? '<span class="best-label">Melhor proposta</span>' : ""}
+    <h2>${escapeHtml(nomeUsinaProposta(item.usina))}</h2>
+    <strong class="price">${escapeHtml(formatMoneyBR(item.valor))}</strong>
+    <dl><div><dt>Prazo de fabricacao</dt><dd>${escapeHtml(item.prazo || "A combinar")}</dd></div><div><dt>Frete</dt><dd>${escapeHtml(item.frete ? formatMoneyBR(item.frete) : "A combinar")}</dd></div><div><dt>Status</dt><dd>${escapeHtml(statusPropostaLabel(status))}</dd></div></dl>
+    <p>${escapeHtml(item.observacao || "Sem observacoes adicionais.")}</p>
+    <div class="card-actions"><button class="btn btn-ghost js-alert" type="button">Ver detalhes</button>${decisaoBtn}</div>
   </article>`;
+}
+
+function renderReceivedProposalDetails(item) {
+  const status = item.status || "enviada";
+  const travada = propostaEstaTravada(status);
+  return `
+    <div class="proposal-detail-head">
+      <div><span>Usina</span><strong>${escapeHtml(nomeUsinaProposta(item.usina))}</strong></div>
+      <strong class="modal-price">${escapeHtml(formatMoneyBR(item.valor))}</strong>
+    </div>
+    <div class="action-modal-grid">
+      <div><span>Prazo de fabricacao</span><strong>${escapeHtml(item.prazo || "A combinar")}</strong></div>
+      <div><span>Frete</span><strong>${escapeHtml(item.frete ? formatMoneyBR(item.frete) : "A combinar")}</strong></div>
+      <div><span>Status</span><strong>${escapeHtml(statusPropostaLabel(status))}</strong></div>
+      <div><span>Pedido</span><strong>${escapeHtml(item.pedido?.numeroPedido || "-")}</strong></div>
+    </div>
+    <div class="detail-list"><div><span>Observacoes</span><strong>${escapeHtml(item.observacao || "Sem observacoes adicionais.")}</strong></div></div>
+    <div class="form-actions">
+      <button class="btn btn-ghost js-action-modal-close" type="button">Fechar</button>
+      ${travada ? "" : '<button class="btn js-modal-accept-proposal" type="button">Aceitar proposta</button><button class="btn btn-ghost js-modal-reject-proposal" type="button">Recusar proposta</button>'}
+    </div>`;
 }
 
 async function loadProposalsFromApi() {
   if (!window.UsinaLinkApi) return;
-  const session = currentSession();
   const usinaTable = document.querySelector("body[data-user-role='usina'] tbody");
   if (document.body.dataset.userRole === "usina" && usinaTable && window.location.pathname.includes("propostas-usina")) {
     try {
@@ -852,13 +881,17 @@ async function loadProposalsFromApi() {
       showToast(error.message);
     }
   }
-  const empresaGrid = document.querySelector("body[data-user-role='empresa'] .proposal-grid");
-  if (empresaGrid && window.location.pathname.includes("propostas")) {
+  const empresaGrid = document.querySelector("[data-proposals-grid]");
+  if (empresaGrid) {
     try {
       const proposals = await window.UsinaLinkApi.get(`/propostas/recebidas`);
-      empresaGrid.innerHTML = proposals.map((item, index) => proposalCardMarkup(item, index === 0)).join("") || '<article class="card proposal-card"><h2>Nenhuma proposta recebida</h2><p>As propostas enviadas pelas usinas aparecerao aqui.</p></article>';
+      ultimasPropostasRecebidas = proposals;
+      const melhorValor = Math.min(...proposals.filter(p => !propostaEstaTravada(p.status)).map(p => Number(p.valor) || Infinity));
+      empresaGrid.innerHTML = proposals.length
+        ? proposals.map((item) => proposalCardMarkup(item, Number(item.valor) === melhorValor)).join("")
+        : '<article class="card proposal-card"><h2>Nenhuma proposta recebida</h2><p>As propostas enviadas pelas usinas aparecerao aqui.</p></article>';
     } catch (error) {
-      showToast(error.message);
+      empresaGrid.innerHTML = `<article class="card proposal-card"><h2>Falha ao carregar propostas</h2><p>${escapeHtml(error.message)}</p></article>`;
     }
   }
 }
@@ -935,15 +968,27 @@ function openSimpleConfirm({ title, message, confirmText, onConfirm, orange = fa
   });
 }
 
+let modalPropostaId = null;
+
+async function decidirProposta(idProposta, aceitar) {
+  if (!window.UsinaLinkApi || !idProposta) return;
+  try {
+    await window.UsinaLinkApi.patch(`/propostas/${idProposta}/${aceitar ? "aceitar" : "recusar"}`, {});
+    ensureActionModal().hidden = true;
+    showToast(aceitar ? "Proposta aceita com sucesso" : "Proposta recusada");
+    await loadProposalsFromApi();
+  } catch (error) {
+    showToast(error.message);
+  }
+}
+
 document.addEventListener("click", (event) => {
   if (event.target.closest(".js-modal-accept-proposal")) {
-    ensureActionModal().hidden = true;
-    showToast("Proposta aceita com sucesso");
+    decidirProposta(modalPropostaId, true);
     return;
   }
   if (event.target.closest(".js-modal-reject-proposal")) {
-    ensureActionModal().hidden = true;
-    showToast("Proposta recusada");
+    decidirProposta(modalPropostaId, false);
     return;
   }
   const button = event.target.closest(".js-alert");
@@ -976,22 +1021,18 @@ document.addEventListener("click", (event) => {
     return;
   }
 
-  if (card && action === "Ver detalhes") {
-    openActionModal({ title: "Detalhes da proposta", kicker: "Proposta recebida", body: renderProposalDetails(proposalDetailFromCard(card), true) });
+  if (card && action === "Ver detalhes" && card.dataset.proposalId) {
+    modalPropostaId = card.dataset.proposalId;
+    const item = ultimasPropostasRecebidas.find((p) => String(p.idProposta) === modalPropostaId);
+    openActionModal({ title: "Detalhes da proposta", kicker: "Proposta recebida", body: renderReceivedProposalDetails(item || {}) });
     return;
   }
-  if (card && action === "Aceitar proposta") {
+  if (card && action === "Aceitar proposta" && card.dataset.proposalId) {
     openSimpleConfirm({
       title: "Aceitar proposta",
-      message: "Deseja aceitar esta proposta? As demais propostas deste pedido ficarao bloqueadas visualmente.",
+      message: "Deseja aceitar esta proposta? As demais propostas deste pedido ficarao recusadas.",
       confirmText: "Aceitar proposta",
-      onConfirm: () => {
-        document.querySelectorAll(".proposal-card .btn:not(.btn-ghost)").forEach((item) => item.disabled = true);
-        button.textContent = "Proposta aceita";
-        button.disabled = true;
-        card.classList.add("accepted");
-        showToast("Proposta aceita com sucesso");
-      }
+      onConfirm: () => decidirProposta(card.dataset.proposalId, true)
     });
     return;
   }
