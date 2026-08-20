@@ -109,6 +109,30 @@ Depois de publicar a versão anterior deste relatório, você reparou que **o pe
 
 Corrigido nos dois lugares: o HTML agora começa com "Carregando...", e os valores de exemplo do JavaScript agora começam em branco (aparecem como "-") em vez de um nome de empresa inventado. Isso vale tanto pro perfil da empresa quanto pro da usina, porque os dois usam o mesmo mecanismo.
 
+## Parte 3 — Varredura no site inteiro
+
+Depois do relatório acima, você pediu uma checagem completa em **todas** as abas do site pra achar qualquer informação fixa que tivesse sobrado, com uma regra clara: o site só pode mostrar o que existe de verdade no banco de dados.
+
+### 3.1. Mais um "flash" que tinha passado despercebido
+
+- **`propostas-usina.html`** tinha 4 linhas de proposta fixas escritas direto no HTML (Eixo estriado/Metal Forte, Base fundida/Energia Sul...). O código que troca pelos dados reais já existia e funcionava, mas ninguém tinha notado que a tabela começava com esse "flash" — passou despercebido na varredura anterior porque o teste no navegador só olhava o resultado final, depois do JavaScript já ter trocado tudo. Corrigido: a tabela agora começa vazia, com "Carregando...".
+
+### 3.2. Duas coisas que não eram "flash" — eram informação que nunca existiu no banco
+
+Ao continuar a varredura, apareceram duas telas com um problema diferente dos anteriores: não era um dado real que demorava a chegar, era um dado que **nunca teve onde ser guardado**. Te perguntei o que preferia fazer em cada caso, e você pediu pra construir os dois de verdade.
+
+**Catálogo de peças comerciais** (`dashboard-pessoa-juridica.html`): a tela mostrava 4 peças fixas (nome, estoque, preço, fornecedor, tipo "Flange ANSI 150 — Atlas Metais — R$ 380,00") e 4 números de resumo, só que não existia nenhuma tabela no banco pra guardar peças de um catálogo. Foi criado:
+- Uma tabela nova (`peca_comercial`) e uma rota completa no servidor pra listar, cadastrar e remover peças, sempre ligadas à usina dona.
+- Uma tela nova, `pecas-comerciais-usina.html`, onde a usina cadastra as próprias peças (nome, material, estoque, preço, prazo).
+- A tela da empresa (`dashboard-pessoa-juridica.html`) agora busca esse catálogo de verdade e calcula os 4 números a partir dos dados reais.
+
+**Seções do perfil sem nenhum campo no banco**: tanto no perfil da empresa quanto no da usina existiam abas inteiras (Documentos, Notificações, Produção, Certificações, além dos campos WhatsApp/Site) que mostravam texto de exemplo porque essas informações nunca tinham sido salvas em lugar nenhum. Foi criado:
+- Colunas novas no banco pra cada um desses campos (incluindo upload de Contrato Social e Alvará, guardados do mesmo jeito que outros arquivos do sistema já funcionam).
+- Enquanto mexia nisso, achei um bug antigo e genérico: as caixinhas de marcar (checkbox) do formulário de perfil **sempre apareciam marcadas na tela**, não importa o que estivesse salvo, porque o código tinha um erro que ignorava o valor real. Corrigido — agora reflete e salva o estado de verdade.
+- O CNPJ da empresa, que já existia no banco mas nunca aparecia no perfil, agora é mostrado (sem poder ser editado, já que é um dado de identidade fixo por lei).
+
+**Testei tudo isso no navegador:** usina cadastrando uma peça no catálogo, empresa vendo essa peça real e solicitando compra, e o perfil da empresa e da usina salvando e recarregando corretamente Documentos, Notificações, Produção e Certificações — inclusive fechando a página e abrindo de novo pra confirmar que ficou salvo.
+
 ---
 
 ## O que ainda fica de fora (por escolha, não esquecimento)
