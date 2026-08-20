@@ -34,7 +34,9 @@ export class EmpresaService {
   async atualizarPerfil(user: any, dto: UpdatePerfilEmpresaDto) {
     const idEmpresa = await this.ctx.obterEmpresaId(user.sub);
     const { cep, rua, numero, bairro, cidade, estado, complemento, ...dadosEmpresa } = dto;
-    await this.empresas.update({ idEmpresa }, dadosEmpresa);
+    if (Object.values(dadosEmpresa).some((v) => v !== undefined)) {
+      await this.empresas.update({ idEmpresa }, dadosEmpresa);
+    }
 
     const enderecoDto = { cep, rua, numero, bairro, cidade, estado, complemento };
     const temEndereco = Object.values(enderecoDto).some(v => v !== undefined);

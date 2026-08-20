@@ -30,6 +30,7 @@ export class PedidoService {
 
   async criar(dto: any, user: any) {
     const idEmpresa = await this.ctx.obterEmpresaId(user.sub);
+    const prazoDigits = dto.prazoEntregaDias ?? String(dto.prazo || '').match(/\d+/)?.[0];
     const pedido = await this.pedidos.save(this.pedidos.create({
       idEmpresaCompradora: idEmpresa,
       idUsuarioSolicitante: user.sub,
@@ -37,7 +38,7 @@ export class PedidoService {
       urgencia: dto.urgencia,
       status: 'aberto',
       observacoes: dto.observacoes || dto.descricao,
-      prazoEntregaDias: dto.prazoEntregaDias ? Number(dto.prazoEntregaDias) : undefined,
+      prazoEntregaDias: prazoDigits ? Number(prazoDigits) : undefined,
       dataPedido: new Date(),
     }));
 

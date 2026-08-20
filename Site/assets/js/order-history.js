@@ -52,6 +52,8 @@
     if (!container) return;
     container.innerHTML = '<div class="loading-state">Carregando pagamentos...</div>';
     const orders = await service.getOrders();
+    const stat = document.querySelector("[data-stat-aguardando-pagamento]");
+    if (stat) stat.textContent = orders.filter(order => order.statusPagamento !== "Pago").length;
     if (!orders.length) {
       container.innerHTML = '<div class="empty-state"><strong>Nenhum pedido encontrado</strong><span>Assim que houver propostas aceitas, os pedidos aparecem aqui.</span></div>';
       return;

@@ -35,10 +35,10 @@
       </header>
 
       <section class="summary-grid professional">
-        <article class="card summary-card orange-accent"><span>Pedidos dispon&iacute;veis</span><strong>28</strong><small>11 aderentes ao perfil</small></article>
-        <article class="card summary-card orange-accent"><span>Propostas enviadas</span><strong>14</strong><small>5 aguardando retorno</small></article>
-        <article class="card summary-card orange-accent"><span>Propostas aceitas</span><strong>5</strong><small>2 em produ&ccedil;&atilde;o</small></article>
-        <article class="card summary-card orange-accent"><span>Faturamento estimado</span><strong>R$ 186k</strong><small>Pipeline do m&ecirc;s</small></article>
+        <article class="card summary-card orange-accent"><span>Pedidos dispon&iacute;veis</span><strong data-stat-pedidos-disponiveis>-</strong><small>Abertos para proposta</small></article>
+        <article class="card summary-card orange-accent"><span>Propostas enviadas</span><strong data-stat-propostas-enviadas>-</strong><small>No total</small></article>
+        <article class="card summary-card orange-accent"><span>Propostas aceitas</span><strong data-stat-propostas-aceitas>-</strong><small>Fechadas com a usina</small></article>
+        <article class="card summary-card orange-accent"><span>Faturamento estimado</span><strong data-stat-faturamento>-</strong><small>Propostas aceitas</small></article>
       </section>
 
       <section class="card table-card order-section" data-search-scope>
@@ -58,11 +58,8 @@
         <div class="table-wrap">
           <table>
             <thead><tr><th>Nome da pe&ccedil;a</th><th>Material</th><th>Quantidade</th><th>Prazo</th><th>Regi&atilde;o</th><th>Urg&ecirc;ncia</th><th>A&ccedil;&otilde;es</th></tr></thead>
-            <tbody>
-              <tr data-search-row data-region="sudeste" data-urgency="normal" data-days="20" data-description="Eixo para conjunto de transmissao com tolerancia dimensional e tratamento termico." data-file="desenho-eixo-estriado.pdf"><td>Eixo estriado</td><td>A&ccedil;o 4140 temperado</td><td>60 unidades</td><td>20 dias</td><td>Sudeste</td><td><span class="badge muted">Normal</span></td><td><button class="table-action js-open-order-detail" type="button">Ver detalhes</button><a class="btn btn-orange btn-small" href="enviar-proposta.html">Enviar proposta</a></td></tr>
-              <tr data-search-row data-region="sul" data-urgency="alta" data-days="12" data-description="Flange para linha industrial com acabamento usinado e inspecao dimensional." data-file="flange-industrial.dwg"><td>Flange industrial</td><td>A&ccedil;o carbono</td><td>45 unidades</td><td>12 dias</td><td>Sul</td><td><span class="badge warning">Alta</span></td><td><button class="table-action js-open-order-detail" type="button">Ver detalhes</button><a class="btn btn-orange btn-small" href="enviar-proposta.html">Enviar proposta</a></td></tr>
-              <tr data-search-row data-region="sudeste" data-urgency="normal" data-days="25" data-description="Suporte estrutural em aluminio para linha de montagem automatizada." data-file="suporte-metalico.pdf"><td>Suporte met&aacute;lico</td><td>Alum&iacute;nio 6061</td><td>300 unidades</td><td>25 dias</td><td>Sudeste</td><td><span class="badge muted">Normal</span></td><td><button class="table-action js-open-order-detail" type="button">Ver detalhes</button><a class="btn btn-orange btn-small" href="enviar-proposta.html">Enviar proposta</a></td></tr>
-              <tr data-search-row data-region="nordeste" data-urgency="alta" data-days="18" data-description="Engrenagem helicoidal com cementacao e controle de rugosidade." data-file="engrenagem-helicoidal.step"><td>Engrenagem helicoidal</td><td>A&ccedil;o cementado</td><td>20 unidades</td><td>18 dias</td><td>Nordeste</td><td><span class="badge warning">Alta</span></td><td><button class="table-action js-open-order-detail" type="button">Ver detalhes</button><a class="btn btn-orange btn-small" href="enviar-proposta.html">Enviar proposta</a></td></tr>
+            <tbody data-usina-pedidos-body>
+              <tr><td colspan="7" style="text-align:center; padding: 24px;">Carregando...</td></tr>
             </tbody>
           </table>
         </div>
@@ -75,11 +72,8 @@
         <div class="table-wrap">
           <table>
             <thead><tr><th>Pe&ccedil;a</th><th>Cliente</th><th>Valor</th><th>Prazo</th><th>Status</th><th>A&ccedil;&otilde;es</th></tr></thead>
-            <tbody>
-              <tr data-search-row><td>Eixo usinado</td><td>Metal Forte</td><td>R$ 18.500,00</td><td>18 dias</td><td><span class="badge info">Enviada</span></td><td><button class="table-action js-alert" type="button">Ver detalhes</button></td></tr>
-              <tr data-search-row><td>Base fundida</td><td>Energia Sul</td><td>R$ 42.000,00</td><td>30 dias</td><td><span class="badge warning">Em an&aacute;lise</span></td><td><button class="table-action js-alert" type="button">Ver detalhes</button></td></tr>
-              <tr data-search-row><td>Polia industrial</td><td>Minas Parts</td><td>R$ 9.800,00</td><td>15 dias</td><td><span class="badge success">Aceita</span></td><td><button class="table-action js-alert" type="button">Ver detalhes</button></td></tr>
-              <tr data-search-row><td>Suporte inox</td><td>ValeTech</td><td>R$ 12.400,00</td><td>22 dias</td><td><span class="badge muted">Recusada</span></td><td><button class="table-action js-alert" type="button">Ver detalhes</button></td></tr>
+            <tbody data-dashboard-propostas-body>
+              <tr><td colspan="6" style="text-align:center; padding: 24px;">Carregando...</td></tr>
             </tbody>
           </table>
         </div>
@@ -101,7 +95,10 @@
     </section>
   </div>
 
+  <script src="assets/js/api.js"></script>
   <script src="assets/js/auth-guard.js"></script>
   <script src="script.js"></script>
+  <script src="assets/js/pedidos-usina.js"></script>
+  <script src="assets/js/dashboard-usina.js"></script>
 </body>
 </html>

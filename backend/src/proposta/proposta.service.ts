@@ -18,7 +18,7 @@ export class PropostaService {
 
   private async enrich(proposta: Proposta) {
     const [pedido, usina] = await Promise.all([
-      this.pedidos.findOne({ where: { idPedido: proposta.idPedido } }),
+      this.pedidos.findOne({ where: { idPedido: proposta.idPedido }, relations: ['itens', 'empresaCompradora'] }),
       this.usinas.findOne({ where: { idUsina: proposta.idUsina } }),
     ]);
     return { ...proposta, pedido, usina };

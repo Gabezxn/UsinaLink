@@ -450,12 +450,12 @@ const profileData = {
     cancel: "dashboard-usina.html",
     button: "btn-orange",
     sections: {
-      gerais: { title: "Informa\u00e7\u00f5es gerais", subtitle: "Dados industriais exibidos para empresas compradoras.", fields: [["Nome da usina", "text", "Usina Atlas Metais"], ["Nome fantasia", "text", "Atlas Metais"], ["Especialidade principal", "text", "Usinagem de precis\u00e3o"], ["Capacidade produtiva", "text", "12.000 pe\u00e7as/m\u00eas"], ["Descri\u00e7\u00e3o industrial", "textarea", "Usina especializada em usinagem CNC, corte, dobra e componentes industriais sob demanda."]] },
-      contato: { title: "Contato", subtitle: "Canais da equipe comercial da usina.", fields: [["E-mail industrial", "email", "comercial@atlasmetais.com"], ["Telefone", "tel", "(31) 3333-4400"], ["WhatsApp", "tel", "(31) 98888-4400"], ["Respons\u00e1vel comercial", "text", "Carlos Mendes"]] },
-      endereco: { title: "Endere\u00e7o", subtitle: "Localiza\u00e7\u00e3o operacional e regi\u00e3o de atendimento.", fields: [["CEP", "text", "32000-000"], ["Rua", "text", "Rodovia Industrial"], ["Cidade", "text", "Contagem"], ["Estado", "select", "MG", ["MG", "SP", "RJ", "PR", "SC", "RS"]], ["Regi\u00e3o de atendimento", "text", "Sudeste, Sul e Nordeste"]] },
+      gerais: { title: "Informa\u00e7\u00f5es gerais", subtitle: "Dados industriais exibidos para empresas compradoras.", fields: [["Raz\u00e3o social", "text", "Usina Atlas Metais", null, "razaoSocial"], ["Nome fantasia", "text", "Atlas Metais", null, "nomeFantasia"], ["Especialidade principal", "text", "Usinagem de precis\u00e3o", null, "especialidade"], ["Capacidade produtiva", "text", "12.000 pe\u00e7as/m\u00eas", null, "capacidadeProducao"], ["Descri\u00e7\u00e3o industrial", "textarea", "Usina especializada em usinagem CNC, corte, dobra e componentes industriais sob demanda.", null, "descricao"]] },
+      contato: { title: "Contato", subtitle: "Canais da equipe comercial da usina.", fields: [["E-mail industrial", "email", "comercial@atlasmetais.com", null, "email"], ["Telefone", "tel", "(31) 3333-4400", null, "telefone"], ["Respons\u00e1vel comercial", "text", "Carlos Mendes", null, "responsavel"]] },
+      endereco: { title: "Endere\u00e7o", subtitle: "Localiza\u00e7\u00e3o operacional da usina.", fields: [["CEP", "text", "32000-000", null, "cep"], ["Rua", "text", "Rodovia Industrial", null, "rua"], ["N\u00famero", "text", "1000", null, "numero"], ["Bairro", "text", "Distrito Industrial", null, "bairro"], ["Cidade", "text", "Contagem", null, "cidade"], ["Estado", "select", "MG", ["MG", "SP", "RJ", "PR", "SC", "RS"], "estado"], ["Complemento", "text", "Galpao 2", null, "complemento"]] },
       producao: { title: "Produ\u00e7\u00e3o", subtitle: "Capacidade operacional para avaliar pedidos.", fields: [["M\u00e1quinas dispon\u00edveis", "textarea", "Tornos CNC, centros de usinagem, corte laser, dobra CNC"], ["Capacidade mensal", "text", "12.000 pe\u00e7as"], ["Turnos", "select", "2 turnos", ["1 turno", "2 turnos", "3 turnos"]], ["Prazo m\u00e9dio", "text", "18 dias"]] },
       certificacoes: { title: "Certifica\u00e7\u00f5es", subtitle: "Compet\u00eancias e certificados produtivos.", fields: [["ISO 9001", "checkbox", "ISO 9001"], ["CNC", "checkbox", "CNC"], ["Corte laser", "checkbox", "Corte laser"], ["Fundi\u00e7\u00e3o", "checkbox", "Fundi\u00e7\u00e3o"], ["Soldagem", "checkbox", "Soldagem"]] },
-      seguranca: { title: "Seguran\u00e7a", subtitle: "Proteja o acesso da equipe da usina.", fields: [["Senha atual", "password", ""], ["Nova senha", "password", ""], ["Confirmar senha", "password", ""]] },
+      seguranca: { title: "Seguran\u00e7a", subtitle: "Proteja o acesso da equipe da usina.", fields: [["Senha atual", "password", "", null, "senhaAtual"], ["Nova senha", "password", "", null, "novaSenha"], ["Confirmar senha", "password", "", null, "confirmarSenha"]] },
       notificacoes: { title: "Notifica\u00e7\u00f5es", subtitle: "Configure os avisos comerciais da usina.", fields: [["Novos pedidos", "checkbox", "Novos pedidos"], ["Propostas aceitas", "checkbox", "Propostas aceitas"], ["Alertas de prazo", "checkbox", "Alertas de prazo"], ["Mensagens", "checkbox", "Mensagens"]] }
     }
   }
@@ -558,56 +558,6 @@ document.querySelectorAll(".js-toggle-profile-edit").forEach((button) => {
 
 document.addEventListener("click", (event) => {
   if (event.target.closest(".js-cancel-profile-edit")) toggleProfileEdit(true);
-});
-
-function parseCurrency(value) {
-  return Number(String(value || "0").replace(/\D/g, "")) / 100;
-}
-
-function formatCurrency(value) {
-  return "R$ " + Number(value || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-function updateProposalTotal() {
-  const valueInput = document.querySelector("#proposal-value");
-  const freightInput = document.querySelector("#proposal-freight");
-  const totalPreview = document.querySelector("#preview-total");
-  const valuePreview = document.querySelector("#preview-value");
-  const freightPreview = document.querySelector("#preview-freight");
-  
-  if (!valueInput || !freightInput || !totalPreview) return;
-  
-  const valorProposta = parseCurrency(valueInput.value);
-  const valorFrete = parseCurrency(freightInput.value);
-  const valorTotal = valorProposta + valorFrete;
-  
-  totalPreview.textContent = formatCurrency(valorTotal);
-  if (valuePreview) valuePreview.textContent = formatCurrency(valorProposta);
-  if (freightPreview) freightPreview.textContent = formatCurrency(valorFrete);
-}
-
-document.querySelectorAll(".js-proposal-form").forEach((form) => {
-  const valueInput = form.querySelector("#proposal-value");
-  const freightInput = form.querySelector("#proposal-freight");
-  const deadlineInput = form.querySelector("#proposal-deadline");
-  const noteInput = form.querySelector("#proposal-note");
-  
-  if (valueInput) valueInput.addEventListener("input", updateProposalTotal);
-  if (freightInput) freightInput.addEventListener("input", updateProposalTotal);
-  if (deadlineInput) {
-    deadlineInput.addEventListener("input", () => {
-      const preview = document.querySelector("#preview-deadline");
-      if (preview) preview.textContent = deadlineInput.value || "18 dias";
-    });
-  }
-  if (noteInput) {
-    noteInput.addEventListener("input", () => {
-      const preview = document.querySelector("#preview-note");
-      if (preview) preview.textContent = noteInput.value || "Sem observa&ccedil;&otilde;es.";
-    });
-  }
-  
-  updateProposalTotal();
 });
 
 function ensureHistoryEmptyState() {
@@ -806,8 +756,11 @@ function renderProposalRowActions(row) {
 }
 
 function proposalRowMarkup(item) {
-  const status = item.status || "Enviada";
-  return `<tr data-search-row data-proposal-id="${escapeHtml(item.id)}"><td>${escapeHtml(item.peca || "")}</td><td>${escapeHtml(item.cliente || "")}</td><td>${escapeHtml(item.valor || "")}</td><td>${escapeHtml(item.prazo || "")}</td><td><span class="badge ${badgeClass(status)}">${escapeHtml(status)}</span></td><td>${escapeHtml(item.dataEnvio || "")}</td><td>${proposalActionsMarkup(status)}</td></tr>`;
+  const status = statusPropostaLabel(item.status);
+  const peca = item.pedido?.itens?.[0]?.nome || "Peca industrial";
+  const cliente = item.pedido?.empresaCompradora?.nomeFantasia || item.pedido?.empresaCompradora?.razaoSocial || "-";
+  const dataEnvio = item.dataEnvio ? new Date(item.dataEnvio).toLocaleDateString("pt-BR") : "";
+  return `<tr data-search-row data-proposal-id="${escapeHtml(item.idProposta)}"><td>${escapeHtml(peca)}</td><td>${escapeHtml(cliente)}</td><td>${escapeHtml(formatMoneyBR(item.valor))}</td><td>${escapeHtml(item.prazo || "A combinar")}</td><td><span class="badge ${badgeClass(status)}">${escapeHtml(status)}</span></td><td>${escapeHtml(dataEnvio)}</td><td>${proposalActionsMarkup(status)}</td></tr>`;
 }
 
 let ultimasPropostasRecebidas = [];
@@ -1152,8 +1105,10 @@ function closeOrderModal() {
   if (orderModal) orderModal.hidden = true;
 }
 
-document.querySelectorAll(".js-open-order-detail").forEach((button) => {
-  button.addEventListener("click", () => {
+document.addEventListener("click", (event) => {
+  const button = event.target.closest(".js-open-order-detail");
+  if (!button) return;
+  {
     const row = button.closest("[data-search-row]");
     const cells = row.querySelectorAll("td");
     const facts = {};
@@ -1163,21 +1118,24 @@ document.querySelectorAll(".js-open-order-detail").forEach((button) => {
       if (key) facts[key] = value;
     });
     const title = row.querySelector("h2")?.textContent || cells[0]?.textContent || "Pedido";
-    const material = cells[1]?.textContent || facts.material || "";
-    const quantity = cells[2]?.textContent || facts.quantidade || "";
-    const deadline = cells[3]?.textContent || facts.prazo || "";
-    const region = cells[4]?.textContent || facts["regi\u00e3o"] || "";
+    const material = row.dataset.material || cells[1]?.textContent || facts.material || "Nao informado";
+    const quantity = row.dataset.quantidade || cells[2]?.textContent || facts.quantidade || "Nao informado";
+    const dias = Number(row.dataset.days);
+    const deadline = cells[3]?.textContent || (dias && dias < 999 ? `${dias} dias` : facts.prazo || "A combinar");
+    const region = cells[4]?.textContent || row.dataset.region || facts["regi\u00e3o"] || "Nao informado";
     document.querySelector("#order-modal-title").textContent = title;
     document.querySelector("#order-modal-content").innerHTML = `
       <div><span>Detalhes da pe\u00e7a</span><strong>${escapeHtml(title)}</strong></div>
       <div><span>Material</span><strong>${escapeHtml(material)}</strong></div>
       <div><span>Quantidade</span><strong>${escapeHtml(quantity)}</strong></div>
-      <div><span>Descri\u00e7\u00e3o t\u00e9cnica</span><strong>${escapeHtml(row.dataset.description || "Solicita\u00e7\u00e3o com especifica\u00e7\u00f5es t\u00e9cnicas anexas.")}</strong></div>
-      <div><span>Arquivo t\u00e9cnico fict\u00edcio</span><strong>${escapeHtml(row.dataset.file || "arquivo-tecnico.pdf")}</strong></div>
+      <div><span>Descri\u00e7\u00e3o t\u00e9cnica</span><strong>${escapeHtml(row.dataset.description || "Sem descri\u00e7\u00e3o adicional.")}</strong></div>
+      <div><span>Arquivo t\u00e9cnico</span><strong>${escapeHtml(row.dataset.file || "Sem arquivo anexado")}</strong></div>
       <div><span>Prazo desejado</span><strong>${escapeHtml(deadline)}</strong></div>
       <div><span>Regi\u00e3o</span><strong>${escapeHtml(region)}</strong></div>`;
+    const sendLink = orderModal?.querySelector(".btn-orange");
+    if (sendLink) sendLink.href = row.dataset.pedidoId ? `enviar-proposta.html?pedidoId=${encodeURIComponent(row.dataset.pedidoId)}` : "enviar-proposta.html";
     if (orderModal) orderModal.hidden = false;
-  });
+  }
 });
 
 document.querySelectorAll(".js-close-order-modal").forEach((button) => button.addEventListener("click", closeOrderModal));
@@ -1244,77 +1202,9 @@ if (employeeForm) {
 document.querySelectorAll("[data-employee-table] tr").forEach(renderEmployeeRowActions);
 loadEmployeesFromApi();
 
-function formatCurrencyLike(value, fallback) {
-  const clean = value.trim();
-  if (!clean) return fallback;
-  return clean.startsWith("R$") ? clean : `R$ ${clean}`;
-}
-
-function parseCurrencyLike(value) {
-  const clean = String(value || "").replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", ".");
-  const number = Number(clean);
-  return Number.isFinite(number) ? number : 0;
-}
-
-function formatBRL(value) {
-  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(value) || 0);
-}
-
-function updateProposalPreview() {
-  const value = document.querySelector("#proposal-value");
-  const deadline = document.querySelector("#proposal-deadline");
-  const freight = document.querySelector("#proposal-freight");
-  const note = document.querySelector("#proposal-note");
-  if (!value) return;
-  document.querySelector("#preview-value").textContent = formatBRL(parseCurrencyLike(value.value) + parseCurrencyLike(freight.value));
-  document.querySelector("#preview-deadline").textContent = deadline.value || "18 dias";
-  document.querySelector("#preview-freight").textContent = formatCurrencyLike(freight.value, "R$ 950,00");
-  document.querySelector("#preview-note").textContent = note.value || "Proposta com inspe\u00e7\u00e3o dimensional e embalagem refor\u00e7ada.";
-}
-
-document.querySelectorAll("#proposal-value, #proposal-deadline, #proposal-freight, #proposal-note").forEach((input) => {
-  input.addEventListener("input", updateProposalPreview);
-});
-
 document.addEventListener("input", (event) => {
   const input = event.target.closest("input[data-mask]");
   if (input) applyMaskByKey(input);
-});
-
-document.querySelectorAll(".js-send-proposal").forEach((button) => {
-  button.addEventListener("click", async () => {
-    if (button.disabled) return;
-    updateProposalPreview();
-    const session = currentSession();
-    const params = new URLSearchParams(window.location.search);
-    const pedidoId = params.get("pedidoId") || "pedido-1";
-    const value = document.querySelector("#proposal-value");
-    const deadline = document.querySelector("#proposal-deadline");
-    const freight = document.querySelector("#proposal-freight");
-    const note = document.querySelector("#proposal-note");
-    if (!value.value.trim() || !deadline.value.trim()) {
-      showToast("Informe valor e prazo para enviar a proposta");
-      return;
-    }
-    try {
-      button.disabled = true;
-      button.textContent = "Enviando...";
-      if (!window.UsinaLinkApi) throw new Error("Nao foi possivel conectar ao servidor. Verifique se o backend esta rodando.");
-      await window.UsinaLinkApi.post("/propostas", {
-        idPedido: pedidoId,
-        valor: formatCurrencyLike(value.value, "R$ 0,00"),
-        prazo: deadline.value.trim(),
-        frete: formatCurrencyLike(freight.value, "R$ 0,00"),
-        observacao: note.value.trim()
-      });
-      showToast("Proposta enviada com sucesso");
-      window.setTimeout(() => { window.location.href = "propostas-usina.html"; }, 800);
-    } catch (error) {
-      showToast(error.message);
-      button.disabled = false;
-      button.textContent = "Enviar proposta";
-    }
-  });
 });
 
 loadProposalsFromApi();

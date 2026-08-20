@@ -8,6 +8,7 @@ export class CreatePedidoDto {
   @IsOptional() @IsString() material?: string;
   @IsOptional() @IsString() quantidade?: string;
   @IsOptional() @IsString() prazo?: string;
+  @IsOptional() @IsString() prazoEntregaDias?: string;
   @IsOptional() @IsString() regiao?: string;
   @IsOptional() @IsString() urgencia?: string;
   @IsOptional() @IsString() descricao?: string;

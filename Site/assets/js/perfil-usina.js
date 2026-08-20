@@ -1,12 +1,12 @@
 (function () {
-  if (document.body.dataset.profileKind !== 'empresa') return;
+  if (document.body.dataset.profileKind !== 'usina') return;
 
-  function notify(message, type) {
+  function notify(message) {
     if (window.showToast) window.showToast(message);
   }
 
   function applyValuesToSection(sectionKey, values) {
-    const section = profileData?.empresa?.sections?.[sectionKey];
+    const section = profileData?.usina?.sections?.[sectionKey];
     if (!section) return;
     section.fields.forEach((field) => {
       const key = field[4];
@@ -16,22 +16,19 @@
 
   function refreshVisible() {
     const sectionKey = document.querySelector('[data-profile-section].active')?.dataset.profileSection || 'gerais';
-    if (typeof renderProfileView === 'function') renderProfileView(sectionKey);
-    if (!document.querySelector('#profile-dynamic-form').classList.contains('is-hidden') && typeof renderProfileSection === 'function') {
-      renderProfileSection(sectionKey);
-    }
+    if (typeof renderProfileSection === 'function') renderProfileSection(sectionKey);
   }
 
   async function loadPerfil() {
     try {
-      const perfil = await window.UsinaLinkApi.get('/empresas/perfil');
+      const perfil = await window.UsinaLinkApi.get('/usinas/perfil');
       const flat = { ...perfil, ...(perfil.endereco || {}) };
       applyValuesToSection('gerais', flat);
       applyValuesToSection('contato', flat);
       applyValuesToSection('endereco', flat);
       refreshVisible();
     } catch (error) {
-      notify('Não foi possível carregar os dados do perfil: ' + error.message, 'error');
+      notify('Não foi possível carregar os dados do perfil: ' + error.message);
     }
   }
 
@@ -56,21 +53,21 @@
         if (!values.novaSenha) throw new Error('Informe a nova senha.');
         if (values.novaSenha !== values.confirmarSenha) throw new Error('A nova senha e a confirmação não coincidem.');
         await window.UsinaLinkApi.patch('/usuarios/senha', values);
-        notify('Senha atualizada com sucesso.', 'success');
+        notify('Senha atualizada com sucesso.');
         form.reset();
       } else if (sectionKey === 'gerais' || sectionKey === 'contato' || sectionKey === 'endereco') {
-        const atualizado = await window.UsinaLinkApi.patch('/empresas/perfil', values);
+        const atualizado = await window.UsinaLinkApi.patch('/usinas/perfil', values);
         const flat = { ...atualizado, ...(atualizado.endereco || {}) };
         applyValuesToSection('gerais', flat);
         applyValuesToSection('contato', flat);
         applyValuesToSection('endereco', flat);
-        notify('Perfil atualizado com sucesso.', 'success');
+        notify('Perfil atualizado com sucesso.');
       } else {
-        notify('Alterações salvas.', 'success');
+        notify('Alterações salvas.');
       }
-      toggleProfileEdit(true);
+      refreshVisible();
     } catch (error) {
-      notify(error.message, 'error');
+      notify(error.message);
     } finally {
       button.disabled = false;
       button.textContent = originalText;
