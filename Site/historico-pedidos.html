@@ -3,185 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
-  <title>Histórico de Pedidos | Usinalink</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body data-user-role="empresa">
-=======
   <title>Hist&oacute;rico de Pedidos | Usinalink</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
->>>>>>> 8621136 (Melhoria visual + adição de novas api)
+<body data-user-role="empresa">
   <div class="app-layout">
     <aside class="sidebar">
       <a class="brand" href="index.html"><span class="brand-icon">US</span><span>Usinalink</span></a>
       <nav class="side-nav" data-role-nav="empresa">
-<<<<<<< HEAD
-        <a href="dashboard-empresa.html">Dashboard empresa</a>
-        <a href="dashboard-pessoa-juridica.html">Pe&ccedil;as comerciais</a>
-        <a href="perfil-empresa.html">Perfil</a>
-        <a href="funcionarios.html">Funcion&aacute;rios</a>
-        <a href="solicitacoes.html">Solicita&ccedil;&otilde;es</a>
-        <a href="propostas.html">Propostas</a>
-        <a class="active" href="historico-pedidos.html">Hist&oacute;rico de pedidos</a>
-        <a href="index.html">Sair</a>
-      </nav>
-    </aside>
-
-    <main class="app-main">
-      <header class="app-header">
-        <div>
-          <span class="eyebrow">Área da empresa</span>
-          <h1>Histórico de Pedidos</h1>
-        </div>
-        <div class="user-strip">
-          <div><strong>Ana Martins</strong><span>Compras corporativas</span></div>
-          <a class="btn btn-ghost btn-small" href="index.html">Sair</a>
-        </div>
-      </header>
-
-      <section class="summary-grid professional">
-        <article class="card summary-card"><span>Total de pedidos</span><strong>24</strong><small>Últimos 12 meses</small></article>
-        <article class="card summary-card"><span>Valor total</span><strong>R$ 284K</strong><small>Em compras realizadas</small></article>
-        <article class="card summary-card orange-accent"><span>Pedidos em andamento</span><strong>6</strong><small>R$ 84 mil em compras</small></article>
-        <article class="card summary-card"><span>Taxa de conclusão</span><strong>98%</strong><small>No prazo acordado</small></article>
-      </section>
-
-      <section class="card table-card" data-search-scope>
-        <div class="table-toolbar">
-          <div>
-            <h2>Todos os pedidos</h2>
-            <p>Histórico completo de pedidos realizados pela empresa.</p>
-          </div>
-          <div class="toolbar-actions">
-            <label class="search-box"><span>Buscar</span><input class="js-table-search" type="search" placeholder="Número, data ou status"></label>
-            <select class="input-icon">
-              <option value="">Todos os status</option>
-              <option value="concluido">Concluído</option>
-              <option value="andamento">Em andamento</option>
-              <option value="cancelado">Cancelado</option>
-            </select>
-          </div>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Nº do pedido</th><th>Data</th><th>Peça solicitada</th><th>Quantidade</th><th>Valor</th><th>Status</th><th>Ações</th></tr></thead>
-            <tbody>
-              <tr data-search-row>
-                <td><strong>#PED-2026-001</strong></td>
-                <td>15/01/2026</td>
-                <td>Eixo usinado</td>
-                <td>120</td>
-                <td>R$ 12.450</td>
-                <td><span class="badge success">Concluído</span></td>
-                <td><button class="table-action">Ver detalhes</button></td>
-              </tr>
-              <tr data-search-row>
-                <td><strong>#PED-2026-002</strong></td>
-                <td>22/01/2026</td>
-                <td>Flange industrial</td>
-                <td>45</td>
-                <td>R$ 8.320</td>
-                <td><span class="badge success">Concluído</span></td>
-                <td><button class="table-action">Ver detalhes</button></td>
-              </tr>
-              <tr data-search-row>
-                <td><strong>#PED-2026-003</strong></td>
-                <td>08/02/2026</td>
-                <td>Engrenagem helicoidal</td>
-                <td>20</td>
-                <td>R$ 15.890</td>
-                <td><span class="badge warning">Em andamento</span></td>
-                <td><button class="table-action">Ver detalhes</button></td>
-              </tr>
-              <tr data-search-row>
-                <td><strong>#PED-2026-004</strong></td>
-                <td>14/02/2026</td>
-                <td>Suporte metálico</td>
-                <td>300</td>
-                <td>R$ 6.750</td>
-                <td><span class="badge success">Concluído</span></td>
-                <td><button class="table-action">Ver detalhes</button></td>
-              </tr>
-              <tr data-search-row>
-                <td><strong>#PED-2026-005</strong></td>
-                <td>03/03/2026</td>
-                <td>Bucha de bronze</td>
-                <td>80</td>
-                <td>R$ 4.200</td>
-                <td><span class="badge success">Concluído</span></td>
-                <td><button class="table-action">Ver detalhes</button></td>
-              </tr>
-              <tr data-search-row>
-                <td><strong>#PED-2026-006</strong></td>
-                <td>18/03/2026</td>
-                <td>Chapa perfurada</td>
-                <td>150</td>
-                <td>R$ 9.100</td>
-                <td><span class="badge warning">Em andamento</span></td>
-                <td><button class="table-action">Ver detalhes</button></td>
-              </tr>
-              <tr data-search-row>
-                <td><strong>#PED-2026-007</strong></td>
-                <td>25/03/2026</td>
-                <td>Parafuso especial</td>
-                <td>500</td>
-                <td>R$ 3.850</td>
-                <td><span class="badge success">Concluído</span></td>
-                <td><button class="table-action">Ver detalhes</button></td>
-              </tr>
-              <tr data-search-row>
-                <td><strong>#PED-2026-008</strong></td>
-                <td>10/04/2026</td>
-                <td>Arruela de pressão</td>
-                <td>1000</td>
-                <td>R$ 2.400</td>
-                <td><span class="badge success">Concluído</span></td>
-                <td><button class="table-action">Ver detalhes</button></td>
-              </tr>
-              <tr data-search-row>
-                <td><strong>#PED-2026-009</strong></td>
-                <td>22/04/2026</td>
-                <td>Eixo de transmissão</td>
-                <td>35</td>
-                <td>R$ 18.600</td>
-                <td><span class="badge warning">Em andamento</span></td>
-                <td><button class="table-action">Ver detalhes</button></td>
-              </tr>
-              <tr data-search-row>
-                <td><strong>#PED-2026-010</strong></td>
-                <td>05/05/2026</td>
-                <td>Rolamento esférico</td>
-                <td>60</td>
-                <td>R$ 7.800</td>
-                <td><span class="badge muted">Cancelado</span></td>
-                <td><button class="table-action">Ver detalhes</button></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </section>
-
-      <section class="card table-card is-hidden" id="empty-state">
-        <div class="table-toolbar">
-          <div>
-            <h2>Histórico de pedidos</h2>
-            <p>Nenhum pedido encontrado no sistema.</p>
-          </div>
-        </div>
-        <div class="empty-state-content" style="text-align: center; padding: 60px 20px;">
-          <div style="display: grid; width: 80px; height: 80px; place-items: center; margin: 0 auto 20px; border-radius: 20px; background: #eff6ff; font-size: 2rem; color: var(--blue);">📦</div>
-          <h3 style="margin: 0 0 10px; font-size: 1.4rem;">Nenhum pedido encontrado</h3>
-          <p style="color: var(--muted); margin: 0 0 24px; max-width: 400px; margin-left: auto; margin-right: auto;">Você ainda não possui pedidos no histórico. Comece solicitando peças industriais para usinas qualificadas.</p>
-          <a class="btn" href="nova-solicitacao.html">Criar nova solicitação</a>
-        </div>
-      </section>
-    </main>
-  </div>
-  <script src="assets/js/auth-guard.js"></script>
-=======
         <a href="dashboard-empresa.html" data-icon="D">Dashboard empresa</a>
         <a href="dashboard-pessoa-juridica.html" data-icon="P">Pe&ccedil;as comerciais</a>
         <a href="perfil-empresa.html" data-icon="I">Perfil</a>
@@ -229,7 +58,6 @@
   <script src="assets/js/ui-utils.js"></script>
   <script src="assets/js/payment-service.js"></script>
   <script src="assets/js/order-history.js"></script>
->>>>>>> 8621136 (Melhoria visual + adição de novas api)
   <script src="script.js"></script>
 </body>
 </html>
