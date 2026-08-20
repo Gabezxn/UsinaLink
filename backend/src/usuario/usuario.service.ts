@@ -151,6 +151,17 @@ export class UsuarioService {
     return response;
   }
 
+  async trocarSenha(user: any, dto: { senhaAtual: string; novaSenha: string; confirmarSenha: string }) {
+    if (!dto.novaSenha || dto.novaSenha.length < 6) throw new BadRequestException('Nova senha deve ter no minimo 6 caracteres.');
+    if (dto.novaSenha !== dto.confirmarSenha) throw new BadRequestException('A nova senha e a confirmacao nao coincidem.');
+    const usuario = await this.usuarios.createQueryBuilder('u').addSelect('u.senhaHash').where('u.idUsuario = :id', { id: user.sub }).getOne();
+    if (!usuario) throw new BadRequestException('Usuário não encontrado.');
+    if (!await this.passwords.compare(String(dto.senhaAtual || ''), usuario.senhaHash)) throw new BadRequestException('Senha atual incorreta.');
+    const senhaHash = await this.passwords.hash(dto.novaSenha);
+    await this.usuarios.update({ idUsuario: user.sub }, { senhaHash });
+    return { message: 'Senha atualizada com sucesso.' };
+  }
+
   async loginAdmin(dto: LoginDto) {
     const usuario = await this.buscarEmailComSenha(dto.email);
     if (!usuario) throw new UnauthorizedException('Usuário não encontrado.');

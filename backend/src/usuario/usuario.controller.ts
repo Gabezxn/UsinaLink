@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { LoginDto } from './dto/login.dto';
+import { TrocarSenhaDto } from './dto/trocar-senha.dto';
 import { UsuarioService } from './usuario.service';
 
 const LOGIN_THROTTLE = { default: { limit: 5, ttl: 60000 } };
@@ -30,5 +31,10 @@ export class UsuarioController {
   @UseGuards(JwtAuthGuard)
   @Get('usuarios') listar(@Query('tipo') tipo?: string, @Query('status') status?: string) {
     return tipo ? this.service.buscarPorTipo(tipo) : status ? this.service.buscarPorStatus(status) : [];
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Patch('usuarios/senha') trocarSenha(@Body() dto: TrocarSenhaDto, @Req() r: any) {
+    return this.service.trocarSenha(r.user, dto);
   }
 }

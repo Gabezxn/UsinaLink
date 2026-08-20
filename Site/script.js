@@ -432,17 +432,17 @@ const profileData = {
         title: "Informa\u00e7\u00f5es gerais",
         subtitle: "Dados principais exibidos no perfil comercial da organiza\u00e7\u00e3o.",
         fields: [
-          ["Raz\u00e3o Social", "text", "Metal Forte Componentes Industriais Ltda."],
-          ["Nome Fantasia", "text", "Metal Forte"],
-          ["Setor de Atua\u00e7\u00e3o", "select", "Ind\u00fastria metalmec\u00e2nica", ["Ind\u00fastria metalmec\u00e2nica", "Minera\u00e7\u00e3o", "Energia", "Automotivo"]],
-          ["Porte da Empresa", "select", "M\u00e9dio porte", ["Pequeno porte", "M\u00e9dio porte", "Grande porte"]],
-          ["Descri\u00e7\u00e3o / Apresenta\u00e7\u00e3o", "textarea", "Empresa especializada em aquisi\u00e7\u00e3o e manuten\u00e7\u00e3o de componentes industriais para linhas de produ\u00e7\u00e3o."]
+          ["Raz\u00e3o Social", "text", "Metal Forte Componentes Industriais Ltda.", null, "razaoSocial"],
+          ["Nome Fantasia", "text", "Metal Forte", null, "nomeFantasia"],
+          ["Setor de Atua\u00e7\u00e3o", "select", "Ind\u00fastria metalmec\u00e2nica", ["Ind\u00fastria metalmec\u00e2nica", "Minera\u00e7\u00e3o", "Energia", "Automotivo"], "setorAtuacao"],
+          ["Porte da Empresa", "select", "M\u00e9dio porte", ["Pequeno porte", "M\u00e9dio porte", "Grande porte"], "porte"],
+          ["Descri\u00e7\u00e3o / Apresenta\u00e7\u00e3o", "textarea", "Empresa especializada em aquisi\u00e7\u00e3o e manuten\u00e7\u00e3o de componentes industriais para linhas de produ\u00e7\u00e3o.", null, "descricao"]
         ]
       },
-      contato: { title: "Contato", subtitle: "Canais comerciais e respons\u00e1veis por comunica\u00e7\u00e3o.", fields: [["E-mail comercial", "email", "comercial@metalforte.com"], ["Telefone", "tel", "(11) 3333-4400"], ["WhatsApp", "tel", "(11) 98888-4400"], ["Site", "url", "https://www.metalforte.com"], ["Respons\u00e1vel principal", "text", "Ana Martins"]] },
-      endereco: { title: "Endere\u00e7o", subtitle: "Localiza\u00e7\u00e3o fiscal e operacional da organiza\u00e7\u00e3o.", fields: [["CEP", "text", "04000-000"], ["Rua", "text", "Avenida Industrial"], ["N\u00famero", "text", "1200"], ["Bairro", "text", "Distrito Empresarial"], ["Cidade", "text", "Sao Paulo"], ["Estado", "select", "SP", ["SP", "MG", "RJ", "PR", "SC", "RS"]], ["Complemento", "text", "Galpao 4"]] },
+      contato: { title: "Contato", subtitle: "Canais comerciais e respons\u00e1veis por comunica\u00e7\u00e3o.", fields: [["E-mail comercial", "email", "comercial@metalforte.com", null, "email"], ["Telefone", "tel", "(11) 3333-4400", null, "telefone"], ["WhatsApp", "tel", "(11) 98888-4400"], ["Site", "url", "https://www.metalforte.com"], ["Respons\u00e1vel principal", "text", "Ana Martins", null, "responsavel"]] },
+      endereco: { title: "Endere\u00e7o", subtitle: "Localiza\u00e7\u00e3o fiscal e operacional da organiza\u00e7\u00e3o.", fields: [["CEP", "text", "04000-000", null, "cep"], ["Rua", "text", "Avenida Industrial", null, "rua"], ["N\u00famero", "text", "1200", null, "numero"], ["Bairro", "text", "Distrito Empresarial", null, "bairro"], ["Cidade", "text", "Sao Paulo", null, "cidade"], ["Estado", "select", "SP", ["SP", "MG", "RJ", "PR", "SC", "RS"], "estado"], ["Complemento", "text", "Galpao 4", null, "complemento"]] },
       documentos: { title: "Documentos", subtitle: "Registros e comprovantes usados na valida\u00e7\u00e3o comercial.", fields: [["CNPJ", "text", "12.345.678/0001-90"], ["Inscri\u00e7\u00e3o Estadual", "text", "123.456.789.110"], ["Contrato Social", "text", "Contrato_social_metalforte.pdf"], ["Alvar\u00e1", "text", "Alvara_2026.pdf"], ["Certifica\u00e7\u00f5es", "text", "ISO 9001, ISO 14001"]] },
-      seguranca: { title: "Seguran\u00e7a", subtitle: "Proteja o acesso dos usu\u00e1rios vinculados \u00e0 organiza\u00e7\u00e3o.", fields: [["Senha atual", "password", ""], ["Nova senha", "password", ""], ["Confirmar nova senha", "password", ""], ["Autentica\u00e7\u00e3o em duas etapas", "checkbox", "Ativar autentica\u00e7\u00e3o em duas etapas"]] },
+      seguranca: { title: "Seguran\u00e7a", subtitle: "Proteja o acesso dos usu\u00e1rios vinculados \u00e0 organiza\u00e7\u00e3o.", fields: [["Senha atual", "password", "", null, "senhaAtual"], ["Nova senha", "password", "", null, "novaSenha"], ["Confirmar nova senha", "password", "", null, "confirmarSenha"], ["Autentica\u00e7\u00e3o em duas etapas", "checkbox", "Ativar autentica\u00e7\u00e3o em duas etapas"]] },
       notificacoes: { title: "Notifica\u00e7\u00f5es", subtitle: "Configure quais avisos devem chegar para a equipe.", fields: [["Receber propostas por e-mail", "checkbox", "Receber propostas por e-mail"], ["Receber alertas de prazo", "checkbox", "Receber alertas de prazo"], ["Receber mensagens de fornecedores", "checkbox", "Receber mensagens de fornecedores"], ["Receber resumo semanal", "checkbox", "Receber resumo semanal"]] }
     }
   },
@@ -475,12 +475,37 @@ function inferMaskKey(label, type) {
 }
 
 function fieldMarkup(field) {
-  const [label, type, value, options] = field;
-  if (type === "textarea") return `<label class="field span-2"><span>${label}</span><textarea rows="6">${escapeHtml(value)}</textarea></label>`;
-  if (type === "select") return `<label class="field"><span>${label}</span><div class="input-wrap select-field"><span class="input-symbol">v</span><select>${options.map((option) => `<option${option === value ? " selected" : ""}>${escapeHtml(option)}</option>`).join("")}</select></div></label>`;
-  if (type === "checkbox") return `<label class="toggle-field span-2"><input type="checkbox" checked><span></span><strong>${label || value}</strong></label>`;
+  const [label, type, value, options, key] = field;
+  const nameAttr = key ? ` name="${key}"` : "";
+  if (type === "textarea") return `<label class="field span-2"><span>${label}</span><textarea rows="6"${nameAttr}>${escapeHtml(value)}</textarea></label>`;
+  if (type === "select") return `<label class="field"><span>${label}</span><div class="input-wrap select-field"><span class="input-symbol">v</span><select${nameAttr}>${options.map((option) => `<option${option === value ? " selected" : ""}>${escapeHtml(option)}</option>`).join("")}</select></div></label>`;
+  if (type === "checkbox") return `<label class="toggle-field span-2"><input type="checkbox" checked${nameAttr}><span></span><strong>${label || value}</strong></label>`;
   const maskKey = inferMaskKey(label, type);
-  return `<label class="field"><span>${label}</span><div class="input-wrap"><span class="input-symbol">${type === "password" ? "*" : "T"}</span><input type="${type}" value="${escapeHtml(value)}"${maskKey ? ` data-mask="${maskKey}"` : ""}></div></label>`;
+  return `<label class="field"><span>${label}</span><div class="input-wrap"><span class="input-symbol">${type === "password" ? "*" : "T"}</span><input type="${type}" value="${escapeHtml(value)}"${nameAttr}${maskKey ? ` data-mask="${maskKey}"` : ""}></div></label>`;
+}
+
+function viewFieldMarkup(field) {
+  const [label, type] = field;
+  if (type === "password") return `<div class="field"><span>${label}</span><div class="view-value">N&atilde;o exibido</div></div>`;
+  if (type === "checkbox") return "";
+  const value = field[2];
+  const span = type === "textarea" ? " span-2" : "";
+  return `<div class="field${span}"><span>${label}</span><div class="view-value">${escapeHtml(value || "-")}</div></div>`;
+}
+
+function currentProfileSectionKey() {
+  return document.querySelector("[data-profile-section].active")?.dataset.profileSection || "gerais";
+}
+
+function renderProfileView(sectionKey) {
+  const kind = document.body.dataset.profileKind || "empresa";
+  const profile = profileData[kind];
+  const section = profile?.sections[sectionKey];
+  const view = document.querySelector("#profile-view-mode");
+  if (!section || !view) return;
+  document.querySelector("#profile-section-title").textContent = section.title;
+  document.querySelector("#profile-section-subtitle").textContent = section.subtitle;
+  view.innerHTML = `<div class="form-grid">${section.fields.map(viewFieldMarkup).join("")}</div>`;
 }
 
 function renderProfileSection(sectionKey) {
@@ -493,34 +518,46 @@ function renderProfileSection(sectionKey) {
   document.querySelector("#profile-section-subtitle").textContent = section.subtitle;
   form.innerHTML = `${section.fields.map(fieldMarkup).join("")}
     <div class="form-actions span-2">
-      <a class="btn btn-ghost" href="${profile.cancel}">Cancelar</a>
+      <button class="btn btn-ghost js-cancel-profile-edit" type="button">Cancelar</button>
       <button class="btn ${profile.button}" type="submit">Salvar altera\u00e7\u00f5es</button>
     </div>`;
 }
 
-if (document.querySelector("#profile-dynamic-form")) renderProfileSection("gerais");
+if (document.querySelector("#profile-dynamic-form")) {
+  renderProfileView("gerais");
+  renderProfileSection("gerais");
+}
 
 document.querySelectorAll("[data-profile-section]").forEach((item) => {
   item.addEventListener("click", (event) => {
     event.preventDefault();
     item.closest(".sidebar-card").querySelectorAll("a").forEach((link) => link.classList.remove("active"));
     item.classList.add("active");
+    renderProfileView(item.dataset.profileSection);
     renderProfileSection(item.dataset.profileSection);
   });
 });
 
+function toggleProfileEdit(forceView) {
+  const viewMode = document.querySelector("#profile-view-mode");
+  const formMode = document.querySelector("#profile-dynamic-form");
+  const editButton = document.querySelector(".js-toggle-profile-edit");
+  if (!viewMode || !formMode) return;
+  const currentlyViewing = !viewMode.classList.contains("is-hidden");
+  const goToViewing = forceView || !currentlyViewing;
+  viewMode.classList.toggle("is-hidden", !goToViewing);
+  formMode.classList.toggle("is-hidden", goToViewing);
+  if (editButton) editButton.textContent = goToViewing ? "Editar perfil" : "Cancelar edi\u00e7\u00e3o";
+  if (goToViewing) renderProfileView(currentProfileSectionKey());
+  else renderProfileSection(currentProfileSectionKey());
+}
+
 document.querySelectorAll(".js-toggle-profile-edit").forEach((button) => {
-  button.addEventListener("click", () => {
-    const viewMode = document.querySelector("#profile-view-mode");
-    const formMode = document.querySelector("#profile-dynamic-form");
-    if (viewMode && formMode) {
-      const isEditing = !viewMode.classList.contains("is-hidden");
-      viewMode.classList.toggle("is-hidden", isEditing);
-      formMode.classList.toggle("is-hidden", !isEditing);
-      button.textContent = isEditing ? "Cancelar edi&ccedil;&atilde;o" : "Editar perfil";
-      if (!isEditing) renderProfileSection("gerais");
-    }
-  });
+  button.addEventListener("click", () => toggleProfileEdit(false));
+});
+
+document.addEventListener("click", (event) => {
+  if (event.target.closest(".js-cancel-profile-edit")) toggleProfileEdit(true);
 });
 
 function parseCurrency(value) {
