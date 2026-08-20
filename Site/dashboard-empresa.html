@@ -36,18 +36,18 @@
         </div>
       </header>
 
-      <section class="summary-grid professional">
-        <article class="card summary-card"><span>Solicita&ccedil;&otilde;es abertas</span><strong>12</strong><small>3 com prazo cr&iacute;tico</small></article>
-        <article class="card summary-card"><span>Propostas recebidas</span><strong>37</strong><small>+8 nesta semana</small></article>
-        <article class="card summary-card"><span>Pedidos em andamento</span><strong>6</strong><small>R$ 84 mil em compras</small></article>
-        <article class="card summary-card"><span>Pedidos finalizados</span><strong>24</strong><small>98% no prazo</small></article>
+      <section class="summary-grid professional" data-dashboard-summary>
+        <article class="card summary-card"><span>Solicita&ccedil;&otilde;es abertas</span><strong data-stat-solicitacoes-abertas>-</strong><small>Aguardando propostas</small></article>
+        <article class="card summary-card"><span>Propostas recebidas</span><strong data-stat-propostas-recebidas>-</strong><small>No total</small></article>
+        <article class="card summary-card"><span>Pedidos em andamento</span><strong data-stat-pedidos-andamento>-</strong><small data-stat-pedidos-andamento-valor>Em negocia&ccedil;&atilde;o ou produ&ccedil;&atilde;o</small></article>
+        <article class="card summary-card"><span>Pedidos finalizados</span><strong data-stat-pedidos-finalizados>-</strong><small>Conclu&iacute;dos</small></article>
       </section>
 
       <section class="card table-card" data-search-scope>
         <div class="table-toolbar">
           <div>
             <h2>Solicita&ccedil;&otilde;es recentes</h2>
-            <p>Pedidos publicados e suas propostas recebidas.</p>
+            <p>&Uacute;ltimas solicita&ccedil;&otilde;es de pe&ccedil;as publicadas.</p>
           </div>
           <div class="toolbar-actions">
             <label class="search-box"><span>Buscar</span><input class="js-table-search" type="search" placeholder="Nome, categoria ou status"></label>
@@ -56,19 +56,18 @@
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Nome da pe&ccedil;a</th><th>Categoria</th><th>Quantidade</th><th>Status</th><th>Propostas</th><th>Prazo</th></tr></thead>
-            <tbody>
-              <tr data-search-row><td>Eixo usinado</td><td>Usinagem</td><td>120</td><td><span class="badge info">Aberta</span></td><td>8</td><td>12/06/2026</td></tr>
-              <tr data-search-row><td>Flange industrial</td><td>Caldeiraria</td><td>45</td><td><span class="badge warning">Em an&aacute;lise</span></td><td>5</td><td>18/06/2026</td></tr>
-              <tr data-search-row><td>Engrenagem helicoidal</td><td>Transmiss&atilde;o</td><td>20</td><td><span class="badge success">Proposta aceita</span></td><td>11</td><td>25/06/2026</td></tr>
-              <tr data-search-row><td>Suporte met&aacute;lico</td><td>Corte e dobra</td><td>300</td><td><span class="badge muted">Finalizada</span></td><td>6</td><td>02/07/2026</td></tr>
+            <thead><tr><th>Nome da pe&ccedil;a</th><th>Categoria</th><th>Quantidade</th><th>Status</th><th>Prazo</th></tr></thead>
+            <tbody data-dashboard-solicitacoes-body>
+              <tr><td colspan="5" style="text-align:center; padding: 24px;">Carregando...</td></tr>
             </tbody>
           </table>
         </div>
       </section>
     </main>
   </div>
+  <script src="assets/js/api.js"></script>
   <script src="assets/js/auth-guard.js"></script>
   <script src="script.js"></script>
+  <script src="assets/js/dashboard-empresa.js"></script>
 </body>
 </html>

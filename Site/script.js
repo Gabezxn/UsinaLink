@@ -725,10 +725,10 @@ async function loadEmployeesFromApi() {
     try {
       const context = table.dataset.employeeTable;
       const employees = await window.UsinaLinkApi.get(`/funcionarios?contexto=${encodeURIComponent(context)}`);
-      table.innerHTML = employees.map(employeeRowMarkup).join("");
-      table.querySelectorAll("tr").forEach(renderEmployeeRowActions);
-    } catch {
-      table.querySelectorAll("tr").forEach(renderEmployeeRowActions);
+      table.innerHTML = employees.map(employeeRowMarkup).join("") || '<tr><td colspan="6" style="text-align:center; padding: 24px;">Nenhum funcionario cadastrado.</td></tr>';
+      table.querySelectorAll("tr[data-employee-id]").forEach(renderEmployeeRowActions);
+    } catch (error) {
+      table.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 24px;">Falha ao carregar funcionarios: ${escapeHtml(error.message)}</td></tr>`;
     }
   });
 }
