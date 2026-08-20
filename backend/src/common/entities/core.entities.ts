@@ -264,6 +264,18 @@ export class Solicitacao {
   @UpdateDateColumn({ name: 'data_atualizacao' }) atualizadoEm: Date;
 }
 
+@Entity({ name: 'solicitacao_comercial' })
+export class SolicitacaoComercial {
+  @PrimaryGeneratedColumn({ name: 'id_solicitacao_comercial' }) idSolicitacaoComercial: number;
+  @Column({ name: 'id_empresa' }) idEmpresa: number;
+  @Column() peca: string;
+  @Column({ nullable: true }) fornecedor?: string;
+  @Column({ name: 'valor_unitario', type: 'numeric', nullable: true }) valorUnitario?: number;
+  @Column({ nullable: true }) quantidade?: number;
+  @Column({ default: 'registrada' }) status: string;
+  @CreateDateColumn({ name: 'data_criacao' }) criadoEm: Date;
+}
+
 @Entity({ name: 'modelo_contrato' })
 export class ModeloContrato {
   @PrimaryGeneratedColumn({ name: 'id_modelo' }) idModelo: number;
@@ -284,6 +296,6 @@ export class Notificacao {
 
 export const ENTITIES = [
   Usuario, PessoaFisica, Empresa, Usina, Funcionario, EnderecoEmpresa, EnderecoUsina, Peca,
-  Pedido, ItemPedido, ArquivoPedido, Proposta, Pagamento, AvaliacaoEntrega, Solicitacao,
+  Pedido, ItemPedido, ArquivoPedido, Proposta, Pagamento, AvaliacaoEntrega, Solicitacao, SolicitacaoComercial,
   SolicitacaoBloqueioUsina, BloqueioUsina, HistoricoStatusPedido, ModeloContrato, Notificacao,
 ];
