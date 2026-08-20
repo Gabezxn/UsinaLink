@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cat&aacute;logo de Pe&ccedil;as | Usinalink</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="orange-mode" data-user-role="usina">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <a class="brand" href="index.html"><span class="brand-icon orange-icon">US</span><span>Usinalink</span></a>
+      <nav class="side-nav orange-nav" data-role-nav="usina">
+        <a href="dashboard-usina.html" data-icon="D">Dashboard usina</a>
+        <a href="perfil-usina.html" data-icon="I">Perfil</a>
+        <a href="funcionarios-usina.html" data-icon="F">Funcion&aacute;rios</a>
+        <a href="pedidos-disponiveis.html" data-icon="P">Pedidos dispon&iacute;veis</a>
+        <a href="propostas-usina.html" data-icon="E">Propostas enviadas</a>
+        <a class="active" href="pecas-comerciais-usina.html" data-icon="C">Cat&aacute;logo de pe&ccedil;as</a>
+        <a href="historico-pedidos.html" data-icon="H">Hist&oacute;rico relacionado</a>
+        <a href="avaliacoes-usina.html" data-icon="A">Avalia&ccedil;&otilde;es recebidas</a>
+        <a href="index.html" data-icon="X">Sair</a>
+      </nav>
+    </aside>
+
+    <main class="app-main">
+      <div class="page-header">
+        <div><span class="eyebrow orange-text">Venda r&aacute;pida</span><h1>Cat&aacute;logo de pe&ccedil;as comerciais</h1><p>Pe&ccedil;as prontas que sua usina oferece para compra imediata por empresas.</p></div>
+        <button class="btn btn-orange js-open-peca-modal" type="button">Adicionar pe&ccedil;a</button>
+      </div>
+
+      <section class="card table-card" data-search-scope>
+        <div class="table-toolbar">
+          <label class="search-box wide-search"><span>Buscar</span><input class="js-table-search" type="search" placeholder="Pe&ccedil;a, material ou categoria"></label>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Pe&ccedil;a</th><th>Material</th><th>Estoque</th><th>Valor unit&aacute;rio</th><th>Prazo</th><th>A&ccedil;&otilde;es</th></tr></thead>
+            <tbody data-pecas-comerciais-body>
+              <tr><td colspan="6" style="text-align:center; padding: 24px;">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="peca-modal" hidden>
+    <section class="card modal-card" role="dialog" aria-modal="true" aria-labelledby="peca-modal-title">
+      <div class="modal-header"><div><span class="eyebrow orange-text">Cat&aacute;logo</span><h2 id="peca-modal-title">Adicionar pe&ccedil;a</h2></div><button class="modal-close js-close-peca-modal" type="button">x</button></div>
+      <form class="form-grid" id="peca-form">
+        <label class="field"><span>Nome da pe&ccedil;a</span><div class="input-wrap"><span class="input-symbol">N</span><input name="nome" type="text" required></div></label>
+        <label class="field"><span>Material</span><div class="input-wrap"><span class="input-symbol">M</span><input name="material" type="text"></div></label>
+        <label class="field"><span>Categoria</span><div class="input-wrap"><span class="input-symbol">C</span><input name="categoria" type="text"></div></label>
+        <label class="field"><span>Estoque</span><div class="input-wrap"><span class="input-symbol">#</span><input name="estoque" type="number" min="0"></div></label>
+        <label class="field"><span>Unidade</span><div class="input-wrap"><span class="input-symbol">U</span><input name="unidadeEstoque" type="text" placeholder="unidades, barras..."></div></label>
+        <label class="field"><span>Valor unit&aacute;rio</span><div class="input-wrap"><span class="input-symbol">R$</span><input name="valorUnitario" type="text" placeholder="380,00"></div></label>
+        <label class="field"><span>Prazo de entrega (dias)</span><div class="input-wrap"><span class="input-symbol">D</span><input name="prazoEntregaDias" type="number" min="0"></div></label>
+        <label class="field span-2"><span>Descri&ccedil;&atilde;o</span><textarea name="descricao" rows="3"></textarea></label>
+        <div class="form-actions span-2"><button class="btn btn-ghost js-close-peca-modal" type="button">Cancelar</button><button class="btn btn-orange" type="submit">Salvar pe&ccedil;a</button></div>
+      </form>
+    </section>
+  </div>
+
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/auth-guard.js"></script>
+  <script src="script.js"></script>
+  <script src="assets/js/pecas-comerciais-usina.js"></script>
+</body>
+</html>

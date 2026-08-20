@@ -439,11 +439,11 @@ const profileData = {
           ["Descri\u00e7\u00e3o / Apresenta\u00e7\u00e3o", "textarea", "", null, "descricao"]
         ]
       },
-      contato: { title: "Contato", subtitle: "Canais comerciais e respons\u00e1veis por comunica\u00e7\u00e3o.", fields: [["E-mail comercial", "email", "", null, "email"], ["Telefone", "tel", "", null, "telefone"], ["WhatsApp", "tel", ""], ["Site", "url", ""], ["Respons\u00e1vel principal", "text", "", null, "responsavel"]] },
+      contato: { title: "Contato", subtitle: "Canais comerciais e respons\u00e1veis por comunica\u00e7\u00e3o.", fields: [["E-mail comercial", "email", "", null, "email"], ["Telefone", "tel", "", null, "telefone"], ["WhatsApp", "tel", "", null, "whatsapp"], ["Site", "url", "", null, "site"], ["Respons\u00e1vel principal", "text", "", null, "responsavel"]] },
       endereco: { title: "Endere\u00e7o", subtitle: "Localiza\u00e7\u00e3o fiscal e operacional da organiza\u00e7\u00e3o.", fields: [["CEP", "text", "", null, "cep"], ["Rua", "text", "", null, "rua"], ["N\u00famero", "text", "", null, "numero"], ["Bairro", "text", "", null, "bairro"], ["Cidade", "text", "", null, "cidade"], ["Estado", "select", "", ["SP", "MG", "RJ", "PR", "SC", "RS"], "estado"], ["Complemento", "text", "", null, "complemento"]] },
-      documentos: { title: "Documentos", subtitle: "Registros e comprovantes usados na valida\u00e7\u00e3o comercial.", fields: [["CNPJ", "text", "12.345.678/0001-90"], ["Inscri\u00e7\u00e3o Estadual", "text", "123.456.789.110"], ["Contrato Social", "text", "Contrato_social_metalforte.pdf"], ["Alvar\u00e1", "text", "Alvara_2026.pdf"], ["Certifica\u00e7\u00f5es", "text", "ISO 9001, ISO 14001"]] },
-      seguranca: { title: "Seguran\u00e7a", subtitle: "Proteja o acesso dos usu\u00e1rios vinculados \u00e0 organiza\u00e7\u00e3o.", fields: [["Senha atual", "password", "", null, "senhaAtual"], ["Nova senha", "password", "", null, "novaSenha"], ["Confirmar nova senha", "password", "", null, "confirmarSenha"], ["Autentica\u00e7\u00e3o em duas etapas", "checkbox", "Ativar autentica\u00e7\u00e3o em duas etapas"]] },
-      notificacoes: { title: "Notifica\u00e7\u00f5es", subtitle: "Configure quais avisos devem chegar para a equipe.", fields: [["Receber propostas por e-mail", "checkbox", "Receber propostas por e-mail"], ["Receber alertas de prazo", "checkbox", "Receber alertas de prazo"], ["Receber mensagens de fornecedores", "checkbox", "Receber mensagens de fornecedores"], ["Receber resumo semanal", "checkbox", "Receber resumo semanal"]] }
+      documentos: { title: "Documentos", subtitle: "Registros e comprovantes usados na valida\u00e7\u00e3o comercial.", fields: [["CNPJ", "text", "", null, "cnpj"], ["Inscri\u00e7\u00e3o Estadual", "text", "", null, "inscricaoEstadual"], ["Contrato Social", "file", "", null, "contratoSocial"], ["Alvar\u00e1", "file", "", null, "alvara"], ["Certifica\u00e7\u00f5es", "text", "", null, "certificacoes"]] },
+      seguranca: { title: "Seguran\u00e7a", subtitle: "Proteja o acesso dos usu\u00e1rios vinculados \u00e0 organiza\u00e7\u00e3o.", fields: [["Senha atual", "password", "", null, "senhaAtual"], ["Nova senha", "password", "", null, "novaSenha"], ["Confirmar nova senha", "password", "", null, "confirmarSenha"]] },
+      notificacoes: { title: "Notifica\u00e7\u00f5es", subtitle: "Configure quais avisos devem chegar para a equipe.", fields: [["Receber propostas por e-mail", "checkbox", false, null, "propostasEmail"], ["Receber alertas de prazo", "checkbox", false, null, "alertasPrazo"], ["Receber mensagens de fornecedores", "checkbox", false, null, "mensagensFornecedores"], ["Receber resumo semanal", "checkbox", false, null, "resumoSemanal"]] }
     }
   },
   usina: {
@@ -453,10 +453,10 @@ const profileData = {
       gerais: { title: "Informa\u00e7\u00f5es gerais", subtitle: "Dados industriais exibidos para empresas compradoras.", fields: [["Raz\u00e3o social", "text", "", null, "razaoSocial"], ["Nome fantasia", "text", "", null, "nomeFantasia"], ["Especialidade principal", "text", "", null, "especialidade"], ["Capacidade produtiva", "text", "", null, "capacidadeProducao"], ["Descri\u00e7\u00e3o industrial", "textarea", "", null, "descricao"]] },
       contato: { title: "Contato", subtitle: "Canais da equipe comercial da usina.", fields: [["E-mail industrial", "email", "", null, "email"], ["Telefone", "tel", "", null, "telefone"], ["Respons\u00e1vel comercial", "text", "", null, "responsavel"]] },
       endereco: { title: "Endere\u00e7o", subtitle: "Localiza\u00e7\u00e3o operacional da usina.", fields: [["CEP", "text", "", null, "cep"], ["Rua", "text", "", null, "rua"], ["N\u00famero", "text", "", null, "numero"], ["Bairro", "text", "", null, "bairro"], ["Cidade", "text", "", null, "cidade"], ["Estado", "select", "", ["MG", "SP", "RJ", "PR", "SC", "RS"], "estado"], ["Complemento", "text", "", null, "complemento"]] },
-      producao: { title: "Produ\u00e7\u00e3o", subtitle: "Capacidade operacional para avaliar pedidos.", fields: [["M\u00e1quinas dispon\u00edveis", "textarea", "Tornos CNC, centros de usinagem, corte laser, dobra CNC"], ["Capacidade mensal", "text", "12.000 pe\u00e7as"], ["Turnos", "select", "2 turnos", ["1 turno", "2 turnos", "3 turnos"]], ["Prazo m\u00e9dio", "text", "18 dias"]] },
-      certificacoes: { title: "Certifica\u00e7\u00f5es", subtitle: "Compet\u00eancias e certificados produtivos.", fields: [["ISO 9001", "checkbox", "ISO 9001"], ["CNC", "checkbox", "CNC"], ["Corte laser", "checkbox", "Corte laser"], ["Fundi\u00e7\u00e3o", "checkbox", "Fundi\u00e7\u00e3o"], ["Soldagem", "checkbox", "Soldagem"]] },
+      producao: { title: "Produ\u00e7\u00e3o", subtitle: "Capacidade operacional para avaliar pedidos.", fields: [["M\u00e1quinas dispon\u00edveis", "textarea", "", null, "maquinasDisponiveis"], ["Capacidade mensal", "text", "", null, "capacidadeMensal"], ["Turnos", "select", "", ["1 turno", "2 turnos", "3 turnos"], "turnos"], ["Prazo m\u00e9dio", "text", "", null, "prazoMedio"]] },
+      certificacoes: { title: "Certifica\u00e7\u00f5es", subtitle: "Compet\u00eancias e certificados produtivos.", fields: [["ISO 9001", "checkbox", false, null, "iso9001"], ["CNC", "checkbox", false, null, "cnc"], ["Corte laser", "checkbox", false, null, "corteLaser"], ["Fundi\u00e7\u00e3o", "checkbox", false, null, "fundicao"], ["Soldagem", "checkbox", false, null, "soldagem"]] },
       seguranca: { title: "Seguran\u00e7a", subtitle: "Proteja o acesso da equipe da usina.", fields: [["Senha atual", "password", "", null, "senhaAtual"], ["Nova senha", "password", "", null, "novaSenha"], ["Confirmar senha", "password", "", null, "confirmarSenha"]] },
-      notificacoes: { title: "Notifica\u00e7\u00f5es", subtitle: "Configure os avisos comerciais da usina.", fields: [["Novos pedidos", "checkbox", "Novos pedidos"], ["Propostas aceitas", "checkbox", "Propostas aceitas"], ["Alertas de prazo", "checkbox", "Alertas de prazo"], ["Mensagens", "checkbox", "Mensagens"]] }
+      notificacoes: { title: "Notifica\u00e7\u00f5es", subtitle: "Configure os avisos comerciais da usina.", fields: [["Novos pedidos", "checkbox", false, null, "novosPedidos"], ["Propostas aceitas", "checkbox", false, null, "propostasAceitas"], ["Alertas de prazo", "checkbox", false, null, "alertasPrazo"], ["Mensagens", "checkbox", false, null, "mensagens"]] }
     }
   }
 };
@@ -479,7 +479,8 @@ function fieldMarkup(field) {
   const nameAttr = key ? ` name="${key}"` : "";
   if (type === "textarea") return `<label class="field span-2"><span>${label}</span><textarea rows="6"${nameAttr}>${escapeHtml(value)}</textarea></label>`;
   if (type === "select") return `<label class="field"><span>${label}</span><div class="input-wrap select-field"><span class="input-symbol">v</span><select${nameAttr}>${options.map((option) => `<option${option === value ? " selected" : ""}>${escapeHtml(option)}</option>`).join("")}</select></div></label>`;
-  if (type === "checkbox") return `<label class="toggle-field span-2"><input type="checkbox" checked${nameAttr}><span></span><strong>${label || value}</strong></label>`;
+  if (type === "checkbox") return `<label class="toggle-field span-2"><input type="checkbox"${value ? " checked" : ""}${nameAttr}><span></span><strong>${label}</strong></label>`;
+  if (type === "file") return `<label class="field span-2"><span>${label}</span><div class="input-wrap file-field"><input type="file" data-file-key="${key}" accept=".pdf,.jpg,.jpeg,.png"></div><small>${value ? `Arquivo atual: ${escapeHtml(value)}` : "Nenhum arquivo enviado ainda."}</small></label>`;
   const maskKey = inferMaskKey(label, type);
   return `<label class="field"><span>${label}</span><div class="input-wrap"><span class="input-symbol">${type === "password" ? "*" : "T"}</span><input type="${type}" value="${escapeHtml(value)}"${nameAttr}${maskKey ? ` data-mask="${maskKey}"` : ""}></div></label>`;
 }
@@ -487,9 +488,9 @@ function fieldMarkup(field) {
 function viewFieldMarkup(field) {
   const [label, type] = field;
   if (type === "password") return `<div class="field"><span>${label}</span><div class="view-value">N&atilde;o exibido</div></div>`;
-  if (type === "checkbox") return "";
+  if (type === "checkbox") return `<div class="field"><span>${label}</span><div class="view-value">${field[2] ? "Ativado" : "Desativado"}</div></div>`;
   const value = field[2];
-  const span = type === "textarea" ? " span-2" : "";
+  const span = type === "textarea" || type === "file" ? " span-2" : "";
   return `<div class="field${span}"><span>${label}</span><div class="view-value">${escapeHtml(value || "-")}</div></div>`;
 }
 

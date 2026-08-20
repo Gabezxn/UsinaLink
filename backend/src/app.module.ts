@@ -14,6 +14,7 @@ import { AvaliacaoModule } from './avaliacao/avaliacao.module';
 import { SolicitacaoBloqueioUsinaModule } from './solicitacao-bloqueio-usina/solicitacao-bloqueio-usina.module';
 import { SolicitacaoModule } from './solicitacao/solicitacao.module';
 import { SolicitacaoComercialModule } from './solicitacao-comercial/solicitacao-comercial.module';
+import { PecaComercialModule } from './peca-comercial/peca-comercial.module';
 import { UsuarioModule } from './usuario/usuario.module';
 import { AuthModule } from './auth/auth.module';
 import { ContextoUsuarioModule } from './contexto-usuario/contexto-usuario.module';
@@ -58,6 +59,7 @@ import { PagamentoModule } from './pagamento/pagamento.module';
     SolicitacaoBloqueioUsinaModule,
     SolicitacaoModule,
     SolicitacaoComercialModule,
+    PecaComercialModule,
     NotificacaoModule,
     PagamentoModule
   ],

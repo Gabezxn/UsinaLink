@@ -44,6 +44,15 @@ export class Empresa {
   @Column({ name: 'porte', nullable: true }) porte?: string;
   @Column({ name: 'descricao', type: 'text', nullable: true }) descricao?: string;
   @Column({ name: 'status_validacao', default: 'pendente' }) statusValidacao: string;
+  @Column({ name: 'whatsapp', nullable: true }) whatsapp?: string;
+  @Column({ name: 'site', nullable: true }) site?: string;
+  @Column({ name: 'inscricao_estadual', nullable: true }) inscricaoEstadual?: string;
+  @Column({ name: 'contrato_social_arquivo', type: 'text', nullable: true }) contratoSocialArquivo?: string;
+  @Column({ name: 'contrato_social_nome', nullable: true }) contratoSocialNome?: string;
+  @Column({ name: 'alvara_arquivo', type: 'text', nullable: true }) alvaraArquivo?: string;
+  @Column({ name: 'alvara_nome', nullable: true }) alvaraNome?: string;
+  @Column({ name: 'certificacoes', type: 'text', nullable: true }) certificacoes?: string;
+  @Column({ name: 'notificacoes', type: 'simple-json', nullable: true }) notificacoes?: Record<string, boolean>;
   @OneToOne(() => Usuario, u => u.empresa) @JoinColumn({ name: 'id_usuario' }) usuario: Relation<Usuario>;
   @OneToMany(() => EnderecoEmpresa, e => e.empresa) enderecos: Relation<EnderecoEmpresa[]>;
   @OneToMany(() => Pedido, p => p.empresaCompradora) pedidos: Relation<Pedido[]>;
@@ -63,8 +72,15 @@ export class Usina {
   @Column({ name: 'capacidade_producao', nullable: true }) capacidadeProducao?: string;
   @Column({ name: 'descricao', type: 'text', nullable: true }) descricao?: string;
   @Column({ name: 'status_validacao', default: 'pendente' }) statusValidacao: string;
+  @Column({ name: 'maquinas_disponiveis', type: 'text', nullable: true }) maquinasDisponiveis?: string;
+  @Column({ name: 'capacidade_mensal', nullable: true }) capacidadeMensal?: string;
+  @Column({ name: 'turnos', nullable: true }) turnos?: string;
+  @Column({ name: 'prazo_medio', nullable: true }) prazoMedio?: string;
+  @Column({ name: 'certificacoes', type: 'simple-json', nullable: true }) certificacoes?: string[];
+  @Column({ name: 'notificacoes', type: 'simple-json', nullable: true }) notificacoes?: Record<string, boolean>;
   @OneToOne(() => Usuario, u => u.usina) @JoinColumn({ name: 'id_usuario' }) usuario: Relation<Usuario>;
   @OneToMany(() => Proposta, p => p.usina) propostas: Relation<Proposta[]>;
+  @OneToMany(() => PecaComercial, p => p.usina) pecasComerciais: Relation<PecaComercial[]>;
 }
 
 @Entity({ name: 'funcionario' })
@@ -265,6 +281,23 @@ export class Solicitacao {
   @UpdateDateColumn({ name: 'data_atualizacao' }) atualizadoEm: Date;
 }
 
+@Entity({ name: 'peca_comercial' })
+export class PecaComercial {
+  @PrimaryGeneratedColumn({ name: 'id_peca_comercial' }) idPecaComercial: number;
+  @Column({ name: 'id_usina' }) idUsina: number;
+  @Column() nome: string;
+  @Column({ nullable: true }) material?: string;
+  @Column({ nullable: true }) categoria?: string;
+  @Column({ type: 'text', nullable: true }) descricao?: string;
+  @Column({ nullable: true }) estoque?: number;
+  @Column({ name: 'unidade_estoque', nullable: true }) unidadeEstoque?: string;
+  @Column({ name: 'valor_unitario', type: 'numeric', nullable: true }) valorUnitario?: number;
+  @Column({ name: 'prazo_entrega_dias', nullable: true }) prazoEntregaDias?: number;
+  @Column({ default: true }) ativo: boolean;
+  @CreateDateColumn({ name: 'data_criacao' }) criadoEm: Date;
+  @ManyToOne(() => Usina, u => u.pecasComerciais) @JoinColumn({ name: 'id_usina' }) usina: Relation<Usina>;
+}
+
 @Entity({ name: 'solicitacao_comercial' })
 export class SolicitacaoComercial {
   @PrimaryGeneratedColumn({ name: 'id_solicitacao_comercial' }) idSolicitacaoComercial: number;
@@ -298,5 +331,5 @@ export class Notificacao {
 export const ENTITIES = [
   Usuario, PessoaFisica, Empresa, Usina, Funcionario, EnderecoEmpresa, EnderecoUsina, Peca,
   Pedido, ItemPedido, ArquivoPedido, Proposta, Pagamento, AvaliacaoEntrega, Solicitacao, SolicitacaoComercial,
-  SolicitacaoBloqueioUsina, BloqueioUsina, HistoricoStatusPedido, ModeloContrato, Notificacao,
+  SolicitacaoBloqueioUsina, BloqueioUsina, HistoricoStatusPedido, ModeloContrato, Notificacao, PecaComercial,
 ];

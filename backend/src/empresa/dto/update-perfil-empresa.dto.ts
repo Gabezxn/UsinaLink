@@ -1,4 +1,4 @@
-import { IsEmail, IsOptional, IsString } from 'class-validator';
+import { IsEmail, IsObject, IsOptional, IsString } from 'class-validator';
 
 export class UpdatePerfilEmpresaDto {
   @IsOptional() @IsString() razaoSocial?: string;
@@ -8,6 +8,8 @@ export class UpdatePerfilEmpresaDto {
   @IsOptional() @IsString() descricao?: string;
   @IsOptional() @IsEmail({}, { message: 'E-mail inválido.' }) email?: string;
   @IsOptional() @IsString() telefone?: string;
+  @IsOptional() @IsString() whatsapp?: string;
+  @IsOptional() @IsString() site?: string;
   @IsOptional() @IsString() responsavel?: string;
   @IsOptional() @IsString() cep?: string;
   @IsOptional() @IsString() rua?: string;
@@ -16,4 +18,11 @@ export class UpdatePerfilEmpresaDto {
   @IsOptional() @IsString() cidade?: string;
   @IsOptional() @IsString() estado?: string;
   @IsOptional() @IsString() complemento?: string;
+  @IsOptional() @IsString() inscricaoEstadual?: string;
+  @IsOptional() @IsString() contratoSocialArquivo?: string;
+  @IsOptional() @IsString() contratoSocialNome?: string;
+  @IsOptional() @IsString() alvaraArquivo?: string;
+  @IsOptional() @IsString() alvaraNome?: string;
+  @IsOptional() @IsString() certificacoes?: string;
+  @IsOptional() @IsObject() notificacoes?: Record<string, boolean>;
 }
