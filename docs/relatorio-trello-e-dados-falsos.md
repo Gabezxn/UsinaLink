@@ -100,6 +100,15 @@ Isso é importante: como **nenhuma dessas telas da usina tinha dado real antes**
 - **`pagamentos.html` tinha um número fixo** ("2 pedidos aguardando pagamento") que nunca mudava. Agora conta de verdade quantos pedidos estão esperando pagamento.
 - **Apagado `propostas-enviadas.html`**, um arquivo órfão: nenhum link do site inteiro apontava pra ele — era um duplicado morto de `propostas-usina.html`.
 
+### 2.5. O último flash: perfil da empresa
+
+Depois de publicar a versão anterior deste relatório, você reparou que **o perfil da empresa ainda mostrava algo que trocava logo depois** — exatamente o mesmo padrão do início deste relatório, só que numa tela que já parecia "consertada". A causa era em dois lugares diferentes ao mesmo tempo:
+
+1. O card "Informações gerais" tinha um texto **escrito direto no HTML** da página ("Metal Forte Componentes Industriais Ltda.", "Indústria metalmecânica", "Médio porte"...) — visível assim que a página abre, antes de qualquer código rodar.
+2. Mesmo depois desse texto do HTML, o JavaScript tinha uma **segunda cópia dos mesmos dados de exemplo**, usada como valor inicial do formulário — ou seja, mesmo trocando o texto do HTML, ainda apareceria um "Metal Forte" de mentirinha por um instante antes da resposta do servidor chegar.
+
+Corrigido nos dois lugares: o HTML agora começa com "Carregando...", e os valores de exemplo do JavaScript agora começam em branco (aparecem como "-") em vez de um nome de empresa inventado. Isso vale tanto pro perfil da empresa quanto pro da usina, porque os dois usam o mesmo mecanismo.
+
 ---
 
 ## O que ainda fica de fora (por escolha, não esquecimento)
