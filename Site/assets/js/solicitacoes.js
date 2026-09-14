@@ -70,6 +70,9 @@
     }
     if (arquivoLabel) {
       arquivoLabel.classList.toggle('has-error', Boolean(erroArquivoMsg));
+      arquivoLabel.classList.toggle('has-file', Boolean(arquivoSelecionado) && !erroArquivoMsg);
+      const nomeElement = arquivoLabel.querySelector('.upload-filename');
+      if (nomeElement) nomeElement.textContent = arquivoSelecionado && !erroArquivoMsg ? `Selecionado: ${arquivoSelecionado.name}` : '';
       let msgElement = arquivoLabel.querySelector('.field-message');
       if (!msgElement) {
         msgElement = document.createElement('small');
@@ -98,9 +101,13 @@
       const file = arquivoInput.files?.[0];
       const erro = file ? validarArquivo(file) : null;
       label?.classList.toggle('has-error', Boolean(erro));
+      label?.classList.toggle('has-file', Boolean(file) && !erro);
+      const nomeElement = label?.querySelector('.upload-filename');
+      if (nomeElement) nomeElement.textContent = file && !erro ? `Selecionado: ${file.name}` : '';
       const msgElement = label?.querySelector('.field-message');
       if (msgElement) msgElement.textContent = erro || '';
       if (erro) notify(erro, 'error');
+      else if (file) notify(`Arquivo "${file.name}" anexado.`, 'success');
     });
 
     form.addEventListener('submit', async (event) => {

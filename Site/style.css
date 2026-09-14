@@ -647,6 +647,12 @@ th {
   box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.08);
 }
 
+.upload.has-file {
+  border-style: solid;
+  border-color: #16a34a;
+  background: #f0fdf4;
+}
+
 .upload .field-message {
   margin-top: 8px;
 }
@@ -654,6 +660,17 @@ th {
 .upload.has-error .field-message {
   display: block;
   color: #dc2626;
+}
+
+.upload-filename {
+  display: none;
+  margin-top: 8px;
+  font-weight: 600;
+  color: #166534;
+}
+
+.upload.has-file .upload-filename {
+  display: block;
 }
 
 .upload span {
