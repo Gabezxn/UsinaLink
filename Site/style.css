@@ -1064,7 +1064,7 @@ dd {
 }
 
 .is-hidden {
-  display: none;
+  display: none !important;
 }
 
 @media (max-width: 980px) {
