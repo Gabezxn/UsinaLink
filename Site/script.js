@@ -1055,15 +1055,6 @@ document.addEventListener("click", (event) => {
     } });
     return;
   }
-  if (row && action === "Ver") {
-    const cells = rowCells(row);
-    openActionModal({
-      title: cells[0] || "Detalhes do pedido",
-      kicker: "Solicitacao",
-      body: `<div class="action-modal-grid"><div><span>Categoria</span><strong>${escapeHtml(cells[1])}</strong></div><div><span>Quantidade</span><strong>${escapeHtml(cells[2])}</strong></div><div><span>Status</span><strong>${escapeHtml(cells[3])}</strong></div><div><span>Propostas</span><strong>${escapeHtml(cells[4])}</strong></div><div><span>Prazo</span><strong>${escapeHtml(cells[5])}</strong></div><div><span>Arquivo tecnico</span><strong>arquivo-tecnico.pdf</strong></div></div><div class="form-actions"><button class="btn btn-ghost js-action-modal-close" type="button">Fechar</button></div>`
-    });
-    return;
-  }
   showToast(`${action} acionado`);
 });
 

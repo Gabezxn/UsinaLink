@@ -641,6 +641,21 @@ th {
   display: none;
 }
 
+.upload.has-error {
+  border-color: #ef4444;
+  background: #fffafa;
+  box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.08);
+}
+
+.upload .field-message {
+  margin-top: 8px;
+}
+
+.upload.has-error .field-message {
+  display: block;
+  color: #dc2626;
+}
+
 .upload span {
   display: grid;
   width: 42px;
@@ -1542,6 +1557,21 @@ tbody tr:hover {
 
 .request-form {
   margin-top: 0;
+}
+
+@media (max-width: 680px) {
+  .request-form .form-actions {
+    position: sticky;
+    bottom: 0;
+    background: var(--card);
+    padding: 14px 0;
+    margin: 20px -22px -22px;
+    padding-left: 22px;
+    padding-right: 22px;
+    border-top: 1px solid var(--border);
+    box-shadow: 0 -8px 16px -8px rgba(15, 23, 42, 0.12);
+    z-index: 5;
+  }
 }
 
 .field {
