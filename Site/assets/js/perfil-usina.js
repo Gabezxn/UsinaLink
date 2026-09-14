@@ -16,7 +16,10 @@
 
   function refreshVisible() {
     const sectionKey = document.querySelector('[data-profile-section].active')?.dataset.profileSection || 'gerais';
-    if (typeof renderProfileSection === 'function') renderProfileSection(sectionKey);
+    if (typeof renderProfileView === 'function') renderProfileView(sectionKey);
+    if (!document.querySelector('#profile-dynamic-form').classList.contains('is-hidden') && typeof renderProfileSection === 'function') {
+      renderProfileSection(sectionKey);
+    }
   }
 
   function certArrayToValues(certificacoes) {
@@ -102,7 +105,7 @@
       } else {
         notify('Alterações salvas.');
       }
-      refreshVisible();
+      toggleProfileEdit(true);
     } catch (error) {
       notify(error.message);
     } finally {

@@ -48,10 +48,24 @@
 
         <article class="card form-panel profile-form-card">
           <div class="panel-heading with-divider">
-            <h2 id="profile-section-title">Informa&ccedil;&otilde;es gerais</h2>
-            <p id="profile-section-subtitle">Dados industriais exibidos para empresas compradoras.</p>
+            <div style="display: flex; justify-content: space-between; align-items: start; gap: 16px;">
+              <div>
+                <h2 id="profile-section-title">Informa&ccedil;&otilde;es gerais</h2>
+                <p id="profile-section-subtitle">Dados industriais exibidos para empresas compradoras.</p>
+              </div>
+              <button class="btn btn-small js-toggle-profile-edit" type="button">Editar perfil</button>
+            </div>
           </div>
-          <form class="form-grid" id="profile-dynamic-form"></form>
+          <div id="profile-view-mode" class="profile-view-content">
+            <div class="form-grid">
+              <div class="field"><span>Raz&atilde;o social</span><div class="view-value">Carregando...</div></div>
+              <div class="field"><span>Nome fantasia</span><div class="view-value">Carregando...</div></div>
+              <div class="field"><span>Especialidade principal</span><div class="view-value">Carregando...</div></div>
+              <div class="field"><span>Capacidade produtiva</span><div class="view-value">Carregando...</div></div>
+              <div class="field span-2"><span>Descri&ccedil;&atilde;o industrial</span><div class="view-value">Carregando...</div></div>
+            </div>
+          </div>
+          <form class="form-grid is-hidden" id="profile-dynamic-form"></form>
         </article>
 
         <aside class="card rating-summary-card">
