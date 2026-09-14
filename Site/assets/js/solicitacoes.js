@@ -30,29 +30,31 @@
     return null;
   }
 
+  function validarCampoTexto(form, name, mensagem) {
+    const campo = form.querySelector(`[name="${name}"]`);
+    if (!campo.value.trim()) {
+      setFieldState(campo, mensagem);
+      return false;
+    }
+    setFieldState(campo, '');
+    return true;
+  }
+
   function validarFormulario(form) {
     let valido = true;
     let erroArquivoMsg = '';
-    const peca = form.querySelector('[name="peca"]');
-    const categoria = form.querySelector('[name="categoria"]');
     const quantidade = form.querySelector('[name="quantidade"]');
     const arquivo = form.querySelector('[name="arquivo"]');
 
-    if (!peca.value.trim()) {
-      setFieldState(peca, 'Informe o nome da peça.');
-      valido = false;
-    } else {
-      setFieldState(peca, '');
-    }
+    if (!validarCampoTexto(form, 'peca', 'Informe o nome da peça.')) valido = false;
+    if (!validarCampoTexto(form, 'categoria', 'Selecione uma categoria.')) valido = false;
+    if (!validarCampoTexto(form, 'material', 'Informe o material.')) valido = false;
+    if (!validarCampoTexto(form, 'prazoDesejado', 'Informe o prazo desejado.')) valido = false;
+    if (!validarCampoTexto(form, 'urgencia', 'Selecione a urgência.')) valido = false;
+    if (!validarCampoTexto(form, 'localEntrega', 'Informe o local de entrega.')) valido = false;
+    if (!validarCampoTexto(form, 'descricao', 'Informe a descrição técnica.')) valido = false;
 
-    if (!categoria.value.trim()) {
-      setFieldState(categoria, 'Selecione uma categoria.');
-      valido = false;
-    } else {
-      setFieldState(categoria, '');
-    }
-
-    if (quantidade.value && Number(quantidade.value) <= 0) {
+    if (!quantidade.value || Number(quantidade.value) <= 0) {
       setFieldState(quantidade, 'Informe uma quantidade maior que zero.');
       valido = false;
     } else {
@@ -61,7 +63,9 @@
 
     const arquivoLabel = arquivo?.closest('.upload');
     const arquivoSelecionado = arquivo?.files?.[0];
-    if (arquivoSelecionado) {
+    if (!arquivoSelecionado) {
+      erroArquivoMsg = 'Anexe um arquivo técnico.';
+    } else {
       erroArquivoMsg = validarArquivo(arquivoSelecionado) || '';
     }
     if (arquivoLabel) {
@@ -83,7 +87,7 @@
     const form = document.querySelector('.js-solicitacao-form');
     if (!form) return;
 
-    form.querySelectorAll('[name="peca"], [name="categoria"], [name="quantidade"]').forEach((input) => {
+    form.querySelectorAll('[name="peca"], [name="categoria"], [name="material"], [name="quantidade"], [name="prazoDesejado"], [name="urgencia"], [name="localEntrega"], [name="descricao"]').forEach((input) => {
       input.addEventListener('input', () => setFieldState(input, ''));
       input.addEventListener('change', () => setFieldState(input, ''));
     });
@@ -116,22 +120,20 @@
         const payload = {
           peca: String(data.get('peca') || '').trim(),
           categoria: String(data.get('categoria') || '').trim(),
-          material: data.get('material') || undefined,
-          quantidade: data.get('quantidade') || undefined,
-          prazoDesejado: data.get('prazoDesejado') || undefined,
-          urgencia: data.get('urgencia') || undefined,
-          localEntrega: data.get('localEntrega') || undefined,
-          descricao: data.get('descricao') || undefined,
+          material: String(data.get('material') || '').trim(),
+          quantidade: data.get('quantidade'),
+          prazoDesejado: data.get('prazoDesejado'),
+          urgencia: data.get('urgencia'),
+          localEntrega: String(data.get('localEntrega') || '').trim(),
+          descricao: String(data.get('descricao') || '').trim(),
         };
 
         const arquivo = form.querySelector('input[name="arquivo"]')?.files?.[0];
-        if (arquivo) {
-          payload.arquivoTecnico = await readFileAsDataUrl(arquivo);
-          payload.arquivoTecnicoNome = arquivo.name;
-        }
+        payload.arquivoTecnico = await readFileAsDataUrl(arquivo);
+        payload.arquivoTecnicoNome = arquivo.name;
 
         await window.UsinaLinkApi.post('/solicitacoes', payload);
-        notify(arquivo ? 'Solicitação publicada com o arquivo anexado.' : 'Solicitação publicada com sucesso.', 'success');
+        notify('Solicitação publicada com o arquivo anexado.', 'success');
         window.setTimeout(() => { window.location.href = form.dataset.redirect || 'solicitacoes.html'; }, 600);
       } catch (error) {
         notify(error.message, 'error');
