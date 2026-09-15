@@ -37,16 +37,9 @@
     return usina?.nomeFantasia || usina?.razaoSocial || "Usina a definir";
   }
 
-  async function loadSourceData() {
-    const [orders, proposals] = await Promise.all([apiGet("/pedidos/meus"), apiGet("/propostas/recebidas")]);
-    return { orders, proposals };
-  }
-
   // A API devolve os campos com prefixo (idPedido, idUsina...). As telas de pagamento/historico
   // foram escritas esperando nomes genericos (id, usina, peca...). Essa funcao faz essa ponte.
-  function enrichOrder(order, proposals, payments) {
-    const propostaAceita = proposals.find(item => item.idPedido === order.idPedido && item.status === "aceita");
-    const proposta = propostaAceita || proposals.find(item => item.idPedido === order.idPedido) || {};
+  function enrichOrder(order, proposta, payments) {
     const payment = payments.find(item => item.idPedido === order.idPedido) || null;
     const item = primeiroItem(order);
     const totals = ui().calculateTotals(order, proposta, payment);
@@ -76,12 +69,31 @@
     };
   }
 
+  async function getOrdersEmpresa(payments) {
+    const [orders, proposals] = await Promise.all([apiGet("/pedidos/meus"), apiGet("/propostas/recebidas")]);
+    return orders.map(order => {
+      const propostaAceita = proposals.find(item => item.idPedido === order.idPedido && item.status === "aceita");
+      const proposta = propostaAceita || proposals.find(item => item.idPedido === order.idPedido) || {};
+      return enrichOrder(order, proposta, payments);
+    });
+  }
+
+  // A usina nao "possui" pedidos, ela manda propostas pra pedidos de empresas. O historico dela
+  // e a lista de pedidos aos quais ela esta relacionada por ter enviado uma proposta.
+  async function getOrdersUsina(payments) {
+    const minhasPropostas = await apiGet("/propostas/enviadas");
+    const pedidos = await Promise.all(minhasPropostas.map(proposta => apiGet(`/pedidos/${proposta.idPedido}`).catch(() => null)));
+    return minhasPropostas
+      .map((proposta, index) => ({ proposta, pedido: pedidos[index] }))
+      .filter(par => par.pedido)
+      .map(({ proposta, pedido }) => enrichOrder(pedido, proposta, payments));
+  }
+
   async function getOrders() {
-    const { orders, proposals } = await loadSourceData();
     const payments = await apiGet("/pagamentos").catch(() => []);
-    return orders
-      .map(order => enrichOrder(order, proposals, payments))
-      .sort((a, b) => new Date(b.dataCriacao || 0) - new Date(a.dataCriacao || 0));
+    const isUsina = currentSession().tipo === "usina";
+    const orders = isUsina ? await getOrdersUsina(payments) : await getOrdersEmpresa(payments);
+    return orders.sort((a, b) => new Date(b.dataCriacao || 0) - new Date(a.dataCriacao || 0));
   }
 
   async function getOrder(id) {

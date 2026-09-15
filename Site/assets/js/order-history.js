@@ -233,13 +233,18 @@
     document.querySelector("[data-detail-timeline]").innerHTML = cancelado
       ? `<li class="cancelled"><span>X</span><strong>Pedido cancelado</strong></li>`
       : steps.map((step, index) => `<li class="${index <= currentIndex ? "done" : ""}"><span>${index + 1}</span><strong>${step}</strong></li>`).join("");
+    const isUsina = service.currentSession().tipo === "usina";
     const receiptButton = document.querySelector("[data-detail-receipt]");
-    if (receiptButton) receiptButton.hidden = order.statusPagamento !== "Pago";
+    if (receiptButton) receiptButton.hidden = isUsina || order.statusPagamento !== "Pago";
     if (receiptButton) receiptButton.href = receiptLink(order);
-    document.querySelector("[data-detail-pay]").href = paymentLink(order);
+    const payButton = document.querySelector("[data-detail-pay]");
+    if (payButton) {
+      payButton.hidden = isUsina;
+      payButton.href = paymentLink(order);
+    }
     const confirmButton = document.querySelector("[data-detail-confirm-delivery]");
     if (confirmButton) {
-      confirmButton.hidden = order.statusPedido !== "em_producao";
+      confirmButton.hidden = isUsina || order.statusPedido !== "em_producao";
       confirmButton.onclick = async () => {
         confirmButton.disabled = true;
         confirmButton.textContent = "Confirmando...";
