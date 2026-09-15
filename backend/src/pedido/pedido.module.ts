@@ -2,12 +2,12 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
 import { ContextoUsuarioModule } from '../contexto-usuario/contexto-usuario.module';
-import { Pedido, ItemPedido, ArquivoPedido, HistoricoStatusPedido, Proposta, Empresa } from '../common/entities/core.entities';
+import { Pedido, ItemPedido, ArquivoPedido, HistoricoStatusPedido, Proposta, Empresa, Solicitacao } from '../common/entities/core.entities';
 import { PedidoController } from './pedido.controller';
 import { PedidoService } from './pedido.service';
 
 @Module({
-  imports: [AuthModule, ContextoUsuarioModule, TypeOrmModule.forFeature([Pedido, ItemPedido, ArquivoPedido, HistoricoStatusPedido, Proposta, Empresa])],
+  imports: [AuthModule, ContextoUsuarioModule, TypeOrmModule.forFeature([Pedido, ItemPedido, ArquivoPedido, HistoricoStatusPedido, Proposta, Empresa, Solicitacao])],
   controllers: [PedidoController],
   providers: [PedidoService],
   exports: [PedidoService],

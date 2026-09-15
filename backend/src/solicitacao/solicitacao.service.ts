@@ -2,19 +2,29 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ContextoUsuarioService } from '../contexto-usuario/contexto-usuario.service';
+import { PedidoService } from '../pedido/pedido.service';
 import { Solicitacao } from '../common/entities/core.entities';
 import { CreateSolicitacaoDto } from './dto/create-solicitacao.dto';
+
+function diasAte(dataIso?: string): number | undefined {
+  if (!dataIso) return undefined;
+  const alvo = new Date(dataIso);
+  if (Number.isNaN(alvo.getTime())) return undefined;
+  const dias = Math.ceil((alvo.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+  return dias > 0 ? dias : 1;
+}
 
 @Injectable()
 export class SolicitacaoService {
   constructor(
     @InjectRepository(Solicitacao) private readonly solicitacoes: Repository<Solicitacao>,
     private readonly ctx: ContextoUsuarioService,
+    private readonly pedidoService: PedidoService,
   ) {}
 
   async criar(dto: CreateSolicitacaoDto, user: any) {
     const idEmpresa = await this.ctx.obterEmpresaId(user.sub);
-    return this.solicitacoes.save(this.solicitacoes.create({
+    const solicitacao = await this.solicitacoes.save(this.solicitacoes.create({
       idEmpresa,
       peca: dto.peca,
       categoria: dto.categoria,
@@ -28,6 +38,17 @@ export class SolicitacaoService {
       arquivoTecnicoNome: dto.arquivoTecnicoNome,
       status: 'aberta',
     }));
+
+    const pedido = await this.pedidoService.criar({
+      idSolicitacao: solicitacao.idSolicitacao,
+      urgencia: dto.urgencia,
+      observacoes: dto.descricao,
+      prazoEntregaDias: diasAte(dto.prazoDesejado),
+      itens: [{ nome: dto.peca, categoria: dto.categoria, material: dto.material, quantidade: dto.quantidade }],
+      arquivo: dto.arquivoTecnico ? { url: dto.arquivoTecnico, nome: dto.arquivoTecnicoNome } : undefined,
+    }, user);
+    solicitacao.idPedido = pedido.idPedido;
+    return this.solicitacoes.save(solicitacao);
   }
 
   async minhas(user: any) {

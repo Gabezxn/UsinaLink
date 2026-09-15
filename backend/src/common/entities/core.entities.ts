@@ -142,6 +142,7 @@ export class Pedido {
   @PrimaryGeneratedColumn({ name: 'id_pedido' }) idPedido: number;
   @Column({ name: 'id_empresa_compradora' }) idEmpresaCompradora: number;
   @Column({ name: 'id_usuario_solicitante', nullable: true }) idUsuarioSolicitante?: number;
+  @Column({ name: 'id_solicitacao', nullable: true }) idSolicitacao?: number;
   @Column({ name: 'numero_pedido', nullable: true }) numeroPedido?: string;
   @Column({ nullable: true }) urgencia?: string;
   @Column({ default: 'aberto' }) status: string;
@@ -276,6 +277,7 @@ export class Solicitacao {
   @Column({ type: 'text', nullable: true }) descricao?: string;
   @Column({ name: 'arquivo_tecnico', type: 'text', nullable: true }) arquivoTecnico?: string;
   @Column({ name: 'arquivo_tecnico_nome', nullable: true }) arquivoTecnicoNome?: string;
+  @Column({ name: 'id_pedido', nullable: true }) idPedido?: number;
   @Column({ default: 'aberta' }) status: string;
   @CreateDateColumn({ name: 'data_criacao' }) criadoEm: Date;
   @UpdateDateColumn({ name: 'data_atualizacao' }) atualizadoEm: Date;

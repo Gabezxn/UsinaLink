@@ -2,7 +2,7 @@ import { BadRequestException, ConflictException, ForbiddenException, Injectable,
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 import { ContextoUsuarioService } from '../contexto-usuario/contexto-usuario.service';
-import { Proposta, Pedido, Usina, BloqueioUsina } from '../common/entities/core.entities';
+import { Proposta, Pedido, Usina, BloqueioUsina, Solicitacao } from '../common/entities/core.entities';
 
 const STATUS_ABERTOS = ['aberto', 'em_negociacao'];
 
@@ -13,8 +13,19 @@ export class PropostaService {
     @InjectRepository(Pedido) private readonly pedidos: Repository<Pedido>,
     @InjectRepository(Usina) private readonly usinas: Repository<Usina>,
     @InjectRepository(BloqueioUsina) private readonly bloqueios: Repository<BloqueioUsina>,
+    @InjectRepository(Solicitacao) private readonly solicitacoes: Repository<Solicitacao>,
     private readonly ctx: ContextoUsuarioService,
   ) {}
+
+  private async sincronizarSolicitacao(idPedido: number, status: string, apenasSe?: string) {
+    const pedido = await this.pedidos.findOne({ where: { idPedido } });
+    if (!pedido?.idSolicitacao) return;
+    if (apenasSe) {
+      const atual = await this.solicitacoes.findOne({ where: { idSolicitacao: pedido.idSolicitacao } });
+      if (atual?.status !== apenasSe) return;
+    }
+    await this.solicitacoes.update({ idSolicitacao: pedido.idSolicitacao }, { status });
+  }
 
   private async enrich(proposta: Proposta) {
     const [pedido, usina] = await Promise.all([
@@ -48,6 +59,7 @@ export class PropostaService {
     }));
 
     if (pedido.status === 'aberto') await this.pedidos.update({ idPedido: pedido.idPedido }, { status: 'em_negociacao' });
+    await this.sincronizarSolicitacao(pedido.idPedido, 'em_analise', 'aberta');
     return proposta;
   }
 
@@ -86,6 +98,7 @@ export class PropostaService {
     await this.propostas.update({ idPedido: proposta.idPedido }, { status: 'recusada' });
     await this.propostas.update({ idProposta: proposta.idProposta }, { status: 'aceita' });
     await this.pedidos.update({ idPedido: proposta.idPedido }, { status: 'proposta_aceita', valorTotal: proposta.valor });
+    await this.sincronizarSolicitacao(proposta.idPedido, 'concluida');
     return this.propostas.findOne({ where: { idProposta: proposta.idProposta } });
   }
 

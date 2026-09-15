@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/commo
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { ContextoUsuarioService } from '../contexto-usuario/contexto-usuario.service';
-import { Pedido, ItemPedido, ArquivoPedido, HistoricoStatusPedido, Proposta, Empresa } from '../common/entities/core.entities';
+import { Pedido, ItemPedido, ArquivoPedido, HistoricoStatusPedido, Proposta, Empresa, Solicitacao } from '../common/entities/core.entities';
 
 const STATUS_ABERTOS = ['aberto', 'em_negociacao'];
 
@@ -15,6 +15,7 @@ export class PedidoService {
     @InjectRepository(HistoricoStatusPedido) private readonly historico: Repository<HistoricoStatusPedido>,
     @InjectRepository(Proposta) private readonly propostas: Repository<Proposta>,
     @InjectRepository(Empresa) private readonly empresas: Repository<Empresa>,
+    @InjectRepository(Solicitacao) private readonly solicitacoes: Repository<Solicitacao>,
     private readonly ctx: ContextoUsuarioService,
   ) {}
 
@@ -34,6 +35,7 @@ export class PedidoService {
     const pedido = await this.pedidos.save(this.pedidos.create({
       idEmpresaCompradora: idEmpresa,
       idUsuarioSolicitante: user.sub,
+      idSolicitacao: dto.idSolicitacao || undefined,
       numeroPedido: dto.numeroPedido || `PED-${Date.now()}`,
       urgencia: dto.urgencia,
       status: 'aberto',
@@ -100,8 +102,11 @@ export class PedidoService {
   }
 
   async cancelar(id: number | string, user: any) {
-    await this.detalhe(id, user);
+    const pedido = await this.detalhe(id, user);
     await this.pedidos.update({ idPedido: Number(id) }, { status: 'cancelado' });
+    if (pedido.idSolicitacao) {
+      await this.solicitacoes.update({ idSolicitacao: pedido.idSolicitacao }, { status: 'cancelada' });
+    }
     return this.detalhe(id, user);
   }
 }
