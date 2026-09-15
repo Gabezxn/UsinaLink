@@ -101,6 +101,15 @@ export class PedidoService {
     return this.detalhe(id, user);
   }
 
+  async confirmarEntrega(id: number | string, user: any) {
+    if (!user.tipoUsuario?.includes('empresa')) throw new ForbiddenException();
+    const pedido = await this.detalhe(id, user);
+    if (pedido.status !== 'em_producao') throw new ForbiddenException('Pedido ainda nao esta em producao.');
+    await this.pedidos.update({ idPedido: Number(id) }, { status: 'concluido', dataEntregaReal: new Date() });
+    await this.historico.save(this.historico.create({ idPedido: Number(id), statusNovo: 'concluido', idUsuarioResponsavel: user.sub, observacao: 'Entrega confirmada pela empresa' }));
+    return this.detalhe(id, user);
+  }
+
   async cancelar(id: number | string, user: any) {
     const pedido = await this.detalhe(id, user);
     await this.pedidos.update({ idPedido: Number(id) }, { status: 'cancelado' });

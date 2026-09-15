@@ -2717,6 +2717,15 @@ td:last-child .btn {
   background: linear-gradient(135deg, var(--primary), var(--secondary));
 }
 
+.timeline li.cancelled {
+  color: #dc2626;
+}
+
+.timeline li.cancelled span {
+  color: #fff;
+  background: #ef4444;
+}
+
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,

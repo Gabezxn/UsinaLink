@@ -20,6 +20,11 @@
     throw new Error("Cliente da API nao carregado.");
   }
 
+  async function apiPatch(path, body) {
+    if (window.UsinaLinkApi) return window.UsinaLinkApi.patch(path, body || {});
+    throw new Error("Cliente da API nao carregado.");
+  }
+
   function primeiroItem(order) {
     return (order.itens && order.itens[0]) || {};
   }
@@ -98,5 +103,9 @@
     };
   }
 
-  window.UsinaLinkPayments = { getOrders, getOrder, savePayment, currentSession };
+  async function confirmarEntrega(order) {
+    return apiPatch(`/pedidos/${order.idPedido}/confirmar-entrega`);
+  }
+
+  window.UsinaLinkPayments = { getOrders, getOrder, savePayment, confirmarEntrega, currentSession };
 }());

@@ -14,4 +14,5 @@ export class PedidoController {
   @Get(':id') detalhe(@Param('id') id: string, @Req() r: any) { return this.service.detalhe(id, r.user); }
   @Patch(':id') atualizar(@Param('id') id: string, @Body() dto: UpdatePedidoDto, @Req() r: any) { return this.service.atualizar(id, dto, r.user); }
   @Patch(':id/cancelar') cancelar(@Param('id') id: string, @Req() r: any) { return this.service.cancelar(id, r.user); }
+  @Patch(':id/confirmar-entrega') confirmarEntrega(@Param('id') id: string, @Req() r: any) { return this.service.confirmarEntrega(id, r.user); }
 }

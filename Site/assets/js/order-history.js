@@ -17,6 +17,19 @@
     return `confirmacao-pedido.html?pedidoId=${encodeURIComponent(order.id)}`;
   }
 
+  const PEDIDO_STATUS_LABEL = {
+    aberto: "Aberto",
+    em_negociacao: "Em negociação",
+    proposta_aceita: "Proposta aceita",
+    em_producao: "Em produção",
+    concluido: "Concluído",
+    cancelado: "Cancelado",
+  };
+
+  function statusPedidoLabel(status) {
+    return PEDIDO_STATUS_LABEL[status] || status || "Pendente";
+  }
+
   function applySharedRoleNav() {
     const nav = document.querySelector("[data-role-nav]");
     const session = service.currentSession();
@@ -183,7 +196,7 @@
         const statusOk = status === "Todos" || order.statusPedido === status || order.statusPagamento === status;
         return haystack.includes(query) && dateOk && statusOk;
       });
-      table.innerHTML = filtered.map(order => `<tr><td>${ui.orderNumber(order.id)}</td><td>${ui.formatDate(order.dataCriacao)}</td><td>${ui.escapeHtml(order.empresa)}</td><td>${ui.escapeHtml(order.usina)}</td><td>${ui.escapeHtml(order.peca)}</td><td>${ui.formatCurrency(order.totals.total)}</td><td>${ui.escapeHtml(order.formaPagamento)}</td><td>${ui.statusBadge(order.statusPedido)}</td><td>${ui.statusBadge(order.statusPagamento)}</td><td>${ui.escapeHtml(order.prazo)}</td><td><a class="table-action" href="${detailsLink(order)}">Ver detalhes</a>${order.statusPagamento === "Pago" ? `<a class="table-action" href="${receiptLink(order)}">Ver comprovante</a>` : ""}</td></tr>`).join("");
+      table.innerHTML = filtered.map(order => `<tr><td>${ui.orderNumber(order.id)}</td><td>${ui.formatDate(order.dataCriacao)}</td><td>${ui.escapeHtml(order.empresa)}</td><td>${ui.escapeHtml(order.usina)}</td><td>${ui.escapeHtml(order.peca)}</td><td>${ui.formatCurrency(order.totals.total)}</td><td>${ui.escapeHtml(order.formaPagamento)}</td><td>${ui.statusBadge(statusPedidoLabel(order.statusPedido))}</td><td>${ui.statusBadge(order.statusPagamento)}</td><td>${ui.escapeHtml(order.prazo)}</td><td><a class="table-action" href="${detailsLink(order)}">Ver detalhes</a>${order.statusPagamento === "Pago" ? `<a class="table-action" href="${receiptLink(order)}">Ver comprovante</a>` : ""}</td></tr>`).join("");
       cards.innerHTML = filtered.map(order => `<article class="card history-mobile-card"><strong>${ui.orderNumber(order.id)} - ${ui.escapeHtml(order.peca)}</strong><span>${ui.escapeHtml(order.empresa)} / ${ui.escapeHtml(order.usina)}</span><span>${ui.formatCurrency(order.totals.total)}</span><div>${ui.statusBadge(order.statusPagamento)}</div><a class="btn btn-small" href="${detailsLink(order)}">Ver detalhes</a></article>`).join("");
       document.querySelector("[data-history-empty]").hidden = Boolean(filtered.length);
     };
@@ -207,19 +220,40 @@
     document.querySelector("[data-detail-facts]").innerHTML = `
       <div><span>Empresa</span><strong>${ui.escapeHtml(order.empresa)}</strong></div>
       <div><span>Usina</span><strong>${ui.escapeHtml(order.usina)}</strong></div>
-      <div><span>Status</span>${ui.statusBadge(order.statusPedido)}</div>
+      <div><span>Status</span>${ui.statusBadge(statusPedidoLabel(order.statusPedido))}</div>
       <div><span>Pagamento</span>${ui.statusBadge(order.statusPagamento)}</div>
       <div><span>Total</span><strong>${ui.formatCurrency(order.totals.total)}</strong></div>
       <div><span>Prazo</span><strong>${ui.escapeHtml(order.prazo)}</strong></div>
       <div><span>Endereco</span><strong>${ui.escapeHtml(order.endereco)}</strong></div>
       <div><span>Anexo</span><strong>${ui.escapeHtml(order.arquivo || "Sem anexo")}</strong></div>`;
-    const steps = ["Pedido criado", "Proposta recebida", "Proposta aceita", "Pagamento realizado", "Producao iniciada", "Pedido enviado", "Pedido concluido"];
-    const paid = order.statusPagamento === "Pago";
-    document.querySelector("[data-detail-timeline]").innerHTML = steps.map((step, index) => `<li class="${index < (paid ? 5 : 3) ? "done" : ""}"><span>${index + 1}</span><strong>${step}</strong></li>`).join("");
+    const STEP_ORDER = ["aberto", "em_negociacao", "proposta_aceita", "em_producao", "concluido"];
+    const steps = ["Pedido criado", "Proposta recebida", "Proposta aceita", "Pagamento realizado", "Pedido concluido"];
+    const cancelado = order.statusPedido === "cancelado";
+    const currentIndex = STEP_ORDER.indexOf(order.statusPedido);
+    document.querySelector("[data-detail-timeline]").innerHTML = cancelado
+      ? `<li class="cancelled"><span>X</span><strong>Pedido cancelado</strong></li>`
+      : steps.map((step, index) => `<li class="${index <= currentIndex ? "done" : ""}"><span>${index + 1}</span><strong>${step}</strong></li>`).join("");
     const receiptButton = document.querySelector("[data-detail-receipt]");
     if (receiptButton) receiptButton.hidden = order.statusPagamento !== "Pago";
     if (receiptButton) receiptButton.href = receiptLink(order);
     document.querySelector("[data-detail-pay]").href = paymentLink(order);
+    const confirmButton = document.querySelector("[data-detail-confirm-delivery]");
+    if (confirmButton) {
+      confirmButton.hidden = order.statusPedido !== "em_producao";
+      confirmButton.onclick = async () => {
+        confirmButton.disabled = true;
+        confirmButton.textContent = "Confirmando...";
+        try {
+          await service.confirmarEntrega(order);
+          ui.showFeedback("Entrega confirmada com sucesso.", "success");
+          await renderDetailsPage();
+        } catch (error) {
+          ui.showFeedback(error.message, "error");
+          confirmButton.disabled = false;
+          confirmButton.textContent = "Confirmar entrega";
+        }
+      };
+    }
   }
 
   applySharedRoleNav();
