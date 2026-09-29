@@ -449,6 +449,15 @@ const profileData = {
       notificacoes: { title: "Notifica\u00e7\u00f5es", subtitle: "Configure quais avisos devem chegar para a equipe.", fields: [["Receber propostas por e-mail", "checkbox", false, null, "propostasEmail"], ["Receber alertas de prazo", "checkbox", false, null, "alertasPrazo"], ["Receber mensagens de fornecedores", "checkbox", false, null, "mensagensFornecedores"], ["Receber resumo semanal", "checkbox", false, null, "resumoSemanal"]] }
     }
   },
+  pessoa_fisica: {
+    cancel: "dashboard-pessoa-fisica.html",
+    button: "btn-primary",
+    sections: {
+      gerais: { title: "Informações gerais", subtitle: "Seus dados pessoais. O CPF não pode ser alterado.", fields: [["Nome completo", "text", "", null, "nome"]] },
+      contato: { title: "Contato", subtitle: "E-mail de acesso e telefone para contato.", fields: [["E-mail", "email", "", null, "email"], ["Telefone", "tel", "", null, "telefone"]] },
+      seguranca: { title: "Segurança", subtitle: "Proteja o acesso à sua conta.", fields: [["Senha atual", "password", "", null, "senhaAtual"], ["Nova senha", "password", "", null, "novaSenha"], ["Confirmar nova senha", "password", "", null, "confirmarSenha"]] }
+    }
+  },
   usina: {
     cancel: "dashboard-usina.html",
     button: "btn-orange",
@@ -738,7 +747,7 @@ function applySessionContext() {
   if (profileTitle) profileTitle.textContent = displayName;
 
   const profileSubtitle = document.querySelector(".profile-head p");
-  if (profileSubtitle) profileSubtitle.textContent = role === "usina" ? "Perfil industrial da usina logada." : "Perfil comercial da empresa logada.";
+  if (profileSubtitle) profileSubtitle.textContent = role === "usina" ? "Perfil industrial da usina logada." : role === "pessoa_fisica" ? "Atualize seus dados pessoais e de acesso." : "Perfil comercial da empresa logada.";
 }
 
 function proposalActionsMarkup(status) {

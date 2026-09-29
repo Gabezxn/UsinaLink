@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Perfil Pessoa F&iacute;sica | Usinalink</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-user-role="pessoa_fisica" data-profile-kind="pessoa_fisica">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <a class="brand" href="index.html"><span class="brand-icon">US</span><span>Usinalink</span></a>
+      <nav class="side-nav" data-role-nav="pessoa_fisica">
+        <a href="dashboard-pessoa-fisica.html" data-icon="P">Pe&ccedil;as comerciais</a>
+        <a href="compras-pessoa-fisica.html" data-icon="C">Minhas compras</a>
+        <a class="active" href="perfil-pessoa-fisica.html" data-icon="I">Perfil</a>
+        <a href="index.html" data-icon="X">Sair</a>
+      </nav>
+    </aside>
+
+    <main class="app-main">
+      <section class="profile-hero enhanced">
+        <div class="profile-banner"></div>
+        <div class="profile-head">
+          <div class="avatar" aria-hidden="true" data-profile-avatar>PF</div>
+          <div><h1>Minha conta</h1><p>Atualize seus dados pessoais e de acesso.</p></div>
+        </div>
+        <nav class="tabs profile-tabs" aria-label="Tipo de perfil">
+          <button class="tab-pill active" type="button">Pessoa f&iacute;sica</button>
+        </nav>
+      </section>
+
+      <section class="profile-grid">
+        <aside class="card profile-menu sidebar-card">
+          <a class="active" href="#" data-profile-section="gerais"><span>i</span>Informa&ccedil;&otilde;es Gerais</a>
+          <a href="#" data-profile-section="contato"><span>@</span>Contato</a>
+          <a href="#" data-profile-section="seguranca"><span>*</span>Seguran&ccedil;a</a>
+        </aside>
+
+        <article class="card form-panel profile-form-card">
+          <div class="panel-heading with-divider">
+            <div style="display: flex; justify-content: space-between; align-items: start; gap: 16px;">
+              <div>
+                <h2 id="profile-section-title">Informa&ccedil;&otilde;es gerais</h2>
+                <p id="profile-section-subtitle">Dados pessoais da sua conta.</p>
+              </div>
+              <button class="btn btn-small js-toggle-profile-edit" type="button">Editar perfil</button>
+            </div>
+          </div>
+          <div id="profile-view-mode" class="profile-view-content">
+            <div class="form-grid">
+              <div class="field"><span>Nome completo</span><div class="view-value">Carregando...</div></div>
+              <div class="field"><span>CPF</span><div class="view-value">Carregando...</div></div>
+            </div>
+          </div>
+          <form class="form-grid is-hidden" id="profile-dynamic-form"></form>
+        </article>
+      </section>
+    </main>
+  </div>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/auth-guard.js"></script>
+  <script src="script.js"></script>
+  <script src="assets/js/perfil-pessoa-fisica.js"></script>
+</body>
+</html>

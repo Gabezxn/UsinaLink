@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minhas Compras | Usinalink</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-user-role="pessoa_fisica">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <a class="brand" href="index.html"><span class="brand-icon">US</span><span>Usinalink</span></a>
+      <nav class="side-nav" data-role-nav="pessoa_fisica">
+        <a href="dashboard-pessoa-fisica.html" data-icon="P">Pe&ccedil;as comerciais</a>
+        <a class="active" href="compras-pessoa-fisica.html" data-icon="C">Minhas compras</a>
+        <a href="perfil-pessoa-fisica.html" data-icon="I">Perfil</a>
+        <a href="index.html" data-icon="X">Sair</a>
+      </nav>
+    </aside>
+    <main class="app-main">
+      <div class="page-header">
+        <div><span class="eyebrow">Pessoa f&iacute;sica</span><h1>Minhas compras</h1><p>Acompanhe as pe&ccedil;as comerciais que voc&ecirc; solicitou.</p></div>
+        <a class="btn btn-primary" href="dashboard-pessoa-fisica.html">Ver cat&aacute;logo de pe&ccedil;as</a>
+      </div>
+      <section class="card table-card" data-search-scope>
+        <div class="table-toolbar"><label class="search-box wide-search"><span>Buscar</span><input class="js-table-search" type="search" placeholder="Pe&ccedil;a, fornecedor ou data"></label></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Pe&ccedil;a</th><th>Fornecedor</th><th>Valor unit&aacute;rio</th><th>Quantidade</th><th>Status</th><th>Data</th></tr></thead>
+            <tbody data-solicitacoes-comerciais-body></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/auth-guard.js"></script>
+  <script src="assets/js/pecas-comerciais.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

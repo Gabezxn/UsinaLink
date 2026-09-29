@@ -16,11 +16,9 @@
     return usina?.nomeFantasia || usina?.razaoSocial || 'Usina';
   }
 
-  const somenteConsulta = document.body.dataset.userRole === 'pessoa_fisica';
-
   function pecaCardMarkup(peca) {
     const fornecedor = fornecedorNome(peca.usina);
-    const botaoCompra = somenteConsulta ? '' : `<button class="btn btn-primary js-comprar-peca" type="button" data-peca="${esc(peca.nome)}" data-fornecedor="${esc(fornecedor)}" data-valor="${esc(peca.valorUnitario ?? '')}">Solicitar compra</button>`;
+    const botaoCompra = `<button class="btn btn-primary js-comprar-peca" type="button" data-peca="${esc(peca.nome)}" data-fornecedor="${esc(fornecedor)}" data-valor="${esc(peca.valorUnitario ?? '')}">Solicitar compra</button>`;
     return `<article class="card order-opportunity" data-search-row>
       <h2>${esc(peca.nome)}</h2><p>${esc(peca.material || peca.categoria || '')}</p>
       <div class="quote-facts compact"><div><span>Estoque</span><strong>${esc(peca.estoque != null ? `${peca.estoque} ${peca.unidadeEstoque || 'unidades'}` : 'Sob consulta')}</strong></div><div><span>Prazo</span><strong>${esc(peca.prazoEntregaDias ? peca.prazoEntregaDias + ' dias' : 'A combinar')}</strong></div><div><span>Valor unit&aacute;rio</span><strong>${esc(peca.valorUnitario != null ? formatMoney(peca.valorUnitario) : 'Sob consulta')}</strong></div><div><span>Fornecedor</span><strong>${esc(fornecedor)}</strong></div></div>
@@ -45,7 +43,7 @@
 
   async function loadMinhas() {
     const body = document.querySelector('[data-solicitacoes-comerciais-body]');
-    if (!body) return [];
+    if (!body) return window.UsinaLinkApi.get('/solicitacoes-comerciais/minhas').catch(() => []);
     try {
       const rows = await window.UsinaLinkApi.get('/solicitacoes-comerciais/minhas');
       body.innerHTML = rows.length
