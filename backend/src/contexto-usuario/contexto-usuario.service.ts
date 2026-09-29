@@ -1,12 +1,13 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Usuario, Empresa, Usina, Funcionario } from '../common/entities/core.entities';
+import { Usuario, Empresa, Usina, Funcionario, PessoaFisica } from '../common/entities/core.entities';
 
 @Injectable()
 export class ContextoUsuarioService {
   constructor(
     @InjectRepository(Usuario) private readonly usuarios: Repository<Usuario>,
+    @InjectRepository(PessoaFisica) private readonly pessoasFisicas: Repository<PessoaFisica>,
     @InjectRepository(Empresa) private readonly empresas: Repository<Empresa>,
     @InjectRepository(Usina) private readonly usinas: Repository<Usina>,
     @InjectRepository(Funcionario) private readonly funcionarios: Repository<Funcionario>,
@@ -31,6 +32,12 @@ export class ContextoUsuarioService {
     const religada = await this.religarPorEmail(this.empresas, idUsuario, 'empresa');
     if (religada) return religada.idEmpresa;
     throw new ForbiddenException('Usuario sem vinculo ativo com empresa.');
+  }
+
+  async obterPessoaFisicaId(idUsuario: number): Promise<number> {
+    const pessoa = await this.pessoasFisicas.findOne({ where: { idUsuario } });
+    if (pessoa) return pessoa.idPessoaFisica;
+    throw new ForbiddenException('Usuario sem cadastro de pessoa fisica.');
   }
 
   async obterUsinaId(idUsuario: number): Promise<number> {

@@ -6,6 +6,7 @@ import { TokenService } from '../auth/token.service';
 import { Usuario, Empresa, Usina, PessoaFisica, Funcionario, BloqueioUsina } from '../common/entities/core.entities';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { LoginDto } from './dto/login.dto';
+import { UpdatePerfilPessoaFisicaDto } from './dto/update-perfil-pessoa-fisica.dto';
 
 const digits = (v: any) => String(v || '').replace(/\D/g, '');
 const mail = (v: any) => String(v || '').trim().toLowerCase();
@@ -149,6 +150,33 @@ export class UsuarioService {
     const response: any = { accessToken, access_token: accessToken, tipoUsuario: usuario.tipoUsuario, nome: usuario.nome, usuario: this.safe(usuario) };
     if (area !== 'pessoa_fisica') response[area] = vinculo;
     return response;
+  }
+
+  private async pessoaFisicaDoUsuario(user: any) {
+    const pessoa = await this.pessoasFisicas.findOne({ where: { idUsuario: user.sub } });
+    if (!pessoa) throw new ForbiddenException('Esta conta nao e de pessoa fisica.');
+    return pessoa;
+  }
+
+  async perfilPessoaFisica(user: any) {
+    return this.pessoaFisicaDoUsuario(user);
+  }
+
+  async atualizarPerfilPessoaFisica(user: any, dto: UpdatePerfilPessoaFisicaDto) {
+    const pessoa = await this.pessoaFisicaDoUsuario(user);
+    const dados: Partial<PessoaFisica> = {};
+    if (dto.nome !== undefined) dados.nome = dto.nome.trim();
+    if (dto.telefone !== undefined) dados.telefone = digits(dto.telefone);
+    if (dto.email !== undefined) {
+      const email = mail(dto.email);
+      const existente = await this.usuarios.findOne({ where: { email } });
+      if (existente && existente.idUsuario !== user.sub) throw new ConflictException('E-mail já cadastrado.');
+      dados.email = email;
+      await this.usuarios.update({ idUsuario: user.sub }, { email });
+    }
+    if (dados.nome) await this.usuarios.update({ idUsuario: user.sub }, { nome: dados.nome });
+    if (Object.keys(dados).length) await this.pessoasFisicas.update({ idPessoaFisica: pessoa.idPessoaFisica }, dados);
+    return this.pessoaFisicaDoUsuario(user);
   }
 
   async trocarSenha(user: any, dto: { senhaAtual: string; novaSenha: string; confirmarSenha: string }) {

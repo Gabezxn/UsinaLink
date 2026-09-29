@@ -13,9 +13,9 @@ export class SolicitacaoComercialService {
   ) {}
 
   async criar(dto: CreateSolicitacaoComercialDto, user: any) {
-    const idEmpresa = await this.ctx.obterEmpresaId(user.sub);
+    const dono = await this.dono(user);
     return this.solicitacoes.save(this.solicitacoes.create({
-      idEmpresa,
+      ...dono,
       peca: dto.peca,
       fornecedor: dto.fornecedor,
       valorUnitario: dto.valorUnitario ? Number(dto.valorUnitario) : undefined,
@@ -25,7 +25,12 @@ export class SolicitacaoComercialService {
   }
 
   async minhas(user: any) {
-    const idEmpresa = await this.ctx.obterEmpresaId(user.sub);
-    return this.solicitacoes.find({ where: { idEmpresa }, order: { criadoEm: 'DESC' } });
+    return this.solicitacoes.find({ where: await this.dono(user), order: { criadoEm: 'DESC' } });
+  }
+
+  // Solicitacao comercial pertence a uma empresa OU a uma pessoa fisica, conforme o tipo da conta.
+  private async dono(user: any): Promise<{ idEmpresa: number } | { idPessoaFisica: number }> {
+    if (user.tipoUsuario === 'pessoa_fisica') return { idPessoaFisica: await this.ctx.obterPessoaFisicaId(user.sub) };
+    return { idEmpresa: await this.ctx.obterEmpresaId(user.sub) };
   }
 }

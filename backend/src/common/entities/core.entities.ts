@@ -303,7 +303,8 @@ export class PecaComercial {
 @Entity({ name: 'solicitacao_comercial' })
 export class SolicitacaoComercial {
   @PrimaryGeneratedColumn({ name: 'id_solicitacao_comercial' }) idSolicitacaoComercial: number;
-  @Column({ name: 'id_empresa' }) idEmpresa: number;
+  @Column({ name: 'id_empresa', nullable: true }) idEmpresa?: number;
+  @Column({ name: 'id_pessoa_fisica', nullable: true }) idPessoaFisica?: number;
   @Column() peca: string;
   @Column({ nullable: true }) fornecedor?: string;
   @Column({ name: 'valor_unitario', type: 'numeric', nullable: true }) valorUnitario?: number;
