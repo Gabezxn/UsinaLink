@@ -243,8 +243,10 @@ document.querySelectorAll(".choice-card").forEach((card) => {
 document.querySelectorAll('a[href="index.html"]').forEach((link) => {
   if (link.textContent.trim().toLowerCase() === "sair") {
     link.addEventListener("click", () => {
-      sessionStorage.removeItem("usinalinkSession");
-      localStorage.removeItem("usinalinkSession");
+      ["usinalinkSession", "accessToken", "tipoUsuario", "nome"].forEach((key) => {
+        sessionStorage.removeItem(key);
+        localStorage.removeItem(key);
+      });
     });
   }
 });
@@ -399,16 +401,17 @@ document.querySelectorAll(".js-login-form").forEach((form) => {
         email: emailInput.value.trim().toLowerCase(),
         senha: passwordInput.value
       });
-      localStorage.setItem("accessToken", result.accessToken || result.access_token);
-      localStorage.setItem("tipoUsuario", result.tipoUsuario);
-      localStorage.setItem("nome", result.nome || "");
-      localStorage.setItem("usinalinkSession", JSON.stringify({
+      // Sessao por aba (sessionStorage): logar como usina em uma aba nao derruba a empresa logada em outra.
+      ["usinalinkSession", "accessToken", "tipoUsuario", "nome"].forEach((key) => localStorage.removeItem(key));
+      sessionStorage.setItem("accessToken", result.accessToken || result.access_token);
+      sessionStorage.setItem("tipoUsuario", result.tipoUsuario);
+      sessionStorage.setItem("nome", result.nome || "");
+      sessionStorage.setItem("usinalinkSession", JSON.stringify({
         tipo: result.tipoUsuario,
         nome: result.nome || "",
         empresaId: result.empresa?.idEmpresa,
         usinaId: result.usina?.idUsina
       }));
-      sessionStorage.removeItem("usinalinkSession");
       showToast("Login realizado com sucesso");
       window.setTimeout(() => { window.location.href = redirect; }, 500);
     } catch (error) {
@@ -721,7 +724,7 @@ function applySessionContext() {
   const role = document.body?.dataset.userRole || document.body?.dataset.profileKind;
   if (!role || session.tipo !== role) return;
 
-  const displayName = session.nome || (role === "usina" ? "Minha usina" : "Minha empresa");
+  const displayName = session.nome || (role === "usina" ? "Minha usina" : role === "pessoa_fisica" ? "Minha conta" : "Minha empresa");
   const headerTitle = document.querySelector(".app-header h1");
   if (headerTitle) headerTitle.textContent = displayName;
 
@@ -729,7 +732,7 @@ function applySessionContext() {
   if (userName) userName.textContent = displayName;
 
   const userRole = document.querySelector(".user-strip span");
-  if (userRole) userRole.textContent = role === "usina" ? "Conta da usina" : "Conta da empresa";
+  if (userRole) userRole.textContent = role === "usina" ? "Conta da usina" : role === "pessoa_fisica" ? "Conta de pessoa fisica" : "Conta da empresa";
 
   const profileTitle = document.querySelector(".profile-head h1");
   if (profileTitle) profileTitle.textContent = displayName;
@@ -765,6 +768,7 @@ function proposalRowMarkup(item) {
 }
 
 let ultimasPropostasRecebidas = [];
+let ultimasPropostasEnviadas = [];
 
 function formatMoneyBR(value) {
   const n = Number(value);
@@ -789,7 +793,7 @@ function proposalCardMarkup(item, best) {
   const aceita = status === "aceita";
   const travada = propostaEstaTravada(status);
   const decisaoBtn = aceita
-    ? '<button class="btn" type="button" disabled>Proposta aceita</button>'
+    ? `<a class="btn" href="detalhes-pedido.html?pedidoId=${encodeURIComponent(item.idPedido)}">Pagar e acompanhar pedido</a>`
     : travada
       ? `<button class="btn btn-ghost" type="button" disabled>${escapeHtml(statusPropostaLabel(status))}</button>`
       : '<button class="btn js-alert" type="button">Aceitar proposta</button>';
@@ -801,6 +805,32 @@ function proposalCardMarkup(item, best) {
     <p>${escapeHtml(item.observacao || "Sem observacoes adicionais.")}</p>
     <div class="card-actions"><button class="btn btn-ghost js-alert" type="button">Ver detalhes</button>${decisaoBtn}</div>
   </article>`;
+}
+
+function renderSentProposalDetails(item) {
+  const status = item.status || "enviada";
+  const pedido = item.pedido || {};
+  const itemPedido = pedido.itens?.[0] || {};
+  const cliente = pedido.empresaCompradora?.nomeFantasia || pedido.empresaCompradora?.razaoSocial || "-";
+  const dataEnvio = item.dataEnvio ? new Date(item.dataEnvio).toLocaleDateString("pt-BR") : "-";
+  const quantidade = itemPedido.quantidade ? String(itemPedido.quantidade) : "-";
+  return `
+    <div class="proposal-detail-head">
+      <div><span>Cliente</span><strong>${escapeHtml(cliente)}</strong></div>
+      <strong class="modal-price">${escapeHtml(formatMoneyBR(item.valor))}</strong>
+    </div>
+    <div class="action-modal-grid">
+      <div><span>Prazo de fabricacao</span><strong>${escapeHtml(item.prazo || "A combinar")}</strong></div>
+      <div><span>Frete</span><strong>${escapeHtml(item.frete ? formatMoneyBR(item.frete) : "A combinar")}</strong></div>
+      <div><span>Status</span><strong>${escapeHtml(statusPropostaLabel(status))}</strong></div>
+      <div><span>Enviada em</span><strong>${escapeHtml(dataEnvio)}</strong></div>
+      <div><span>Peca/Pedido</span><strong>${escapeHtml(itemPedido.nome || "Peca industrial")}</strong></div>
+      <div><span>Material</span><strong>${escapeHtml(itemPedido.material || "-")}</strong></div>
+      <div><span>Quantidade</span><strong>${escapeHtml(quantidade)}</strong></div>
+      <div><span>Pedido</span><strong>${escapeHtml(pedido.numeroPedido || "-")}</strong></div>
+    </div>
+    <div class="detail-list"><div><span>Observacoes da proposta</span><strong>${escapeHtml(item.observacao || "Sem observacoes adicionais.")}</strong></div></div>
+    <div class="form-actions"><button class="btn btn-ghost js-action-modal-close" type="button">Fechar</button></div>`;
 }
 
 function renderReceivedProposalDetails(item) {
@@ -830,6 +860,7 @@ async function loadProposalsFromApi() {
   if (document.body.dataset.userRole === "usina" && usinaTable && window.location.pathname.includes("propostas-usina")) {
     try {
       const proposals = await window.UsinaLinkApi.get(`/propostas/enviadas`);
+      ultimasPropostasEnviadas = proposals;
       usinaTable.innerHTML = proposals.map(proposalRowMarkup).join("") || '<tr><td colspan="7">Nenhuma proposta enviada.</td></tr>';
     } catch (error) {
       showToast(error.message);
@@ -991,6 +1022,11 @@ document.addEventListener("click", (event) => {
     return;
   }
   if (row && action === "Ver detalhes") {
+    const enviada = ultimasPropostasEnviadas.find((p) => String(p.idProposta) === String(row.dataset.proposalId));
+    if (enviada) {
+      openActionModal({ title: "Detalhes da proposta", kicker: "Proposta enviada", body: renderSentProposalDetails(enviada) });
+      return;
+    }
     const cells = rowCells(row);
     openActionModal({ title: "Detalhes da proposta", kicker: "Proposta enviada", body: renderProposalDetails(cells) });
     return;

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Pessoa F&iacute;sica | Usinalink</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-user-role="pessoa_fisica">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <a class="brand" href="index.html"><span class="brand-icon">US</span><span>Usinalink</span></a>
+      <nav class="side-nav" data-role-nav="pessoa_fisica">
+        <a class="active" href="dashboard-pessoa-fisica.html" data-icon="P">Pe&ccedil;as comerciais</a>
+        <a href="index.html" data-icon="X">Sair</a>
+      </nav>
+    </aside>
+
+    <main class="app-main">
+      <header class="app-header">
+        <div>
+          <span class="eyebrow">Pessoa f&iacute;sica</span>
+          <h1>Minha conta</h1>
+          <p>Conhe&ccedil;a as pe&ccedil;as comerciais dispon&iacute;veis nas usinas parceiras.</p>
+        </div>
+        <div class="user-strip">
+          <div><strong>Minha conta</strong><span>Conta de pessoa f&iacute;sica</span></div>
+          <a class="btn btn-ghost btn-small" href="index.html">Sair</a>
+        </div>
+      </header>
+
+      <section class="summary-grid professional">
+        <article class="card summary-card"><span>Pe&ccedil;as dispon&iacute;veis</span><strong data-stat-pecas-disponiveis>-</strong><small>Cat&aacute;logo comercial</small></article>
+        <article class="card summary-card"><span>Entrega r&aacute;pida</span><strong data-stat-entrega-rapida>-</strong><small>At&eacute; 5 dias</small></article>
+        <article class="card summary-card"><span>Fornecedores</span><strong data-stat-fornecedores>-</strong><small>Usinas no cat&aacute;logo</small></article>
+      </section>
+
+      <section class="card table-card" data-search-scope>
+        <div class="table-toolbar">
+          <div>
+            <h2>Pe&ccedil;as comerciais prontas</h2>
+            <p>Itens padronizados cadastrados pelas usinas.</p>
+          </div>
+          <label class="search-box wide-search"><span>Buscar</span><input class="js-table-search" type="search" placeholder="Pe&ccedil;a, material, aplica&ccedil;&atilde;o"></label>
+        </div>
+        <div class="order-card-grid">
+          <article class="card order-opportunity"><h2>Carregando...</h2></article>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/auth-guard.js"></script>
+  <script src="assets/js/pecas-comerciais.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

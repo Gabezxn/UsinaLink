@@ -37,6 +37,7 @@
     if (!nav || !sharedPage) return;
     const isUsina = session.tipo === "usina";
     document.body.classList.toggle("orange-mode", isUsina);
+    document.querySelector(".sidebar .brand-icon")?.classList.toggle("orange-icon", isUsina);
     nav.dataset.roleNav = isUsina ? "usina" : "empresa";
     nav.className = isUsina ? "side-nav orange-nav" : "side-nav";
     nav.innerHTML = isUsina ? `
@@ -45,6 +46,7 @@
         <a href="funcionarios-usina.html" data-icon="F">Funcion&aacute;rios</a>
         <a href="pedidos-disponiveis.html" data-icon="P">Pedidos dispon&iacute;veis</a>
         <a href="propostas-usina.html" data-icon="E">Propostas enviadas</a>
+        <a href="pecas-comerciais-usina.html" data-icon="C">Cat&aacute;logo de pe&ccedil;as</a>
         <a class="active" href="historico-pedidos.html" data-icon="H">Hist&oacute;rico relacionado</a>
         <a href="avaliacoes-usina.html" data-icon="A">Avalia&ccedil;&otilde;es recebidas</a>
         <a href="index.html" data-icon="X">Sair</a>` : `
@@ -239,7 +241,7 @@
     if (receiptButton) receiptButton.href = receiptLink(order);
     const payButton = document.querySelector("[data-detail-pay]");
     if (payButton) {
-      payButton.hidden = isUsina;
+      payButton.hidden = isUsina || order.statusPagamento === "Pago";
       payButton.href = paymentLink(order);
     }
     const confirmButton = document.querySelector("[data-detail-confirm-delivery]");

@@ -15,12 +15,21 @@
     return data?.message || data?.error || 'Nao foi possivel concluir a requisicao.';
   }
 
+  function getAccessToken() {
+    try {
+      return sessionStorage.getItem('accessToken') || localStorage.getItem('accessToken');
+    } catch {
+      return null;
+    }
+  }
+
   async function apiRequest(endpoint, options = {}) {
+    const token = getAccessToken();
     const response = await fetch(buildUrl(endpoint), {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        ...(localStorage.getItem('accessToken') ? { Authorization: `Bearer ${localStorage.getItem('accessToken')}` } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...(options.headers || {}),
       },
     });
