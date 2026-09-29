@@ -30,6 +30,24 @@
     return PEDIDO_STATUS_LABEL[status] || status || "Pendente";
   }
 
+  function proximoPasso(order, isUsina) {
+    const pago = order.statusPagamento === "Pago";
+    const status = order.statusPedido;
+    if (status === "cancelado") return "Este pedido foi cancelado.";
+    if (status === "concluido") return "Pedido concluido. A entrega foi confirmada pela empresa.";
+    if (status === "em_producao") {
+      return isUsina
+        ? "Pagamento recebido. Produza o pedido; a empresa confirma a entrega quando receber."
+        : "Pagamento confirmado. Quando receber a mercadoria, clique em \"Confirmar entrega\" para concluir o pedido.";
+    }
+    if (status === "proposta_aceita" && !pago) {
+      return isUsina
+        ? "Proposta aceita. Aguardando a empresa pagar o pedido."
+        : "Proposta aceita. Proximo passo: clique em \"Pagar pedido\". Depois do pagamento, confirme a entrega para concluir.";
+    }
+    return "Aguardando a empresa aceitar uma proposta.";
+  }
+
   function applySharedRoleNav() {
     const nav = document.querySelector("[data-role-nav]");
     const session = service.currentSession();
@@ -183,6 +201,13 @@
     });
   }
 
+  function acaoPendente(order) {
+    if (service.currentSession().tipo === "usina") return "";
+    if (order.statusPedido === "proposta_aceita" && order.statusPagamento !== "Pago") return `<a class="table-action" href="${paymentLink(order)}">Pagar pedido</a>`;
+    if (order.statusPedido === "em_producao") return `<a class="table-action" href="${detailsLink(order)}">Confirmar entrega</a>`;
+    return "";
+  }
+
   async function renderHistoryPage() {
     const table = document.querySelector("[data-history-body]");
     const cards = document.querySelector("[data-history-cards]");
@@ -198,7 +223,7 @@
         const statusOk = status === "Todos" || order.statusPedido === status || order.statusPagamento === status;
         return haystack.includes(query) && dateOk && statusOk;
       });
-      table.innerHTML = filtered.map(order => `<tr><td>${ui.orderNumber(order.id)}</td><td>${ui.formatDate(order.dataCriacao)}</td><td>${ui.escapeHtml(order.empresa)}</td><td>${ui.escapeHtml(order.usina)}</td><td>${ui.escapeHtml(order.peca)}</td><td>${ui.formatCurrency(order.totals.total)}</td><td>${ui.escapeHtml(order.formaPagamento)}</td><td>${ui.statusBadge(statusPedidoLabel(order.statusPedido))}</td><td>${ui.statusBadge(order.statusPagamento)}</td><td>${ui.escapeHtml(order.prazo)}</td><td><a class="table-action" href="${detailsLink(order)}">Ver detalhes</a>${order.statusPagamento === "Pago" ? `<a class="table-action" href="${receiptLink(order)}">Ver comprovante</a>` : ""}</td></tr>`).join("");
+      table.innerHTML = filtered.map(order => `<tr><td>${ui.orderNumber(order.id)}</td><td>${ui.formatDate(order.dataCriacao)}</td><td>${ui.escapeHtml(order.empresa)}</td><td>${ui.escapeHtml(order.usina)}</td><td>${ui.escapeHtml(order.peca)}</td><td>${ui.formatCurrency(order.totals.total)}</td><td>${ui.escapeHtml(order.formaPagamento)}</td><td>${ui.statusBadge(statusPedidoLabel(order.statusPedido))}</td><td>${ui.statusBadge(order.statusPagamento)}</td><td>${ui.escapeHtml(order.prazo)}</td><td><a class="table-action" href="${detailsLink(order)}">Ver detalhes</a>${acaoPendente(order)}${order.statusPagamento === "Pago" ? `<a class="table-action" href="${receiptLink(order)}">Ver comprovante</a>` : ""}</td></tr>`).join("");
       cards.innerHTML = filtered.map(order => `<article class="card history-mobile-card"><strong>${ui.orderNumber(order.id)} - ${ui.escapeHtml(order.peca)}</strong><span>${ui.escapeHtml(order.empresa)} / ${ui.escapeHtml(order.usina)}</span><span>${ui.formatCurrency(order.totals.total)}</span><div>${ui.statusBadge(order.statusPagamento)}</div><a class="btn btn-small" href="${detailsLink(order)}">Ver detalhes</a></article>`).join("");
       document.querySelector("[data-history-empty]").hidden = Boolean(filtered.length);
     };
@@ -236,12 +261,20 @@
       ? `<li class="cancelled"><span>X</span><strong>Pedido cancelado</strong></li>`
       : steps.map((step, index) => `<li class="${index <= currentIndex ? "done" : ""}"><span>${index + 1}</span><strong>${step}</strong></li>`).join("");
     const isUsina = service.currentSession().tipo === "usina";
+    let passo = root.querySelector("[data-detail-next]");
+    if (!passo) {
+      passo = document.createElement("div");
+      passo.className = "card detail-card";
+      passo.dataset.detailNext = "";
+      root.querySelector(".detail-layout")?.before(passo);
+    }
+    passo.innerHTML = `<h2>Proximo passo</h2><p>${ui.escapeHtml(proximoPasso(order, isUsina))}</p>`;
     const receiptButton = document.querySelector("[data-detail-receipt]");
     if (receiptButton) receiptButton.hidden = isUsina || order.statusPagamento !== "Pago";
     if (receiptButton) receiptButton.href = receiptLink(order);
     const payButton = document.querySelector("[data-detail-pay]");
     if (payButton) {
-      payButton.hidden = isUsina || order.statusPagamento === "Pago";
+      payButton.hidden = isUsina || order.statusPagamento === "Pago" || order.statusPedido !== "proposta_aceita";
       payButton.href = paymentLink(order);
     }
     const confirmButton = document.querySelector("[data-detail-confirm-delivery]");

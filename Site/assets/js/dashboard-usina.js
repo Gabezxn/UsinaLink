@@ -16,7 +16,7 @@
     const badge = typeof badgeClass === "function" ? badgeClass(status) : "info";
     const peca = item.pedido?.itens?.[0]?.nome || "Peça industrial";
     const cliente = item.pedido?.empresaCompradora?.nomeFantasia || item.pedido?.empresaCompradora?.razaoSocial || "-";
-    return `<tr data-search-row><td>${esc(peca)}</td><td>${esc(cliente)}</td><td>${esc(money(item.valor))}</td><td>${esc(item.prazo || "A combinar")}</td><td><span class="badge ${badge}">${esc(status)}</span></td><td><button class="table-action js-alert" type="button">Ver detalhes</button></td></tr>`;
+    return `<tr data-search-row data-proposal-id="${esc(item.idProposta)}"><td>${esc(peca)}</td><td>${esc(cliente)}</td><td>${esc(money(item.valor))}</td><td>${esc(item.prazo || "A combinar")}</td><td><span class="badge ${badge}">${esc(status)}</span></td><td><button class="table-action js-alert" type="button">Ver detalhes</button></td></tr>`;
   }
 
   async function loadDashboard() {
@@ -36,6 +36,8 @@
       setStat("[data-stat-propostas-enviadas]", propostas.length);
       setStat("[data-stat-propostas-aceitas]", aceitas.length);
       setStat("[data-stat-faturamento]", money(faturamento));
+
+      if (typeof ultimasPropostasEnviadas !== "undefined") ultimasPropostasEnviadas = propostas;
 
       if (propostasBody) {
         const recentes = [...propostas].sort((a, b) => new Date(b.dataEnvio) - new Date(a.dataEnvio)).slice(0, 4);
