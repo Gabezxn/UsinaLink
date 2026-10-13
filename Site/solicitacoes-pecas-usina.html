@@ -27,9 +27,9 @@
       <div class="page-header"><div><span class="eyebrow orange-text">Comercial</span><h1>Solicita&ccedil;&otilde;es de pe&ccedil;as</h1><p>Compras das pe&ccedil;as do seu cat&aacute;logo solicitadas por empresas e pessoas f&iacute;sicas.</p></div></div>
       <section class="summary-grid professional">
         <article class="card summary-card orange-accent"><span>Total recebido</span><strong data-stat-total>-</strong><small>Solicita&ccedil;&otilde;es</small></article>
-        <article class="card summary-card orange-accent"><span>De empresas</span><strong data-stat-empresas>-</strong><small>Pessoa jur&iacute;dica</small></article>
-        <article class="card summary-card orange-accent"><span>De pessoas f&iacute;sicas</span><strong data-stat-pessoas>-</strong><small>Pessoa f&iacute;sica</small></article>
-        <article class="card summary-card orange-accent"><span>Valor estimado</span><strong data-stat-valor>-</strong><small>Soma das solicita&ccedil;&otilde;es</small></article>
+        <article class="card summary-card orange-accent"><span>Novas</span><strong data-stat-novas>-</strong><small>Aguardando voc&ecirc; aceitar</small></article>
+        <article class="card summary-card orange-accent"><span>Para separar</span><strong data-stat-separar>-</strong><small>J&aacute; pagas</small></article>
+        <article class="card summary-card orange-accent"><span>Valor estimado</span><strong data-stat-valor>-</strong><small>Sem recusadas/canceladas</small></article>
       </section>
       <section class="card table-card" data-search-scope>
         <div class="table-toolbar"><label class="search-box wide-search"><span>Buscar</span><input class="js-table-search" type="search" placeholder="Solicitante, pe&ccedil;a ou data"></label></div>
@@ -38,10 +38,16 @@
           <button class="filter-pill" type="button" data-tipo-filter="empresa">Empresas</button>
           <button class="filter-pill" type="button" data-tipo-filter="pessoa_fisica">Pessoas f&iacute;sicas</button>
         </div>
+        <div class="quick-filters">
+          <button class="filter-pill active" type="button" data-status-filter="todos">Qualquer status</button>
+          <button class="filter-pill" type="button" data-status-filter="novas">Novas</button>
+          <button class="filter-pill" type="button" data-status-filter="andamento">Em andamento</button>
+          <button class="filter-pill" type="button" data-status-filter="encerradas">Encerradas</button>
+        </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Solicitante</th><th>Tipo</th><th>Contato</th><th>Pe&ccedil;a</th><th>Qtd.</th><th>Valor unit.</th><th>Total</th><th>Data</th></tr></thead>
-            <tbody data-solicitacoes-pecas-body><tr><td colspan="8" style="text-align:center; padding: 24px;">Carregando...</td></tr></tbody>
+            <thead><tr><th>Solicitante</th><th>Tipo</th><th>Contato</th><th>Pe&ccedil;a</th><th>Qtd.</th><th>Valor unit.</th><th>Total</th><th>Status</th><th>Data</th><th>A&ccedil;&otilde;es</th></tr></thead>
+            <tbody data-solicitacoes-pecas-body><tr><td colspan="10" style="text-align:center; padding: 24px;">Carregando...</td></tr></tbody>
           </table>
         </div>
       </section>

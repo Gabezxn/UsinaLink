@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Usinas | Usinalink</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-user-role="pessoa_fisica">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <a class="brand" href="index.html"><span class="brand-icon">US</span><span>Usinalink</span></a>
+      <nav class="side-nav" data-role-nav="pessoa_fisica"></nav>
+    </aside>
+    <main class="app-main">
+      <div class="page-header">
+        <div><span class="eyebrow">Fornecedores</span><h1>Usinas</h1><p>Conhe&ccedil;a as usinas, veja avalia&ccedil;&otilde;es de outros compradores e as pe&ccedil;as de cada uma.</p></div>
+      </div>
+      <section class="card table-card" data-search-scope>
+        <div class="table-toolbar">
+          <label class="search-box wide-search"><span>Buscar</span><input class="js-table-search" type="search" placeholder="Nome, especialidade ou cidade"></label>
+          <label class="search-box"><span>Ordenar por</span><select data-ordem><option value="nome">Nome</option><option value="nota">Melhor avaliadas</option><option value="pecas">Mais pe&ccedil;as</option></select></label>
+        </div>
+        <div class="order-card-grid" data-usinas><div class="loading-state">Carregando usinas...</div></div>
+      </section>
+    </main>
+  </div>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/auth-guard.js"></script>
+  <script src="assets/js/pf-common.js"></script>
+  <script src="assets/js/pf-nav.js"></script>
+  <script src="assets/js/usinas-pessoa-fisica.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

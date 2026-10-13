@@ -10,24 +10,25 @@
   <div class="app-layout">
     <aside class="sidebar">
       <a class="brand" href="index.html"><span class="brand-icon">US</span><span>Usinalink</span></a>
-      <nav class="side-nav" data-role-nav="pessoa_fisica">
-        <a href="dashboard-pessoa-fisica.html" data-icon="P">Pe&ccedil;as comerciais</a>
-        <a class="active" href="compras-pessoa-fisica.html" data-icon="C">Minhas compras</a>
-        <a href="perfil-pessoa-fisica.html" data-icon="I">Perfil</a>
-        <a href="index.html" data-icon="X">Sair</a>
-      </nav>
+      <nav class="side-nav" data-role-nav="pessoa_fisica"></nav>
     </aside>
     <main class="app-main">
       <div class="page-header">
         <div><span class="eyebrow">Pessoa f&iacute;sica</span><h1>Minhas compras</h1><p>Acompanhe as pe&ccedil;as comerciais que voc&ecirc; solicitou.</p></div>
-        <a class="btn btn-primary" href="dashboard-pessoa-fisica.html">Ver cat&aacute;logo de pe&ccedil;as</a>
+        <a class="btn btn-primary" href="catalogo-pessoa-fisica.html">Ver cat&aacute;logo de pe&ccedil;as</a>
       </div>
       <section class="card table-card" data-search-scope>
-        <div class="table-toolbar"><label class="search-box wide-search"><span>Buscar</span><input class="js-table-search" type="search" placeholder="Pe&ccedil;a, fornecedor ou data"></label></div>
+        <div class="table-toolbar"><label class="search-box wide-search"><span>Buscar</span><input class="js-table-search" type="search" placeholder="Pe&ccedil;a, usina ou status"></label></div>
+        <div class="quick-filters">
+          <button class="filter-pill active" type="button" data-compra-filtro="todas">Todas</button>
+          <button class="filter-pill" type="button" data-compra-filtro="andamento">Em andamento</button>
+          <button class="filter-pill" type="button" data-compra-filtro="entregue">Entregues</button>
+          <button class="filter-pill" type="button" data-compra-filtro="encerrada">Canceladas / recusadas</button>
+        </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Pe&ccedil;a</th><th>Fornecedor</th><th>Valor unit&aacute;rio</th><th>Quantidade</th><th>Status</th><th>Data</th></tr></thead>
-            <tbody data-solicitacoes-comerciais-body></tbody>
+            <thead><tr><th>Pe&ccedil;a</th><th>Usina</th><th>Qtd.</th><th>Total</th><th>Status</th><th>Data</th><th>A&ccedil;&otilde;es</th></tr></thead>
+            <tbody data-compras><tr><td colspan="7" style="text-align:center; padding: 24px;">Carregando...</td></tr></tbody>
           </table>
         </div>
       </section>
@@ -35,7 +36,9 @@
   </div>
   <script src="assets/js/api.js"></script>
   <script src="assets/js/auth-guard.js"></script>
-  <script src="assets/js/pecas-comerciais.js"></script>
+  <script src="assets/js/pf-common.js"></script>
+  <script src="assets/js/pf-nav.js"></script>
+  <script src="assets/js/compras-pessoa-fisica.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

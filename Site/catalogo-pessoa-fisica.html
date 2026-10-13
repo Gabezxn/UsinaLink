@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Peças Comerciais | Usinalink</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-user-role="pessoa_fisica">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <a class="brand" href="index.html"><span class="brand-icon">US</span><span>Usinalink</span></a>
+      <nav class="side-nav" data-role-nav="pessoa_fisica"></nav>
+    </aside>
+    <main class="app-main">
+      <div class="page-header">
+        <div><span class="eyebrow">Cat&aacute;logo</span><h1>Pe&ccedil;as comerciais</h1><p>Pe&ccedil;as prontas das usinas parceiras. Escolha uma e solicite a compra.</p></div>
+      </div>
+      <section class="card table-card" data-search-scope>
+        <div class="table-toolbar"><label class="search-box wide-search"><span>Buscar</span><input class="js-table-search" type="search" placeholder="Pe&ccedil;a, material ou fornecedor"></label></div>
+        <div class="quick-filters" data-categorias></div>
+        <div class="order-card-grid" data-catalogo><div class="loading-state">Carregando cat&aacute;logo...</div></div>
+      </section>
+    </main>
+  </div>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/auth-guard.js"></script>
+  <script src="assets/js/pf-common.js"></script>
+  <script src="assets/js/pf-nav.js"></script>
+  <script src="assets/js/catalogo-pessoa-fisica.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

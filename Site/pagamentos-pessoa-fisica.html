@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pagamentos | Usinalink</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-user-role="pessoa_fisica">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <a class="brand" href="index.html"><span class="brand-icon">US</span><span>Usinalink</span></a>
+      <nav class="side-nav" data-role-nav="pessoa_fisica"></nav>
+    </aside>
+    <main class="app-main">
+      <div class="page-header">
+        <div><span class="eyebrow">Financeiro</span><h1>Pagamentos</h1><p>Pagamentos feitos, valores a pagar e comprovantes.</p></div>
+      </div>
+      <section class="summary-grid professional">
+        <article class="card summary-card"><span>Total pago</span><strong data-stat-pago>-</strong><small>Compras e pedidos</small></article>
+        <article class="card summary-card"><span>Pagamentos feitos</span><strong data-stat-qtd>-</strong><small>No total</small></article>
+        <article class="card summary-card"><span>A pagar</span><strong data-stat-apagar>-</strong><small>Aguardando voc&ecirc;</small></article>
+      </section>
+      <section class="card table-card">
+        <div class="table-toolbar"><div><h2>Aguardando pagamento</h2><p>Compras e pedidos aceitos que ainda n&atilde;o foram pagos.</p></div></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Origem</th><th>Descri&ccedil;&atilde;o</th><th>Valor</th><th>A&ccedil;&atilde;o</th></tr></thead>
+            <tbody data-a-pagar><tr><td colspan="4" style="text-align:center; padding: 24px;">Carregando...</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+      <section class="card table-card">
+        <div class="table-toolbar"><div><h2>Pagamentos realizados</h2><p>Hist&oacute;rico com comprovante.</p></div></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Origem</th><th>Descri&ccedil;&atilde;o</th><th>Valor</th><th>M&eacute;todo</th><th>Data</th><th>Protocolo</th><th>Comprovante</th></tr></thead>
+            <tbody data-pagos><tr><td colspan="7" style="text-align:center; padding: 24px;">Carregando...</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/auth-guard.js"></script>
+  <script src="assets/js/pf-common.js"></script>
+  <script src="assets/js/pf-nav.js"></script>
+  <script src="assets/js/pagamentos-pessoa-fisica.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

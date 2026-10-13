@@ -3,58 +3,66 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Pessoa F&iacute;sica | Usinalink</title>
+  <title>Início Pessoa Física | Usinalink</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body data-user-role="pessoa_fisica">
   <div class="app-layout">
     <aside class="sidebar">
       <a class="brand" href="index.html"><span class="brand-icon">US</span><span>Usinalink</span></a>
-      <nav class="side-nav" data-role-nav="pessoa_fisica">
-        <a class="active" href="dashboard-pessoa-fisica.html" data-icon="P">Pe&ccedil;as comerciais</a>
-        <a href="compras-pessoa-fisica.html" data-icon="C">Minhas compras</a>
-        <a href="perfil-pessoa-fisica.html" data-icon="I">Perfil</a>
-        <a href="index.html" data-icon="X">Sair</a>
-      </nav>
+      <nav class="side-nav" data-role-nav="pessoa_fisica"></nav>
     </aside>
-
     <main class="app-main">
       <header class="app-header">
         <div>
           <span class="eyebrow">Pessoa f&iacute;sica</span>
-          <h1>Minha conta</h1>
-          <p>Escolha pe&ccedil;as comerciais prontas das usinas parceiras e solicite a compra.</p>
+          <h1 data-saudacao>Minha conta</h1>
+          <p>Acompanhe suas compras, pedidos e o que precisa da sua aten&ccedil;&atilde;o.</p>
         </div>
         <div class="user-strip">
-          <div><strong>Minha conta</strong><span>Conta de pessoa f&iacute;sica</span></div>
+          <div><strong data-user-name>Minha conta</strong><span>Conta de pessoa f&iacute;sica</span></div>
           <a class="btn btn-ghost btn-small" href="index.html">Sair</a>
         </div>
       </header>
 
       <section class="summary-grid professional">
-        <article class="card summary-card"><span>Pe&ccedil;as dispon&iacute;veis</span><strong data-stat-pecas-disponiveis>-</strong><small>Cat&aacute;logo comercial</small></article>
-        <article class="card summary-card"><span>Entrega r&aacute;pida</span><strong data-stat-entrega-rapida>-</strong><small>At&eacute; 5 dias</small></article>
-        <article class="card summary-card"><span>Fornecedores</span><strong data-stat-fornecedores>-</strong><small>Usinas no cat&aacute;logo</small></article>
-        <article class="card summary-card"><span>Minhas solicita&ccedil;&otilde;es</span><strong data-stat-cotacoes-salvas>-</strong><small>Compras solicitadas por voc&ecirc;</small></article>
+        <article class="card summary-card"><span>Compras em andamento</span><strong data-stat-andamento>-</strong><small>Pe&ccedil;as do cat&aacute;logo</small></article>
+        <article class="card summary-card"><span>Aguardando seu pagamento</span><strong data-stat-pagar>-</strong><small>Compras e pedidos</small></article>
+        <article class="card summary-card"><span>Propostas para analisar</span><strong data-stat-propostas>-</strong><small>Pedidos sob medida</small></article>
+        <article class="card summary-card"><span>Notifica&ccedil;&otilde;es novas</span><strong data-stat-notificacoes>-</strong><small>N&atilde;o lidas</small></article>
       </section>
 
-      <section class="card table-card" data-search-scope>
-        <div class="table-toolbar">
-          <div>
-            <h2>Pe&ccedil;as comerciais prontas</h2>
-            <p>Itens padronizados cadastrados pelas usinas.</p>
-          </div>
-          <label class="search-box wide-search"><span>Buscar</span><input class="js-table-search" type="search" placeholder="Pe&ccedil;a, material, aplica&ccedil;&atilde;o"></label>
+      <section class="card table-card">
+        <div class="table-toolbar"><div><h2>Precisa da sua aten&ccedil;&atilde;o</h2><p>O pr&oacute;ximo passo de cada compra e pedido.</p></div></div>
+        <div class="pf-actions-list" data-acoes><div class="loading-state">Carregando...</div></div>
+      </section>
+
+      <section class="card table-card">
+        <div class="table-toolbar"><div><h2>&Uacute;ltimas compras</h2><p>Pe&ccedil;as que voc&ecirc; solicitou no cat&aacute;logo.</p></div><a class="btn btn-small" href="compras-pessoa-fisica.html">Ver todas</a></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Pe&ccedil;a</th><th>Usina</th><th>Qtd.</th><th>Total</th><th>Status</th><th>Data</th></tr></thead>
+            <tbody data-ultimas-compras><tr><td colspan="6" style="text-align:center; padding: 24px;">Carregando...</td></tr></tbody>
+          </table>
         </div>
-        <div class="order-card-grid">
-          <article class="card order-opportunity"><h2>Carregando...</h2></article>
+      </section>
+
+      <section class="card table-card">
+        <div class="table-toolbar"><div><h2>Atalhos</h2><p>O que voc&ecirc; pode fazer agora.</p></div></div>
+        <div class="pf-toolbar-actions">
+          <a class="btn btn-primary" href="catalogo-pessoa-fisica.html">Ver pe&ccedil;as comerciais</a>
+          <a class="btn btn-ghost" href="nova-solicitacao.html">Pedir pe&ccedil;a sob medida</a>
+          <a class="btn btn-ghost" href="usinas-pessoa-fisica.html">Conhecer usinas</a>
+          <a class="btn btn-ghost" href="favoritos-pessoa-fisica.html">Meus favoritos</a>
         </div>
       </section>
     </main>
   </div>
   <script src="assets/js/api.js"></script>
   <script src="assets/js/auth-guard.js"></script>
-  <script src="assets/js/pecas-comerciais.js"></script>
+  <script src="assets/js/pf-common.js"></script>
+  <script src="assets/js/pf-nav.js"></script>
+  <script src="assets/js/dashboard-pessoa-fisica.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

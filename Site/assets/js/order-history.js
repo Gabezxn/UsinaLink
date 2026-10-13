@@ -53,6 +53,7 @@
     const session = service.currentSession();
     const sharedPage = /historico-pedidos|detalhes-pedido/.test(window.location.pathname);
     if (!nav || !sharedPage) return;
+    if (session.tipo === "pessoa_fisica") return; // o menu da PF vem de pf-nav.js
     const isUsina = session.tipo === "usina";
     document.body.classList.toggle("orange-mode", isUsina);
     document.querySelector(".sidebar .brand-icon")?.classList.toggle("orange-icon", isUsina);

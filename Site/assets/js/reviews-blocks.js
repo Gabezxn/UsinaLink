@@ -33,7 +33,7 @@
   // A API devolve nomes com prefixo (idPedido, idUsina...); estas telas foram escritas
   // esperando nomes genericos (pedidoId, usinaId...). As funcoes abaixo fazem essa ponte.
   function normalizeReview(review) {
-    return { ...review, id: review.idAvaliacao, pedidoId: review.idPedido, notaGeral: review.nota };
+    return { ...review, id: review.idAvaliacao, pedidoId: review.idPedido, notaGeral: review.nota, compraId: review.idSolicitacaoComercial };
   }
 
   function normalizeOrder(order) {
@@ -80,7 +80,7 @@
     return `
       <article class="card review-card" data-review-id="${review.id}">
         <div class="review-head">
-          <div><strong>Pedido ${review.pedidoId}</strong><span>${new Date(review.criadoEm).toLocaleDateString("pt-BR")}</span></div>
+          <div><strong>${review.compraId ? "Compra de peça #" + review.compraId : "Pedido " + review.pedidoId}</strong><span>${new Date(review.criadoEm).toLocaleDateString("pt-BR")}</span></div>
           ${stars(review.notaGeral)}
         </div>
         <div class="review-metrics">
