@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solicita&ccedil;&otilde;es de Pe&ccedil;as | Usinalink</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="orange-mode" data-user-role="usina">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <a class="brand" href="index.html"><span class="brand-icon orange-icon">US</span><span>Usinalink</span></a>
+      <nav class="side-nav orange-nav" data-role-nav="usina">
+        <a href="dashboard-usina.html" data-icon="D">Dashboard usina</a>
+        <a href="perfil-usina.html" data-icon="I">Perfil</a>
+        <a href="funcionarios-usina.html" data-icon="F">Funcion&aacute;rios</a>
+        <a href="pedidos-disponiveis.html" data-icon="P">Pedidos dispon&iacute;veis</a>
+        <a href="propostas-usina.html" data-icon="E">Propostas enviadas</a>
+        <a class="active" href="solicitacoes-pecas-usina.html" data-icon="S">Solicita&ccedil;&otilde;es de pe&ccedil;as</a>
+        <a href="pecas-comerciais-usina.html" data-icon="C">Cat&aacute;logo de pe&ccedil;as</a>
+        <a href="historico-pedidos.html" data-icon="H">Hist&oacute;rico relacionado</a>
+        <a href="avaliacoes-usina.html" data-icon="A">Avalia&ccedil;&otilde;es recebidas</a>
+        <a href="index.html" data-icon="X">Sair</a>
+      </nav>
+    </aside>
+    <main class="app-main">
+      <div class="page-header"><div><span class="eyebrow orange-text">Comercial</span><h1>Solicita&ccedil;&otilde;es de pe&ccedil;as</h1><p>Compras das pe&ccedil;as do seu cat&aacute;logo solicitadas por empresas e pessoas f&iacute;sicas.</p></div></div>
+      <section class="summary-grid professional">
+        <article class="card summary-card orange-accent"><span>Total recebido</span><strong data-stat-total>-</strong><small>Solicita&ccedil;&otilde;es</small></article>
+        <article class="card summary-card orange-accent"><span>De empresas</span><strong data-stat-empresas>-</strong><small>Pessoa jur&iacute;dica</small></article>
+        <article class="card summary-card orange-accent"><span>De pessoas f&iacute;sicas</span><strong data-stat-pessoas>-</strong><small>Pessoa f&iacute;sica</small></article>
+        <article class="card summary-card orange-accent"><span>Valor estimado</span><strong data-stat-valor>-</strong><small>Soma das solicita&ccedil;&otilde;es</small></article>
+      </section>
+      <section class="card table-card" data-search-scope>
+        <div class="table-toolbar"><label class="search-box wide-search"><span>Buscar</span><input class="js-table-search" type="search" placeholder="Solicitante, pe&ccedil;a ou data"></label></div>
+        <div class="quick-filters">
+          <button class="filter-pill active" type="button" data-tipo-filter="todos">Todos</button>
+          <button class="filter-pill" type="button" data-tipo-filter="empresa">Empresas</button>
+          <button class="filter-pill" type="button" data-tipo-filter="pessoa_fisica">Pessoas f&iacute;sicas</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Solicitante</th><th>Tipo</th><th>Contato</th><th>Pe&ccedil;a</th><th>Qtd.</th><th>Valor unit.</th><th>Total</th><th>Data</th></tr></thead>
+            <tbody data-solicitacoes-pecas-body><tr><td colspan="8" style="text-align:center; padding: 24px;">Carregando...</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/auth-guard.js"></script>
+  <script src="assets/js/solicitacoes-pecas-usina.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

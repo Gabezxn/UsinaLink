@@ -13,6 +13,11 @@ export class SolicitacaoComercialController {
     return this.service.criar(dto, r.user);
   }
 
+  @Get('recebidas')
+  recebidas(@Req() r: any) {
+    return this.service.recebidas(r.user);
+  }
+
   @Get('minhas')
   minhas(@Req() r: any) {
     return this.service.minhas(r.user);

@@ -18,7 +18,7 @@
 
   function pecaCardMarkup(peca) {
     const fornecedor = fornecedorNome(peca.usina);
-    const botaoCompra = `<button class="btn btn-primary js-comprar-peca" type="button" data-peca="${esc(peca.nome)}" data-fornecedor="${esc(fornecedor)}" data-valor="${esc(peca.valorUnitario ?? '')}">Solicitar compra</button>`;
+    const botaoCompra = `<button class="btn btn-primary js-comprar-peca" type="button" data-peca-id="${esc(peca.idPecaComercial)}" data-peca="${esc(peca.nome)}" data-fornecedor="${esc(fornecedor)}" data-valor="${esc(peca.valorUnitario ?? '')}">Solicitar compra</button>`;
     return `<article class="card order-opportunity" data-search-row>
       <h2>${esc(peca.nome)}</h2><p>${esc(peca.material || peca.categoria || '')}</p>
       <div class="quote-facts compact"><div><span>Estoque</span><strong>${esc(peca.estoque != null ? `${peca.estoque} ${peca.unidadeEstoque || 'unidades'}` : 'Sob consulta')}</strong></div><div><span>Prazo</span><strong>${esc(peca.prazoEntregaDias ? peca.prazoEntregaDias + ' dias' : 'A combinar')}</strong></div><div><span>Valor unit&aacute;rio</span><strong>${esc(peca.valorUnitario != null ? formatMoney(peca.valorUnitario) : 'Sob consulta')}</strong></div><div><span>Fornecedor</span><strong>${esc(fornecedor)}</strong></div></div>
@@ -78,11 +78,12 @@
     const peca = button.dataset.peca;
     const fornecedor = button.dataset.fornecedor;
     const valorUnitario = button.dataset.valor;
+    const pecaId = button.dataset.pecaId;
     button.disabled = true;
     const originalText = button.textContent;
     button.textContent = 'Enviando...';
     try {
-      await window.UsinaLinkApi.post('/solicitacoes-comerciais', { peca, fornecedor, valorUnitario: valorUnitario || undefined, quantidade: '1' });
+      await window.UsinaLinkApi.post('/solicitacoes-comerciais', { pecaId, peca, fornecedor, valorUnitario: valorUnitario || undefined, quantidade: '1' });
       notify('Solicitação comercial registrada.', 'success');
       const minhas = await loadMinhas();
       updateStats(await loadCatalogo(), minhas);
