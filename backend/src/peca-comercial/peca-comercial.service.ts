@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { ContextoUsuarioService } from '../contexto-usuario/contexto-usuario.service';
 import { PecaComercial, Usina } from '../common/entities/core.entities';
 import { CreatePecaComercialDto } from './dto/create-peca-comercial.dto';
+import { UpdatePecaComercialDto } from './dto/update-peca-comercial.dto';
 
 @Injectable()
 export class PecaComercialService {
@@ -42,7 +43,25 @@ export class PecaComercialService {
 
   async minhas(user: any) {
     const idUsina = await this.ctx.obterUsinaId(user.sub);
-    return this.pecas.find({ where: { idUsina }, order: { criadoEm: 'DESC' } });
+    return this.pecas.find({ where: { idUsina, ativo: true }, order: { criadoEm: 'DESC' } });
+  }
+
+  async atualizar(id: number, dto: UpdatePecaComercialDto, user: any) {
+    const idUsina = await this.ctx.obterUsinaId(user.sub);
+    const peca = await this.pecas.findOne({ where: { idPecaComercial: id, ativo: true } });
+    if (!peca) throw new NotFoundException('Peça comercial não encontrada.');
+    if (peca.idUsina !== idUsina) throw new ForbiddenException();
+    const numero = (v: string | null | undefined) => (v === null ? null : Number(v));
+    const dados: Record<string, unknown> = {};
+    if (dto.nome !== undefined) dados.nome = dto.nome.trim();
+    for (const campo of ['material', 'categoria', 'descricao', 'unidadeEstoque'] as const) {
+      if (dto[campo] !== undefined) dados[campo] = dto[campo];
+    }
+    for (const campo of ['estoque', 'valorUnitario', 'prazoEntregaDias'] as const) {
+      if (dto[campo] !== undefined) dados[campo] = numero(dto[campo]);
+    }
+    if (Object.keys(dados).length) await this.pecas.update({ idPecaComercial: id }, dados as any);
+    return this.enrich((await this.pecas.findOne({ where: { idPecaComercial: id } }))!);
   }
 
   async remover(id: number, user: any) {

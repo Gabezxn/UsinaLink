@@ -950,11 +950,11 @@ function openProposalEdit(row) {
   });
 }
 
-function openSimpleConfirm({ title, message, confirmText, onConfirm, orange = false }) {
+function openSimpleConfirm({ title, message, confirmText, onConfirm, orange = false, cancelText = "Voltar" }) {
   openActionModal({
     title,
     kicker: "Confirmacao",
-    body: `<p class="modal-copy">${escapeHtml(message)}</p><div class="form-actions"><button class="btn btn-ghost js-action-modal-close" type="button">Voltar</button><button class="btn ${orange ? "btn-orange" : "btn-primary"} js-modal-confirm" type="button">${escapeHtml(confirmText)}</button></div>`
+    body: `<p class="modal-copy">${escapeHtml(message)}</p><div class="form-actions"><button class="btn btn-ghost js-action-modal-close" type="button">${escapeHtml(cancelText)}</button><button class="btn ${orange ? "btn-orange" : "btn-primary"} js-modal-confirm" type="button">${escapeHtml(confirmText)}</button></div>`
   });
   document.querySelector(".js-modal-confirm").addEventListener("click", () => {
     onConfirm();
