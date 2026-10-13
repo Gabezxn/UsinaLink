@@ -21,6 +21,7 @@ import { ContextoUsuarioModule } from './contexto-usuario/contexto-usuario.modul
 import { UsinaModule } from './usina/usina.module';
 import { NotificacaoModule } from './notificacao/notificacao.module';
 import { PagamentoModule } from './pagamento/pagamento.module';
+import { FavoritoModule } from './favorito/favorito.module';
 
 @Module({
   imports: [
@@ -61,7 +62,8 @@ import { PagamentoModule } from './pagamento/pagamento.module';
     SolicitacaoComercialModule,
     PecaComercialModule,
     NotificacaoModule,
-    PagamentoModule
+    PagamentoModule,
+    FavoritoModule
   ],
   controllers: [AppController],
   providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }]

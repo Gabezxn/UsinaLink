@@ -23,9 +23,10 @@ export class SolicitacaoService {
   ) {}
 
   async criar(dto: CreateSolicitacaoDto, user: any) {
-    const idEmpresa = await this.ctx.obterEmpresaId(user.sub);
+    const comprador = await this.ctx.obterComprador(user.sub);
     const solicitacao = await this.solicitacoes.save(this.solicitacoes.create({
-      idEmpresa,
+      idEmpresa: comprador.idEmpresa,
+      idPessoaFisica: comprador.idPessoaFisica,
       peca: dto.peca,
       categoria: dto.categoria,
       material: dto.material,
@@ -52,15 +53,19 @@ export class SolicitacaoService {
   }
 
   async minhas(user: any) {
-    const idEmpresa = await this.ctx.obterEmpresaId(user.sub);
-    return this.solicitacoes.find({ where: { idEmpresa }, order: { criadoEm: 'DESC' } });
+    const comprador = await this.ctx.obterComprador(user.sub);
+    const where = comprador.idPessoaFisica ? { idPessoaFisica: comprador.idPessoaFisica } : { idEmpresa: comprador.idEmpresa };
+    return this.solicitacoes.find({ where, order: { criadoEm: 'DESC' } });
   }
 
   async detalhe(id: number, user: any) {
     const solicitacao = await this.solicitacoes.findOne({ where: { idSolicitacao: id } });
     if (!solicitacao) throw new NotFoundException('Solicitação não encontrada.');
-    const idEmpresa = await this.ctx.obterEmpresaId(user.sub);
-    if (solicitacao.idEmpresa !== idEmpresa) throw new ForbiddenException();
+    const comprador = await this.ctx.obterComprador(user.sub);
+    const dono = comprador.idPessoaFisica
+      ? solicitacao.idPessoaFisica === comprador.idPessoaFisica
+      : !!comprador.idEmpresa && solicitacao.idEmpresa === comprador.idEmpresa;
+    if (!dono) throw new ForbiddenException();
     return solicitacao;
   }
 }

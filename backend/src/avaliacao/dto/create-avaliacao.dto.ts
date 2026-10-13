@@ -1,7 +1,8 @@
 import { IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
 
 export class CreateAvaliacaoDto {
-  @IsNotEmpty({ message: 'Informe o pedido avaliado.' }) @IsString() pedidoId: string;
+  @IsOptional() @IsString() pedidoId?: string;
+  @IsOptional() @IsString() solicitacaoComercialId?: string;
   @IsInt() @Min(1) @Max(5) notaGeral: number;
   @IsInt() @Min(1) @Max(5) qualidade: number;
   @IsInt() @Min(1) @Max(5) prazo: number;

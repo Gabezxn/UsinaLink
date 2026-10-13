@@ -15,6 +15,12 @@ export class AvaliacaoController {
     return this.service.create(dto, r.user);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('minhas')
+  minhas(@Req() r: any) {
+    return this.service.minhas(r.user);
+  }
+
   @Get('usina/:usinaId')
   findByUsina(@Param('usinaId') usinaId: string) {
     return this.service.findByUsina(+usinaId);

@@ -2,6 +2,7 @@ import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/com
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { ContextoUsuarioService } from '../contexto-usuario/contexto-usuario.service';
+import { NotificacaoService } from '../notificacao/notificacao.service';
 import { Pagamento, Pedido, Proposta } from '../common/entities/core.entities';
 import { CreatePagamentoDto } from './dto/create-pagamento.dto';
 
@@ -12,11 +13,14 @@ export class PagamentoService {
     @InjectRepository(Pedido) private readonly pedidos: Repository<Pedido>,
     @InjectRepository(Proposta) private readonly propostas: Repository<Proposta>,
     private readonly ctx: ContextoUsuarioService,
+    private readonly notificacoes: NotificacaoService,
   ) {}
 
   async list(user: any, status?: string) {
     const where: any = status ? { status } : {};
-    if (String(user.tipoUsuario).includes('empresa')) {
+    if (user.tipoUsuario === 'pessoa_fisica') {
+      where.idPessoaFisicaPagadora = await this.ctx.obterPessoaFisicaId(user.sub);
+    } else if (String(user.tipoUsuario).includes('empresa')) {
       where.idEmpresaPagadora = await this.ctx.obterEmpresaId(user.sub);
     } else {
       where.idUsinaRecebedora = await this.ctx.obterUsinaId(user.sub);
@@ -25,10 +29,13 @@ export class PagamentoService {
   }
 
   async criar(dto: CreatePagamentoDto, user: any) {
-    const idEmpresa = await this.ctx.obterEmpresaId(user.sub);
+    const comprador = await this.ctx.obterComprador(user.sub);
     const pedido = await this.pedidos.findOne({ where: { idPedido: Number(dto.pedidoId) } });
     if (!pedido) throw new BadRequestException('Pedido não encontrado.');
-    if (pedido.idEmpresaCompradora !== idEmpresa) throw new ForbiddenException('Pedido nao pertence a sua empresa.');
+    const dono = comprador.idPessoaFisica
+      ? pedido.idPessoaFisicaCompradora === comprador.idPessoaFisica
+      : !!comprador.idEmpresa && pedido.idEmpresaCompradora === comprador.idEmpresa;
+    if (!dono) throw new ForbiddenException('Pedido nao pertence a sua conta.');
 
     const proposta = await this.propostas.findOne({ where: { idPedido: pedido.idPedido, status: In(['aceita', 'enviada']) } });
     if (!proposta) throw new BadRequestException('Nenhuma proposta aceita para este pedido.');
@@ -39,7 +46,8 @@ export class PagamentoService {
     const dados = {
       idPedido: pedido.idPedido,
       idProposta: proposta.idProposta,
-      idEmpresaPagadora: idEmpresa,
+      idEmpresaPagadora: comprador.idEmpresa,
+      idPessoaFisicaPagadora: comprador.idPessoaFisica,
       idUsinaRecebedora: proposta.idUsina,
       valor: proposta.valor,
       metodo: dto.metodo || dto.method,
@@ -52,6 +60,7 @@ export class PagamentoService {
       : await this.pagamentos.save(this.pagamentos.create(dados));
 
     await this.pedidos.update({ idPedido: pedido.idPedido }, { status: 'em_producao' });
+    this.notificacoes.criar(await this.ctx.idUsuarioDaUsina(proposta.idUsina), 'Pagamento recebido', `O pedido ${pedido.numeroPedido || '#' + pedido.idPedido} foi pago e entrou em producao.`, 'historico-pedidos.html');
     return pagamento;
   }
 }

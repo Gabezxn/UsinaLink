@@ -1,8 +1,9 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-import { ContextoUsuarioService } from '../contexto-usuario/contexto-usuario.service';
-import { Pedido, ItemPedido, ArquivoPedido, HistoricoStatusPedido, Proposta, Empresa, Solicitacao } from '../common/entities/core.entities';
+import { Comprador, ContextoUsuarioService } from '../contexto-usuario/contexto-usuario.service';
+import { NotificacaoService } from '../notificacao/notificacao.service';
+import { Pedido, ItemPedido, ArquivoPedido, HistoricoStatusPedido, Proposta, Empresa, PessoaFisica, Solicitacao } from '../common/entities/core.entities';
 
 const STATUS_ABERTOS = ['aberto', 'em_negociacao'];
 
@@ -15,25 +16,39 @@ export class PedidoService {
     @InjectRepository(HistoricoStatusPedido) private readonly historico: Repository<HistoricoStatusPedido>,
     @InjectRepository(Proposta) private readonly propostas: Repository<Proposta>,
     @InjectRepository(Empresa) private readonly empresas: Repository<Empresa>,
+    @InjectRepository(PessoaFisica) private readonly pessoasFisicas: Repository<PessoaFisica>,
     @InjectRepository(Solicitacao) private readonly solicitacoes: Repository<Solicitacao>,
     private readonly ctx: ContextoUsuarioService,
+    private readonly notificacoes: NotificacaoService,
   ) {}
 
+  private ehDoComprador(pedido: Pedido, c: Comprador) {
+    return c.idPessoaFisica
+      ? pedido.idPessoaFisicaCompradora === c.idPessoaFisica
+      : !!c.idEmpresa && pedido.idEmpresaCompradora === c.idEmpresa;
+  }
+
   private async enrich(pedido: Pedido) {
-    const [propostas, empresaCompradora, itens, arquivos] = await Promise.all([
+    const [propostas, empresa, pessoa, itens, arquivos] = await Promise.all([
       this.propostas.find({ where: { idPedido: pedido.idPedido } }),
-      this.empresas.findOne({ where: { idEmpresa: pedido.idEmpresaCompradora } }),
+      pedido.idEmpresaCompradora ? this.empresas.findOne({ where: { idEmpresa: pedido.idEmpresaCompradora } }) : null,
+      pedido.idPessoaFisicaCompradora ? this.pessoasFisicas.findOne({ where: { idPessoaFisica: pedido.idPessoaFisicaCompradora } }) : null,
       this.itens.find({ where: { idPedido: pedido.idPedido } }),
       this.arquivos.find({ where: { idPedido: pedido.idPedido } }),
     ]);
+    // Comprador pessoa fisica aparece no mesmo campo que a empresa, assim as telas da usina funcionam sem mudanca.
+    const empresaCompradora = empresa || (pessoa
+      ? { nomeFantasia: pessoa.nome, razaoSocial: pessoa.nome, email: pessoa.email, telefone: pessoa.telefone, tipoComprador: 'pessoa_fisica' }
+      : null);
     return { ...pedido, propostas, empresaCompradora, itens, arquivos };
   }
 
   async criar(dto: any, user: any) {
-    const idEmpresa = await this.ctx.obterEmpresaId(user.sub);
+    const comprador = await this.ctx.obterComprador(user.sub);
     const prazoDigits = dto.prazoEntregaDias ?? String(dto.prazo || '').match(/\d+/)?.[0];
     const pedido = await this.pedidos.save(this.pedidos.create({
-      idEmpresaCompradora: idEmpresa,
+      idEmpresaCompradora: comprador.idEmpresa,
+      idPessoaFisicaCompradora: comprador.idPessoaFisica,
       idUsuarioSolicitante: user.sub,
       idSolicitacao: dto.idSolicitacao || undefined,
       numeroPedido: dto.numeroPedido || `PED-${Date.now()}`,
@@ -70,8 +85,9 @@ export class PedidoService {
   }
 
   async meus(user: any) {
-    const idEmpresa = await this.ctx.obterEmpresaId(user.sub);
-    const pedidos = await this.pedidos.find({ where: { idEmpresaCompradora: idEmpresa } });
+    const comprador = await this.ctx.obterComprador(user.sub);
+    const where = comprador.idPessoaFisica ? { idPessoaFisicaCompradora: comprador.idPessoaFisica } : { idEmpresaCompradora: comprador.idEmpresa };
+    const pedidos = await this.pedidos.find({ where });
     return Promise.all(pedidos.map(p => this.enrich(p)));
   }
 
@@ -84,9 +100,9 @@ export class PedidoService {
     const pedido = await this.pedidos.findOne({ where: { idPedido: Number(id) } });
     if (!pedido) throw new NotFoundException('Pedido não encontrado.');
     const enriched = await this.enrich(pedido);
-    if (user.tipoUsuario?.includes('empresa')) {
-      const idEmpresa = await this.ctx.obterEmpresaId(user.sub);
-      if (pedido.idEmpresaCompradora !== idEmpresa) throw new ForbiddenException();
+    if (user.tipoUsuario === 'pessoa_fisica' || user.tipoUsuario?.includes('empresa')) {
+      const comprador = await this.ctx.obterComprador(user.sub);
+      if (!this.ehDoComprador(pedido, comprador)) throw new ForbiddenException();
     } else {
       const idUsina = await this.ctx.obterUsinaId(user.sub);
       const temProposta = enriched.propostas?.some(p => p.idUsina === idUsina);
@@ -102,11 +118,13 @@ export class PedidoService {
   }
 
   async confirmarEntrega(id: number | string, user: any) {
-    if (!user.tipoUsuario?.includes('empresa')) throw new ForbiddenException();
+    if (!user.tipoUsuario?.includes('empresa') && user.tipoUsuario !== 'pessoa_fisica') throw new ForbiddenException();
     const pedido = await this.detalhe(id, user);
     if (pedido.status !== 'em_producao') throw new ForbiddenException('Pedido ainda nao esta em producao.');
     await this.pedidos.update({ idPedido: Number(id) }, { status: 'concluido', dataEntregaReal: new Date() });
-    await this.historico.save(this.historico.create({ idPedido: Number(id), statusNovo: 'concluido', idUsuarioResponsavel: user.sub, observacao: 'Entrega confirmada pela empresa' }));
+    await this.historico.save(this.historico.create({ idPedido: Number(id), statusNovo: 'concluido', idUsuarioResponsavel: user.sub, observacao: 'Entrega confirmada pelo comprador' }));
+    const aceita = pedido.propostas?.find(p => p.status === 'aceita');
+    this.notificacoes.criar(await this.ctx.idUsuarioDaUsina(aceita?.idUsina), 'Entrega confirmada', `O comprador confirmou a entrega do pedido ${pedido.numeroPedido || '#' + pedido.idPedido}.`, 'historico-pedidos.html');
     return this.detalhe(id, user);
   }
 

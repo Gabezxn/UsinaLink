@@ -3,6 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Usuario, Empresa, Usina, Funcionario, PessoaFisica } from '../common/entities/core.entities';
 
+/** Quem compra: uma empresa OU uma pessoa fisica. */
+export type Comprador = { idEmpresa?: number; idPessoaFisica?: number };
+
 @Injectable()
 export class ContextoUsuarioService {
   constructor(
@@ -32,6 +35,24 @@ export class ContextoUsuarioService {
     const religada = await this.religarPorEmail(this.empresas, idUsuario, 'empresa');
     if (religada) return religada.idEmpresa;
     throw new ForbiddenException('Usuario sem vinculo ativo com empresa.');
+  }
+
+  async obterComprador(idUsuario: number): Promise<Comprador> {
+    const pessoa = await this.pessoasFisicas.findOne({ where: { idUsuario } });
+    if (pessoa) return { idPessoaFisica: pessoa.idPessoaFisica };
+    return { idEmpresa: await this.obterEmpresaId(idUsuario) };
+  }
+
+  /** Usuario (login) dono do comprador, para enviar notificacoes. */
+  async idUsuarioDoComprador(c: Comprador): Promise<number | undefined> {
+    if (c.idPessoaFisica) return (await this.pessoasFisicas.findOne({ where: { idPessoaFisica: c.idPessoaFisica } }))?.idUsuario;
+    if (c.idEmpresa) return (await this.empresas.findOne({ where: { idEmpresa: c.idEmpresa } }))?.idUsuario;
+    return undefined;
+  }
+
+  async idUsuarioDaUsina(idUsina?: number): Promise<number | undefined> {
+    if (!idUsina) return undefined;
+    return (await this.usinas.findOne({ where: { idUsina } }))?.idUsuario;
   }
 
   async obterPessoaFisicaId(idUsuario: number): Promise<number> {

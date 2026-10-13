@@ -140,7 +140,8 @@ export class Peca {
 @Entity({ name: 'pedido' })
 export class Pedido {
   @PrimaryGeneratedColumn({ name: 'id_pedido' }) idPedido: number;
-  @Column({ name: 'id_empresa_compradora' }) idEmpresaCompradora: number;
+  @Column({ name: 'id_empresa_compradora', nullable: true }) idEmpresaCompradora?: number;
+  @Column({ name: 'id_pessoa_fisica_compradora', nullable: true }) idPessoaFisicaCompradora?: number;
   @Column({ name: 'id_usuario_solicitante', nullable: true }) idUsuarioSolicitante?: number;
   @Column({ name: 'id_solicitacao', nullable: true }) idSolicitacao?: number;
   @Column({ name: 'numero_pedido', nullable: true }) numeroPedido?: string;
@@ -204,6 +205,7 @@ export class Pagamento {
   @Column({ name: 'id_pedido' }) idPedido: number;
   @Column({ name: 'id_proposta', nullable: true }) idProposta?: number;
   @Column({ name: 'id_empresa_pagadora', nullable: true }) idEmpresaPagadora?: number;
+  @Column({ name: 'id_pessoa_fisica_pagadora', nullable: true }) idPessoaFisicaPagadora?: number;
   @Column({ name: 'id_usina_recebedora', nullable: true }) idUsinaRecebedora?: number;
   @Column({ type: 'numeric', nullable: true }) valor?: number;
   @Column({ nullable: true }) metodo?: string;
@@ -214,8 +216,10 @@ export class Pagamento {
 @Entity({ name: 'avaliacao_entrega' })
 export class AvaliacaoEntrega {
   @PrimaryGeneratedColumn({ name: 'id_avaliacao' }) idAvaliacao: number;
-  @Column({ name: 'id_pedido' }) idPedido: number;
-  @Column({ name: 'id_empresa_avaliadora' }) idEmpresaAvaliadora: number;
+  @Column({ name: 'id_pedido', nullable: true }) idPedido?: number;
+  @Column({ name: 'id_solicitacao_comercial', nullable: true }) idSolicitacaoComercial?: number;
+  @Column({ name: 'id_empresa_avaliadora', nullable: true }) idEmpresaAvaliadora?: number;
+  @Column({ name: 'id_pessoa_fisica_avaliadora', nullable: true }) idPessoaFisicaAvaliadora?: number;
   @Column({ name: 'id_usina_avaliada' }) idUsinaAvaliada: number;
   @Column({ name: 'nota_geral' }) nota: number;
   @Column({ name: 'nota_qualidade', nullable: true }) qualidade?: number;
@@ -223,6 +227,7 @@ export class AvaliacaoEntrega {
   @Column({ name: 'nota_comunicacao', nullable: true }) comunicacao?: number;
   @Column({ type: 'text', nullable: true }) comentario?: string;
   @Column({ name: 'resposta_usina', type: 'text', nullable: true }) respostaDaUsina?: string;
+  @CreateDateColumn({ name: 'data_avaliacao' }) criadoEm: Date;
 }
 
 export type SolicitacaoBloqueioStatus = 'pendente' | 'em_analise' | 'aprovada' | 'rejeitada' | 'cancelada';
@@ -266,7 +271,8 @@ export class HistoricoStatusPedido {
 @Entity({ name: 'solicitacao' })
 export class Solicitacao {
   @PrimaryGeneratedColumn({ name: 'id_solicitacao' }) idSolicitacao: number;
-  @Column({ name: 'id_empresa' }) idEmpresa: number;
+  @Column({ name: 'id_empresa', nullable: true }) idEmpresa?: number;
+  @Column({ name: 'id_pessoa_fisica', nullable: true }) idPessoaFisica?: number;
   @Column({ name: 'peca' }) peca: string;
   @Column({ nullable: true }) categoria?: string;
   @Column({ nullable: true }) material?: string;
@@ -312,6 +318,22 @@ export class SolicitacaoComercial {
   @Column({ name: 'valor_unitario', type: 'numeric', nullable: true }) valorUnitario?: number;
   @Column({ nullable: true }) quantidade?: number;
   @Column({ default: 'registrada' }) status: string;
+  @Column({ default: false }) pago: boolean;
+  @Column({ name: 'metodo_pagamento', nullable: true }) metodoPagamento?: string;
+  @Column({ name: 'data_pagamento', type: 'timestamp', nullable: true }) dataPagamento?: Date;
+  @Column({ name: 'protocolo_pagamento', nullable: true }) protocoloPagamento?: string;
+  @Column({ name: 'observacao_usina', type: 'text', nullable: true }) observacaoUsina?: string;
+  @Column({ name: 'historico', type: 'simple-json', nullable: true }) historico?: { status: string; em: string }[];
+  @CreateDateColumn({ name: 'data_criacao' }) criadoEm: Date;
+  @UpdateDateColumn({ name: 'data_atualizacao' }) atualizadoEm: Date;
+}
+
+@Entity({ name: 'favorito' })
+export class Favorito {
+  @PrimaryGeneratedColumn({ name: 'id_favorito' }) idFavorito: number;
+  @Column({ name: 'id_usuario' }) idUsuario: number;
+  @Column() tipo: string; // 'peca' | 'usina'
+  @Column({ name: 'id_referencia' }) idReferencia: number;
   @CreateDateColumn({ name: 'data_criacao' }) criadoEm: Date;
 }
 
@@ -329,6 +351,7 @@ export class Notificacao {
   @Column({ name: 'id_usuario' }) idUsuario: number;
   @Column() titulo: string;
   @Column({ type: 'text', nullable: true }) mensagem?: string;
+  @Column({ nullable: true }) link?: string;
   @Column({ default: false }) lida: boolean;
   @CreateDateColumn({ name: 'data_criacao' }) dataCriacao: Date;
 }
@@ -336,5 +359,5 @@ export class Notificacao {
 export const ENTITIES = [
   Usuario, PessoaFisica, Empresa, Usina, Funcionario, EnderecoEmpresa, EnderecoUsina, Peca,
   Pedido, ItemPedido, ArquivoPedido, Proposta, Pagamento, AvaliacaoEntrega, Solicitacao, SolicitacaoComercial,
-  SolicitacaoBloqueioUsina, BloqueioUsina, HistoricoStatusPedido, ModeloContrato, Notificacao, PecaComercial,
+  SolicitacaoBloqueioUsina, BloqueioUsina, HistoricoStatusPedido, ModeloContrato, Notificacao, PecaComercial, Favorito,
 ];

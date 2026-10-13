@@ -2,6 +2,7 @@ import { BadRequestException, ConflictException, ForbiddenException, Injectable,
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 import { ContextoUsuarioService } from '../contexto-usuario/contexto-usuario.service';
+import { NotificacaoService } from '../notificacao/notificacao.service';
 import { Proposta, Pedido, Usina, BloqueioUsina, Solicitacao } from '../common/entities/core.entities';
 
 const STATUS_ABERTOS = ['aberto', 'em_negociacao'];
@@ -15,6 +16,7 @@ export class PropostaService {
     @InjectRepository(BloqueioUsina) private readonly bloqueios: Repository<BloqueioUsina>,
     @InjectRepository(Solicitacao) private readonly solicitacoes: Repository<Solicitacao>,
     private readonly ctx: ContextoUsuarioService,
+    private readonly notificacoes: NotificacaoService,
   ) {}
 
   private async sincronizarSolicitacao(idPedido: number, status: string, apenasSe?: string) {
@@ -60,12 +62,15 @@ export class PropostaService {
 
     if (pedido.status === 'aberto') await this.pedidos.update({ idPedido: pedido.idPedido }, { status: 'em_negociacao' });
     await this.sincronizarSolicitacao(pedido.idPedido, 'em_analise', 'aberta');
+    const usina = await this.usinas.findOne({ where: { idUsina } });
+    this.notificacoes.criar(pedido.idUsuarioSolicitante, 'Nova proposta recebida', `${usina?.nomeFantasia || usina?.razaoSocial || 'Uma usina'} enviou uma proposta para o seu pedido.`, 'propostas.html');
     return proposta;
   }
 
   async recebidas(user: any) {
-    const idEmpresa = await this.ctx.obterEmpresaId(user.sub);
-    const pedidos = await this.pedidos.find({ where: { idEmpresaCompradora: idEmpresa } });
+    const comprador = await this.ctx.obterComprador(user.sub);
+    const where = comprador.idPessoaFisica ? { idPessoaFisicaCompradora: comprador.idPessoaFisica } : { idEmpresaCompradora: comprador.idEmpresa };
+    const pedidos = await this.pedidos.find({ where });
     const ids = pedidos.map(p => p.idPedido);
     if (!ids.length) return [];
     const rows = await this.propostas.createQueryBuilder('p').where('p.idPedido IN (:...ids)', { ids }).andWhere('p.status != :cancelada', { cancelada: 'cancelada' }).getMany();
@@ -82,9 +87,12 @@ export class PropostaService {
     const proposta = await this.propostas.findOne({ where: { idProposta: Number(id) } });
     if (!proposta) throw new NotFoundException('Proposta não encontrada.');
     const enriched = await this.enrich(proposta);
-    if (user.tipoUsuario?.includes('empresa')) {
-      const idEmpresa = await this.ctx.obterEmpresaId(user.sub);
-      if (enriched.pedido?.idEmpresaCompradora !== idEmpresa) throw new ForbiddenException();
+    if (user.tipoUsuario === 'pessoa_fisica' || user.tipoUsuario?.includes('empresa')) {
+      const comprador = await this.ctx.obterComprador(user.sub);
+      const dono = comprador.idPessoaFisica
+        ? enriched.pedido?.idPessoaFisicaCompradora === comprador.idPessoaFisica
+        : !!comprador.idEmpresa && enriched.pedido?.idEmpresaCompradora === comprador.idEmpresa;
+      if (!dono) throw new ForbiddenException();
     }
     if (user.tipoUsuario?.includes('usina')) {
       const idUsina = await this.ctx.obterUsinaId(user.sub);
@@ -99,6 +107,7 @@ export class PropostaService {
     await this.propostas.update({ idProposta: proposta.idProposta }, { status: 'aceita' });
     await this.pedidos.update({ idPedido: proposta.idPedido }, { status: 'proposta_aceita', valorTotal: proposta.valor });
     await this.sincronizarSolicitacao(proposta.idPedido, 'concluida');
+    this.notificacoes.criar(await this.ctx.idUsuarioDaUsina(proposta.idUsina), 'Proposta aceita', `Sua proposta para o pedido ${proposta.pedido?.numeroPedido || '#' + proposta.idPedido} foi aceita.`, 'propostas-usina.html');
     return this.propostas.findOne({ where: { idProposta: proposta.idProposta } });
   }
 
