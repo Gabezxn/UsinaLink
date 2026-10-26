@@ -3432,3 +3432,74 @@ body[data-user-role="pessoa_fisica"] .side-nav a:not([href="index.html"]).active
   color: #0f766e;
   background: #e6f6f3;
 }
+
+/* Dados resumidos dos cards (estoque, prazo, valor...): rotulo acima do valor, alinhados a esquerda,
+   em quantas colunas couberem. Antes eram 3 colunas fixas com rotulo/valor nas pontas e o 4o item quebrava. */
+.quote-facts.compact {
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 14px 16px;
+}
+
+.quote-facts.compact div {
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.quote-facts.compact strong {
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.quote-facts .text-link,
+.detail-list .text-link {
+  display: inline;
+  margin-top: 0;
+}
+
+.action-modal-grid .text-link {
+  display: inline;
+  margin-top: 0;
+}
+
+/* Tabelas largas (ex.: solicitacoes de pecas da usina) cabem na tela sem cortar a coluna de acoes. */
+.table-compact th,
+.table-compact td {
+  padding: 14px 8px;
+  font-size: 0.9rem;
+}
+
+.table-compact td:nth-child(3) {
+  min-width: 135px;
+  max-width: 200px;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.table-compact td:nth-child(4) {
+  min-width: 80px;
+  max-width: 160px;
+  white-space: normal;
+}
+
+.table-compact .badge {
+  white-space: nowrap;
+}
+
+.table-compact th {
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+}
+
+.table-compact th,
+.table-compact td {
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+td .text-link {
+  display: inline;
+  margin-top: 0;
+}
