@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 import { ContextoUsuarioService } from '../contexto-usuario/contexto-usuario.service';
 import { NotificacaoService } from '../notificacao/notificacao.service';
-import { Proposta, Pedido, Usina, BloqueioUsina, Solicitacao } from '../common/entities/core.entities';
+import { Proposta, Pedido, Usina, BloqueioUsina, Solicitacao, PessoaFisica } from '../common/entities/core.entities';
 
 const STATUS_ABERTOS = ['aberto', 'em_negociacao'];
 
@@ -15,6 +15,7 @@ export class PropostaService {
     @InjectRepository(Usina) private readonly usinas: Repository<Usina>,
     @InjectRepository(BloqueioUsina) private readonly bloqueios: Repository<BloqueioUsina>,
     @InjectRepository(Solicitacao) private readonly solicitacoes: Repository<Solicitacao>,
+    @InjectRepository(PessoaFisica) private readonly pessoasFisicas: Repository<PessoaFisica>,
     private readonly ctx: ContextoUsuarioService,
     private readonly notificacoes: NotificacaoService,
   ) {}
@@ -34,6 +35,11 @@ export class PropostaService {
       this.pedidos.findOne({ where: { idPedido: proposta.idPedido }, relations: ['itens', 'empresaCompradora'] }),
       this.usinas.findOne({ where: { idUsina: proposta.idUsina } }),
     ]);
+    // Comprador pessoa fisica aparece no mesmo campo da empresa, como em PedidoService.enrich.
+    if (pedido && !pedido.empresaCompradora && pedido.idPessoaFisicaCompradora) {
+      const pessoa = await this.pessoasFisicas.findOne({ where: { idPessoaFisica: pedido.idPessoaFisicaCompradora } });
+      if (pessoa) (pedido as any).empresaCompradora = { nomeFantasia: pessoa.nome, razaoSocial: pessoa.nome, email: pessoa.email, telefone: pessoa.telefone, tipoComprador: 'pessoa_fisica' };
+    }
     return { ...proposta, pedido, usina };
   }
 

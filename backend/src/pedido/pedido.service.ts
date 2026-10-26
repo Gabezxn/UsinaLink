@@ -91,9 +91,12 @@ export class PedidoService {
     return Promise.all(pedidos.map(p => this.enrich(p)));
   }
 
-  async disponiveis() {
+  async disponiveis(user: any) {
+    const idUsina = await this.ctx.obterUsinaId(user.sub);
     const pedidos = await this.pedidos.find({ where: { status: In(STATUS_ABERTOS) } });
-    return Promise.all(pedidos.map(p => this.enrich(p)));
+    const enriched = await Promise.all(pedidos.map(p => this.enrich(p)));
+    // Pedido que esta usina ja respondeu com proposta (exceto cancelada) sai da lista.
+    return enriched.filter(p => !p.propostas.some(pr => pr.idUsina === idUsina && pr.status !== 'cancelada'));
   }
 
   async detalhe(id: number | string, user: any) {

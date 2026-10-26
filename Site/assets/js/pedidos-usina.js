@@ -3,6 +3,48 @@
     return typeof escapeHtml === "function" ? escapeHtml(value ?? "") : String(value ?? "");
   }
 
+  // Conteudo dos arquivos tecnicos por pedido; fica fora do HTML porque o data URL e grande.
+  const arquivosPorPedido = {};
+  window.UsinaLinkArquivosPedido = arquivosPorPedido;
+
+  function dataUrlParaBlob(dataUrl) {
+    const [cabecalho, corpo = ""] = String(dataUrl).split(",");
+    const tipo = (cabecalho.match(/^data:([^;,]+)/) || [])[1] || "application/octet-stream";
+    const bytes = /;base64/.test(cabecalho) ? atob(corpo) : decodeURIComponent(corpo);
+    const dados = new Uint8Array(bytes.length);
+    for (let i = 0; i < bytes.length; i += 1) dados[i] = bytes.charCodeAt(i);
+    return new Blob([dados], { type: tipo });
+  }
+
+  function guardarArquivos(pedidos) {
+    pedidos.forEach((pedido) => {
+      const arquivo = (pedido.arquivos || []).find((a) => a.urlArquivo);
+      if (arquivo) arquivosPorPedido[pedido.idPedido] = { nome: arquivo.nomeArquivo || "arquivo-tecnico", url: arquivo.urlArquivo };
+    });
+  }
+
+  document.addEventListener("click", (event) => {
+    const botao = event.target.closest("[data-arquivo-acao]");
+    if (!botao) return;
+    const arquivo = arquivosPorPedido[botao.dataset.pedidoId];
+    if (!arquivo) return;
+    event.preventDefault();
+    let blob;
+    try { blob = arquivo.url.startsWith("data:") ? dataUrlParaBlob(arquivo.url) : null; } catch (e) { blob = null; }
+    const href = blob ? URL.createObjectURL(blob) : arquivo.url;
+    if (botao.dataset.arquivoAcao === "baixar") {
+      const link = document.createElement("a");
+      link.href = href;
+      link.download = arquivo.nome;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } else {
+      window.open(href, "_blank", "noopener");
+    }
+    if (blob) setTimeout(() => URL.revokeObjectURL(href), 60000);
+  });
+
   function itemDe(pedido) {
     return (pedido.itens && pedido.itens[0]) || {};
   }

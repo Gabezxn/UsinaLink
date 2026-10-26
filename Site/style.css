@@ -3396,3 +3396,17 @@ td {
 .cat-hidden {
   display: none !important;
 }
+
+/* Tema verde-azulado das paginas da pessoa fisica (body[data-user-role="pessoa_fisica"]) */
+body[data-user-role="pessoa_fisica"] {
+  --blue: #0f766e;
+  --primary: #0f9488;
+  --primary-dark: #115e59;
+  --secondary: #14b8a6;
+  --gradient: linear-gradient(135deg, #115e59, #0f9488);
+  --shadow: 0 16px 38px rgba(15, 118, 110, 0.07);
+  --soft-shadow: 0 8px 22px rgba(15, 118, 110, 0.055);
+  background:
+    radial-gradient(circle at top left, rgba(20, 184, 166, 0.09), transparent 30rem),
+    linear-gradient(180deg, #fff 0%, var(--bg) 42%, #f5f7fb 100%);
+}

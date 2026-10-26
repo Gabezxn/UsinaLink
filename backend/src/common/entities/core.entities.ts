@@ -178,7 +178,7 @@ export class ItemPedido {
 export class ArquivoPedido {
   @PrimaryGeneratedColumn({ name: 'id_arquivo' }) idArquivo: number;
   @Column({ name: 'id_pedido' }) idPedido: number;
-  @Column({ name: 'url_arquivo', nullable: true }) urlArquivo?: string;
+  @Column({ name: 'url_arquivo', type: 'text', nullable: true }) urlArquivo?: string;
   @Column({ name: 'nome_arquivo', nullable: true }) nomeArquivo?: string;
   @ManyToOne(() => Pedido, p => p.arquivos) @JoinColumn({ name: 'id_pedido' }) pedido: Relation<Pedido>;
 }

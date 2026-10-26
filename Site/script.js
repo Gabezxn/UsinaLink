@@ -1024,7 +1024,7 @@ document.addEventListener("click", (event) => {
   if (card && action === "Aceitar proposta" && card.dataset.proposalId) {
     openSimpleConfirm({
       title: "Aceitar proposta",
-      message: "Deseja aceitar esta proposta? As demais propostas deste pedido ficarao recusadas.",
+      message: "Deseja aceitar esta proposta?",
       confirmText: "Aceitar proposta",
       onConfirm: () => decidirProposta(card.dataset.proposalId, true)
     });
@@ -1166,7 +1166,7 @@ document.addEventListener("click", (event) => {
       <div><span>Material</span><strong>${escapeHtml(material)}</strong></div>
       <div><span>Quantidade</span><strong>${escapeHtml(quantity)}</strong></div>
       <div><span>Descri\u00e7\u00e3o t\u00e9cnica</span><strong>${escapeHtml(row.dataset.description || "Sem descri\u00e7\u00e3o adicional.")}</strong></div>
-      <div><span>Arquivo t\u00e9cnico</span><strong>${escapeHtml(row.dataset.file || "Sem arquivo anexado")}</strong></div>
+      <div><span>Arquivo t\u00e9cnico</span><strong>${escapeHtml(row.dataset.file || "Sem arquivo anexado")}</strong>${window.UsinaLinkArquivosPedido?.[row.dataset.pedidoId] ? `<div class="card-actions"><button class="btn btn-ghost btn-small" type="button" data-arquivo-acao="visualizar" data-pedido-id="${escapeHtml(row.dataset.pedidoId)}">Visualizar</button><button class="btn btn-orange btn-small" type="button" data-arquivo-acao="baixar" data-pedido-id="${escapeHtml(row.dataset.pedidoId)}">Baixar</button></div>` : ""}</div>
       <div><span>Prazo desejado</span><strong>${escapeHtml(deadline)}</strong></div>
       <div><span>Regi\u00e3o</span><strong>${escapeHtml(region)}</strong></div>`;
     const sendLink = orderModal?.querySelector(".btn-orange");
