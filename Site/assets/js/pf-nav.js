@@ -8,6 +8,7 @@
 
   const nav = document.querySelector("[data-role-nav]");
   if (!nav || session.tipo !== "pessoa_fisica") return;
+  document.body.classList.add("pf-mode");
 
   const itens = [
     ["dashboard-pessoa-fisica.html", "D", "Início"],
@@ -34,7 +35,9 @@
     "pagamento-pedido.html": "historico-pedidos.html",
     "confirmacao-pedido.html": "historico-pedidos.html",
   };
-  const atual = window.location.pathname.split("/").pop() || "dashboard-pessoa-fisica.html";
+  // Hospedagens como o Cloudflare Pages servem a pagina sem a extensao (/compras-pessoa-fisica).
+  let atual = window.location.pathname.split("/").pop() || "dashboard-pessoa-fisica.html";
+  if (!atual.includes(".")) atual += ".html";
   const ativo = pai[atual] || atual;
 
   nav.dataset.roleNav = "pessoa_fisica";

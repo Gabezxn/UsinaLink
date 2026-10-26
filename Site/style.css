@@ -3398,7 +3398,8 @@ td {
 }
 
 /* Tema verde-azulado das paginas da pessoa fisica (body[data-user-role="pessoa_fisica"]) */
-body[data-user-role="pessoa_fisica"] {
+body[data-user-role="pessoa_fisica"],
+body.pf-mode {
   --blue: #0f766e;
   --primary: #0f9488;
   --primary-dark: #115e59;
@@ -3409,4 +3410,25 @@ body[data-user-role="pessoa_fisica"] {
   background:
     radial-gradient(circle at top left, rgba(20, 184, 166, 0.09), transparent 30rem),
     linear-gradient(180deg, #fff 0%, var(--bg) 42%, #f5f7fb 100%);
+}
+
+/* Barra lateral: hover e pagina atual na cor de cada tipo de conta.
+   Usina = laranja, pessoa fisica = verde-azulado; empresa continua azul (regras base).
+   Seletores por papel/classe para valer tambem nas paginas compartilhadas, onde o menu e trocado por JS. */
+.orange-mode .side-nav a:not([href="index.html"]):hover,
+.orange-mode .side-nav a:not([href="index.html"]).active,
+body[data-user-role="usina"] .side-nav a:not([href="index.html"]):hover,
+body[data-user-role="usina"] .side-nav a:not([href="index.html"]).active,
+.orange-nav a:not([href="index.html"]):hover,
+.orange-nav a:not([href="index.html"]).active {
+  color: var(--orange);
+  background: #fff7ed;
+}
+
+body.pf-mode .side-nav a:not([href="index.html"]):hover,
+body.pf-mode .side-nav a:not([href="index.html"]).active,
+body[data-user-role="pessoa_fisica"] .side-nav a:not([href="index.html"]):hover,
+body[data-user-role="pessoa_fisica"] .side-nav a:not([href="index.html"]).active {
+  color: #0f766e;
+  background: #e6f6f3;
 }
