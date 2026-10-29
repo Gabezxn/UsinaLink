@@ -84,6 +84,7 @@
     if (!window.UsinaLinkApi) return;
     try {
       const pedidos = await window.UsinaLinkApi.get("/pedidos/disponiveis");
+      guardarArquivos(pedidos);
       if (grid) {
         grid.innerHTML = pedidos.length
           ? pedidos.map(orderCardMarkup).join("")
