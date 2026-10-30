@@ -5,6 +5,7 @@ export class CreatePecaComercialDto {
   @IsOptional() @IsString() material?: string;
   @IsOptional() @IsString() categoria?: string;
   @IsOptional() @IsString() descricao?: string;
+  @IsOptional() @IsString() imagem?: string;
   @IsOptional() @IsNumberString({}, { message: 'Estoque deve ser numérico.' }) estoque?: string;
   @IsOptional() @IsString() unidadeEstoque?: string;
   @IsOptional() @IsNumberString({}, { message: 'Valor unitário deve ser numérico.' }) valorUnitario?: string;

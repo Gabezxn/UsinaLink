@@ -27,6 +27,7 @@ export class PecaComercialService {
       material: dto.material,
       categoria: dto.categoria,
       descricao: dto.descricao,
+      imagem: dto.imagem,
       estoque: dto.estoque ? Number(dto.estoque) : undefined,
       unidadeEstoque: dto.unidadeEstoque || 'unidades',
       valorUnitario: dto.valorUnitario ? Number(dto.valorUnitario) : undefined,
@@ -54,7 +55,7 @@ export class PecaComercialService {
     const numero = (v: string | null | undefined) => (v === null ? null : Number(v));
     const dados: Record<string, unknown> = {};
     if (dto.nome !== undefined) dados.nome = dto.nome.trim();
-    for (const campo of ['material', 'categoria', 'descricao', 'unidadeEstoque'] as const) {
+    for (const campo of ['material', 'categoria', 'descricao', 'unidadeEstoque', 'imagem'] as const) {
       if (dto[campo] !== undefined) dados[campo] = dto[campo];
     }
     for (const campo of ['estoque', 'valorUnitario', 'prazoEntregaDias'] as const) {

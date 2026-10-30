@@ -2,12 +2,12 @@
   const { api, esc, pecaCard, emptyState, favoritos } = window.PF;
   const grade = document.querySelector("[data-catalogo]");
   const filtros = document.querySelector("[data-categorias]");
-  let categoria = "todas";
+  let selecionadas = new Set();
 
   // a busca de texto (script.js) usa a classe is-hidden; o filtro de categoria usa cat-hidden
   function aplicarCategoria() {
     grade.querySelectorAll("[data-search-row]").forEach((card) => {
-      card.classList.toggle("cat-hidden", categoria !== "todas" && card.dataset.categoria !== categoria);
+      card.classList.toggle("cat-hidden", selecionadas.size > 0 && !selecionadas.has(card.dataset.categoria));
     });
   }
 
@@ -22,13 +22,10 @@
 
       const categorias = [...new Set(pecas.map((p) => p.categoria).filter(Boolean))];
       filtros.innerHTML = categorias.length
-        ? ['<button class="filter-pill active" type="button" data-cat="todas">Todas</button>']
-            .concat(categorias.map((c) => `<button class="filter-pill" type="button" data-cat="${esc(c)}">${esc(c)}</button>`)).join("")
+        ? categorias.map((c) => `<label class="check-chip"><input type="checkbox" value="${esc(c)}" data-cat> ${esc(c)}</label>`).join("")
         : "";
-      filtros.querySelectorAll("[data-cat]").forEach((botao) => botao.addEventListener("click", () => {
-        filtros.querySelectorAll("[data-cat]").forEach((b) => b.classList.remove("active"));
-        botao.classList.add("active");
-        categoria = botao.dataset.cat;
+      filtros.querySelectorAll("[data-cat]").forEach((caixa) => caixa.addEventListener("change", () => {
+        selecionadas = new Set([...filtros.querySelectorAll("[data-cat]:checked")].map((c) => c.value));
         aplicarCategoria();
       }));
       await favoritos.pintar(grade);

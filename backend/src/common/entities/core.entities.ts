@@ -302,6 +302,7 @@ export class PecaComercial {
   @Column({ name: 'unidade_estoque', nullable: true }) unidadeEstoque?: string;
   @Column({ name: 'valor_unitario', type: 'numeric', nullable: true }) valorUnitario?: number;
   @Column({ name: 'prazo_entrega_dias', nullable: true }) prazoEntregaDias?: number;
+  @Column({ name: 'imagem', type: 'text', nullable: true }) imagem?: string;
   @Column({ default: true }) ativo: boolean;
   @CreateDateColumn({ name: 'data_criacao' }) criadoEm: Date;
   @ManyToOne(() => Usina, u => u.pecasComerciais) @JoinColumn({ name: 'id_usina' }) usina: Relation<Usina>;

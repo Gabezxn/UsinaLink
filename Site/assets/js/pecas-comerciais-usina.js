@@ -1,4 +1,35 @@
 (function () {
+
+// Foto da peca: reduzida no navegador para caber no banco (cerca de 40 KB).
+function reduzirImagem(arquivo) {
+  return new Promise((resolve, reject) => {
+    const leitor = new FileReader();
+    leitor.onerror = () => reject(new Error("Nao foi possivel ler a imagem."));
+    leitor.onload = () => {
+      const img = new Image();
+      img.onerror = () => reject(new Error("Imagem invalida."));
+      img.onload = () => {
+        let lado = 360;
+        for (let tentativa = 0; tentativa < 6; tentativa += 1) {
+          const escala = Math.min(1, lado / Math.max(img.width, img.height));
+          const canvas = document.createElement("canvas");
+          canvas.width = Math.round(img.width * escala);
+          canvas.height = Math.round(img.height * escala);
+          const ctx = canvas.getContext("2d");
+          ctx.fillStyle = "#fff";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          const url = canvas.toDataURL("image/jpeg", 0.7);
+          if (url.length < 52000) return resolve(url);
+          lado = Math.round(lado * 0.75);
+        }
+        reject(new Error("Imagem muito complexa, escolha outra."));
+      };
+      img.src = leitor.result;
+    };
+    leitor.readAsDataURL(arquivo);
+  });
+}
   function esc(value) {
     return typeof escapeHtml === "function" ? escapeHtml(value ?? "") : String(value ?? "");
   }
@@ -18,7 +49,7 @@
 
   function pecaRowMarkup(peca) {
     return `<tr data-search-row data-peca-id="${esc(peca.idPecaComercial)}">
-      <td>${esc(peca.nome)}</td>
+      <td>${peca.imagem ? `<img class="peca-foto-mini" src="${esc(peca.imagem)}" alt=""> ` : ""}${esc(peca.nome)}</td>
       <td>${esc(peca.material || "-")}</td>
       <td>${esc(peca.estoque != null ? `${peca.estoque} ${peca.unidadeEstoque || "unidades"}` : "-")}</td>
       <td>${esc(peca.valorUnitario != null ? money(peca.valorUnitario) : "-")}</td>
@@ -54,6 +85,7 @@
       const set = (name, value) => { form.elements[name].value = value ?? ""; };
       set("nome", peca.nome);
       set("material", peca.material);
+      if (peca.categoria && ![...form.elements.categoria.options].some((o) => o.value === peca.categoria)) form.elements.categoria.add(new Option(peca.categoria, peca.categoria));
       set("categoria", peca.categoria);
       set("descricao", peca.descricao);
       set("estoque", peca.estoque);
@@ -84,6 +116,7 @@
       const valor = parseMoney(data.get("valorUnitario"));
       const editando = editandoId !== null;
       // Na edicao, campo vazio vai como "" para limpar o valor; na criacao, simplesmente nao vai.
+      const foto = form.elements.foto.files[0] ? await reduzirImagem(form.elements.foto.files[0]) : undefined;
       const opcional = (nome) => (data.get(nome) || (editando ? "" : undefined));
       const payload = {
         nome: data.get("nome"),

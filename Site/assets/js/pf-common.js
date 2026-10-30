@@ -109,6 +109,7 @@
     const fornecedor = peca.usina?.nomeFantasia || peca.usina?.razaoSocial || "Usina";
     const estoque = peca.estoque != null ? `${peca.estoque} ${peca.unidadeEstoque || "unidades"}` : "Sob consulta";
     return `<article class="card order-opportunity" data-search-row data-categoria="${esc(peca.categoria || "")}">
+      ${peca.imagem ? `<img class="peca-foto" src="${esc(peca.imagem)}" alt="Foto de ${esc(peca.nome)}">` : ""}
       <div class="card-title-row"><h2>${esc(peca.nome)}</h2>${coracao("peca", peca.idPecaComercial)}</div>
       <p>${esc(peca.material || peca.categoria || "")}</p>
       <div class="quote-facts compact">

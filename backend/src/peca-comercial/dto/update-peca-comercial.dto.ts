@@ -9,6 +9,7 @@ export class UpdatePecaComercialDto {
   @Transform(vazioViraNulo) @IsOptional() @IsString() material?: string | null;
   @Transform(vazioViraNulo) @IsOptional() @IsString() categoria?: string | null;
   @Transform(vazioViraNulo) @IsOptional() @IsString() descricao?: string | null;
+  @Transform(vazioViraNulo) @IsOptional() @IsString() imagem?: string | null;
   @Transform(vazioViraNulo) @IsOptional() @IsNumberString({}, { message: 'Estoque deve ser numérico.' }) estoque?: string | null;
   @Transform(vazioViraNulo) @IsOptional() @IsString() unidadeEstoque?: string | null;
   @Transform(vazioViraNulo) @IsOptional() @IsNumberString({}, { message: 'Valor unitário deve ser numérico.' }) valorUnitario?: string | null;

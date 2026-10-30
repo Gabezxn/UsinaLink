@@ -20,6 +20,7 @@
     const fornecedor = fornecedorNome(peca.usina);
     const botaoCompra = `<button class="btn btn-primary js-comprar-peca" type="button" data-peca-id="${esc(peca.idPecaComercial)}" data-peca="${esc(peca.nome)}" data-fornecedor="${esc(fornecedor)}" data-valor="${esc(peca.valorUnitario ?? '')}">Solicitar compra</button>`;
     return `<article class="card order-opportunity" data-search-row>
+      ${peca.imagem ? `<img class="peca-foto" src="${esc(peca.imagem)}" alt="Foto de ${esc(peca.nome)}">` : ""}
       <h2>${esc(peca.nome)}</h2><p>${esc(peca.material || peca.categoria || '')}</p>
       <div class="quote-facts compact"><div><span>Estoque</span><strong>${esc(peca.estoque != null ? `${peca.estoque} ${peca.unidadeEstoque || 'unidades'}` : 'Sob consulta')}</strong></div><div><span>Prazo</span><strong>${esc(peca.prazoEntregaDias ? peca.prazoEntregaDias + ' dias' : 'A combinar')}</strong></div><div><span>Valor unit&aacute;rio</span><strong>${esc(peca.valorUnitario != null ? formatMoney(peca.valorUnitario) : 'Sob consulta')}</strong></div><div><span>Fornecedor</span><strong>${esc(fornecedor)}</strong></div></div>
       <div class="card-actions"><button class="btn btn-ghost js-alert" type="button">Ver detalhes</button>${botaoCompra}</div>
