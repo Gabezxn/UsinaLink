@@ -51,7 +51,7 @@
   function applySharedRoleNav() {
     const nav = document.querySelector("[data-role-nav]");
     const session = service.currentSession();
-    const sharedPage = /historico-pedidos|detalhes-pedido/.test(window.location.pathname);
+    const sharedPage = /historico-pedidos|detalhes-pedido|confirmacao-pedido/.test(window.location.pathname);
     if (!nav || !sharedPage) return;
     if (session.tipo === "pessoa_fisica") return; // o menu da PF vem de pf-nav.js
     const isUsina = session.tipo === "usina";
@@ -143,57 +143,31 @@
       return;
     }
     const totals = order.totals;
-    document.querySelectorAll("[data-order-number]").forEach(item => item.textContent = ui.orderNumber(order.id));
-    document.querySelector("[data-payment-title]").textContent = order.peca || "Pedido industrial";
-    document.querySelector("[data-payment-description]").textContent = order.descricao || "Servico industrial contratado.";
-    document.querySelector("[data-payment-company]").textContent = order.empresa || "Cliente";
-    document.querySelector("[data-payment-plant]").textContent = order.usina;
-    document.querySelector("[data-payment-quantity]").textContent = order.quantidade || "1 unidade";
-    document.querySelector("[data-payment-unit]").textContent = ui.formatCurrency(totals.subtotal);
-    document.querySelector("[data-payment-total]").textContent = ui.formatCurrency(totals.total);
-    document.querySelector("[data-payment-deadline]").textContent = order.prazo;
-    document.querySelector("[data-payment-address]").textContent = order.endereco;
-    document.querySelector("[data-summary-subtotal]").textContent = ui.formatCurrency(totals.subtotal);
-    document.querySelector("[data-summary-discount]").textContent = ui.formatCurrency(totals.discount);
-    document.querySelector("[data-summary-taxes]").textContent = ui.formatCurrency(totals.taxes);
-    document.querySelector("[data-summary-total]").textContent = ui.formatCurrency(totals.total);
-    document.querySelector("[data-copy-pix]")?.addEventListener("click", () => navigator.clipboard?.writeText("pix-teste@usinalink.com").then(() => ui.showFeedback("Chave PIX copiada.")));
-    document.querySelector("[data-copy-boleto]")?.addEventListener("click", () => navigator.clipboard?.writeText("34191.79001 01043.510047 91020.150008 8 98760000018500").then(() => ui.showFeedback("Linha digitavel copiada.")));
-    document.querySelectorAll("[data-payment-method]").forEach(button => button.addEventListener("click", () => setMethod(button.dataset.paymentMethod)));
-    setMethod("PIX");
-    document.querySelector("[data-confirm-payment]")?.addEventListener("click", async (event) => {
-      const button = event.currentTarget;
-      const method = document.querySelector("#payment-method").value;
-      if (!validatePayment(method)) return;
-      button.disabled = true;
-      button.textContent = "Processando...";
-      try {
-        await new Promise(resolve => window.setTimeout(resolve, 900));
-        await service.savePayment(order, method);
-        ui.showFeedback("Pagamento de teste confirmado.", "success");
-        window.location.href = `confirmacao-pedido.html?pedidoId=${encodeURIComponent(order.id)}`;
-      } catch (error) {
-        ui.showFeedback(error.message, "error");
-        button.disabled = false;
-        button.textContent = "Confirmar pagamento";
-      }
-    });
-  }
-
-  async function renderReceiptPage() {
-    const root = document.querySelector("[data-receipt-page]");
-    if (!root) return;
-    const order = await service.getOrder(params.get("pedidoId"));
-    if (!order) return;
-    const payment = order.pagamento || await service.savePayment(order, "PIX");
-    document.querySelectorAll("[data-order-number]").forEach(item => item.textContent = ui.orderNumber(order.id));
-    document.querySelector("[data-receipt-date]").textContent = ui.formatDateTime(payment.createdAt);
-    document.querySelector("[data-receipt-method]").textContent = payment.method;
-    document.querySelector("[data-receipt-deadline]").textContent = order.prazo;
-    document.querySelector("[data-receipt-total]").textContent = ui.formatCurrency(order.totals.total);
-    document.querySelector("[data-receipt-address]").textContent = order.endereco;
-    document.querySelector("[data-receipt-protocol]").textContent = payment.protocol;
-    document.querySelector("[data-receipt-items]").innerHTML = `<tr><td>${ui.escapeHtml(order.peca)}</td><td>${ui.escapeHtml(order.quantidade)}</td><td>${ui.formatCurrency(order.totals.subtotal)}</td><td>${ui.formatCurrency(order.totals.total)}</td></tr>`;
+    const set = (sel, val) => document.querySelectorAll(sel).forEach(el => { el.textContent = val; });
+    const usina = order.usinaDados || {};
+    const comprador = order.empresaDados || {};
+    const nomeUsina = order.usina;
+    const total = order.totals.total;
+    const frete = Number(order.frete || 0);
+    set("[data-order-number]", ui.orderNumber(order.id));
+    set("[data-receipt-date]", ui.formatDateTime(payment.createdAt));
+    set("[data-receipt-method]", payment.method);
+    set("[data-receipt-deadline]", order.prazo);
+    set("[data-receipt-total]", ui.formatCurrency(total));
+    set("[data-receipt-address]", order.endereco);
+    set("[data-receipt-protocol], [data-receipt-protocol-2], [data-receipt-protocol-3]", payment.protocol);
+    set("[data-danfe-emitente], [data-danfe-emitente-2]", nomeUsina);
+    set("[data-danfe-emitente-info]", [usina.email, usina.telefone].filter(Boolean).join(" · "));
+    set("[data-danfe-emitente-cnpj]", usina.cnpj || "-");
+    set("[data-danfe-dest]", order.empresa);
+    set("[data-danfe-dest-doc]", comprador.cnpj || comprador.cpf || "-");
+    set("[data-danfe-dest-fone]", comprador.telefone || "-");
+    set("[data-danfe-produtos]", ui.formatCurrency(order.totals.subtotal));
+    set("[data-danfe-frete]", ui.formatCurrency(frete));
+    set("[data-danfe-taxa]", ui.formatCurrency(order.totals.taxes));
+    set("[data-danfe-total]", ui.formatCurrency(total));
+    const unitario = Number(order.quantidade) ? order.totals.subtotal / Number(order.quantidade) : order.totals.subtotal;
+    document.querySelector("[data-receipt-items]").innerHTML = `<tr><td>${ui.escapeHtml(String(order.id).padStart(5, "0"))}</td><td>${ui.escapeHtml(order.peca)}</td><td>UN</td><td>${ui.escapeHtml(order.quantidade)}</td><td>${ui.formatCurrency(unitario)}</td><td>${ui.formatCurrency(order.totals.subtotal)}</td></tr>`;
     document.querySelector("[data-print-receipt]")?.addEventListener("click", () => window.print());
     document.querySelector("[data-share-receipt]")?.addEventListener("click", async () => {
       const text = `Pedido ${ui.orderNumber(order.id)} confirmado no UsinaLink. Total ${ui.formatCurrency(order.totals.total)}.`;

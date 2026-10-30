@@ -3508,3 +3508,41 @@ td .text-link {
 .field[hidden] {
   display: none !important;
 }
+
+/* Mostrar senha e rotulo do tipo de conta */
+.has-pass-toggle { position: relative; }
+.has-pass-toggle input { padding-right: 84px; }
+.pass-toggle {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  border: 0; background: transparent; color: var(--primary, #1d4ed8);
+  font: inherit; font-size: 0.8rem; font-weight: 700; cursor: pointer; padding: 6px 8px;
+}
+body[data-user-role="usina"] .brand-role, .orange-mode .brand-role { color: #c2410c; background: #fff7ed; }
+body.pf-mode .brand-role { color: #0f766e; background: #e6f6f3; }
+.brand-role {
+  display: inline-block; margin: -4px 0 14px 14px; padding: 3px 10px; border-radius: 999px;
+  font-size: 0.72rem; font-weight: 800; letter-spacing: .02em; color: #1d4ed8; background: #eaf1ff; align-self: flex-start;
+}
+
+/* Comprovante no formato de nota fiscal (DANFE) */
+.danfe { padding: 0; overflow: hidden; }
+.danfe > .receipt-actions { padding: 14px 18px; border-bottom: 1px solid var(--line, #dbe3ef); }
+.danfe h3 { margin: 0; padding: 6px 14px; font-size: .74rem; text-transform: uppercase; letter-spacing: .06em; background: #f1f5f9; border-top: 1px solid #94a3b8; border-bottom: 1px solid #cbd5e1; }
+.danfe-canhoto { display: grid; grid-template-columns: 1fr 120px; gap: 8px; padding: 10px 14px; border-bottom: 2px dashed #94a3b8; font-size: .72rem; }
+.danfe-canhoto > div { display: flex; gap: 24px; border: 1px solid #94a3b8; padding: 22px 8px 4px; grid-column: 1; }
+.danfe-canhoto .danfe-nf { grid-column: 2; grid-row: 1 / span 2; text-align: center; border: 1px solid #94a3b8; padding: 8px; font-size: .78rem; }
+.danfe-head { display: grid; grid-template-columns: 1.4fr 1fr 1fr; border-bottom: 1px solid #94a3b8; }
+.danfe-head > div { padding: 12px 14px; border-right: 1px solid #cbd5e1; display: flex; flex-direction: column; gap: 4px; }
+.danfe-head > div:last-child { border-right: 0; }
+.danfe-title { text-align: center; align-items: center; }
+.danfe-title strong { font-size: 1.5rem; }
+.danfe small { color: #64748b; }
+.danfe-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); border-bottom: 1px solid #cbd5e1; }
+.danfe-row > div { padding: 8px 14px; border-right: 1px solid #e2e8f0; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.danfe-row > div:last-child { border-right: 0; }
+.danfe-row span { font-size: .68rem; color: #64748b; text-transform: uppercase; letter-spacing: .03em; }
+.danfe-row strong { overflow-wrap: anywhere; }
+.danfe .receipt-table { margin: 0; border: 0; border-radius: 0; }
+.danfe-obs { padding: 10px 14px; display: flex; flex-direction: column; gap: 4px; font-size: .88rem; }
+.danfe .receipt-footer { padding: 10px 14px; border-top: 1px solid #cbd5e1; }
+@media (max-width: 720px) { .danfe-head { grid-template-columns: 1fr; } .danfe-canhoto { grid-template-columns: 1fr; } .danfe-canhoto .danfe-nf { grid-column: 1; grid-row: auto; } }

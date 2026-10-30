@@ -1250,3 +1250,43 @@ applySessionContext();
 if (window.location.pathname.includes("propostas-usina") || window.location.pathname.includes("propostas-enviadas")) {
   document.querySelectorAll("tbody tr[data-search-row]").forEach(renderProposalRowActions);
 }
+
+// Botao "mostrar senha" em todos os campos de senha e rotulo do tipo de conta abaixo da marca.
+function setupPasswordToggles() {
+  document.querySelectorAll('input[type="password"]').forEach((input) => {
+    if (input.dataset.toggleReady) return;
+    input.dataset.toggleReady = "1";
+    const host = input.closest(".input-wrap, .input-icon") || input.parentElement;
+    host.classList.add("has-pass-toggle");
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "pass-toggle";
+    button.textContent = "Mostrar";
+    button.setAttribute("aria-label", "Mostrar senha");
+    button.addEventListener("click", () => {
+      const show = input.type === "password";
+      input.type = show ? "text" : "password";
+      button.textContent = show ? "Ocultar" : "Mostrar";
+      button.setAttribute("aria-label", show ? "Ocultar senha" : "Mostrar senha");
+    });
+    input.after(button);
+  });
+}
+
+function setupRoleLabel() {
+  const brand = document.querySelector(".sidebar .brand");
+  if (!brand || document.querySelector(".brand-role")) return;
+  const role = (document.body.dataset.userRole || "").split(",")[0].trim();
+  const session = currentSession();
+  const tipo = session.tipo && (document.body.dataset.userRole || "").includes(session.tipo) ? session.tipo : role;
+  const nomes = { usina: "Conta Usina", empresa: "Conta Empresa", pessoa_fisica: "Conta Pessoa Física" };
+  if (!nomes[tipo]) return;
+  const tag = document.createElement("span");
+  tag.className = "brand-role";
+  tag.textContent = nomes[tipo];
+  brand.after(tag);
+}
+
+setupPasswordToggles();
+setupRoleLabel();
+document.addEventListener("DOMContentLoaded", () => { setupPasswordToggles(); setupRoleLabel(); });

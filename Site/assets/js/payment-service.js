@@ -65,6 +65,8 @@
       statusPedido: order.status || "Pendente",
       dataCriacao: order.dataPedido,
       pagamento: payment,
+      usinaDados: proposta.usina || {},
+      empresaDados: order.empresaCompradora || {},
       totals,
     };
   }

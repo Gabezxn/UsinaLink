@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Comprovante Oficial de Pedido | Usinalink</title>
+  <title>Nota fiscal do pedido | Usinalink</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body data-user-role="empresa,pessoa_fisica">
+<body data-user-role="empresa,pessoa_fisica,usina">
   <div class="app-layout receipt-shell" data-receipt-page>
     <aside class="sidebar print-hidden">
       <a class="brand" href="index.html"><span class="brand-icon">US</span><span>Usinalink</span></a>
@@ -24,36 +24,27 @@
       </nav>
     </aside>
     <main class="app-main">
-      <section class="card receipt-card">
-        <header class="receipt-hero">
-          <div><span>Comprovante Oficial de Pedido</span><h1 data-order-number></h1><p>Pedido confirmado e processado em <strong data-receipt-date></strong></p></div>
-          <strong class="receipt-stamp">Confirmado</strong>
-        </header>
-        <ol class="steps-line"><li>Carrinho</li><li>Endere&ccedil;o</li><li>Pagamento</li><li>Confirma&ccedil;&atilde;o</li></ol>
-        <div class="receipt-success"><strong>Pagamento confirmado com sucesso.</strong><span>Este comprovante &eacute; gerado em ambiente de testes do UsinaLink.</span></div>
+      <section class="card receipt-card danfe" data-danfe>
         <div class="receipt-actions print-hidden">
           <button class="btn" type="button" data-print-receipt>Baixar PDF</button>
           <button class="btn btn-ghost" type="button" data-share-receipt>Compartilhar</button>
           <a class="btn btn-ghost" href="historico-pedidos.html">Ir para hist&oacute;rico</a>
         </div>
-        <section class="action-modal-grid">
-          <div><span>Forma de pagamento</span><strong data-receipt-method></strong></div>
-          <div><span>Prazo de entrega</span><strong data-receipt-deadline></strong></div>
-          <div><span>Total final</span><strong data-receipt-total></strong></div>
-          <div><span>Garantia</span><strong>90 dias ap&oacute;s entrega</strong></div>
-          <div><span>Endere&ccedil;o de entrega</span><strong data-receipt-address></strong></div>
-          <div><span>Dados fiscais</span><strong>Documento fiscal em valida&ccedil;&atilde;o</strong></div>
-        </section>
-        <div class="table-wrap receipt-table">
-          <table>
-            <thead><tr><th>Item</th><th>Quantidade</th><th>Valor unit&aacute;rio</th><th>Total</th></tr></thead>
-            <tbody data-receipt-items></tbody>
-          </table>
-        </div>
-        <footer class="receipt-footer">
-          <span>Suporte: atendimento@usinalink.test</span>
-          <span>Protocolo: <strong data-receipt-protocol></strong></span>
-        </footer>
+        <div class="danfe-canhoto"><span>RECEBEMOS DE <strong data-danfe-emitente></strong> OS PRODUTOS CONSTANTES DA NOTA FISCAL INDICADA AO LADO</span><div><span>Data de recebimento</span><span>Identifica&ccedil;&atilde;o e assinatura do recebedor</span></div><strong class="danfe-nf">NF-e<br>N&ordm; <span data-order-number></span><br>S&eacute;rie 1</strong></div>
+        <div class="danfe-head"><div><strong data-danfe-emitente-2></strong><small data-danfe-emitente-info></small></div><div class="danfe-title"><strong>DANFE</strong><small>Documento Auxiliar da Nota Fiscal Eletr&ocirc;nica</small><small>1 - Sa&iacute;da</small></div><div><strong>N&ordm; <span data-order-number></span></strong><small>S&Eacute;RIE: 1 &middot; P&aacute;gina 1 de 1</small></div></div>
+        <div class="danfe-row"><div><span>Natureza da opera&ccedil;&atilde;o</span><strong>Venda de pe&ccedil;a sob encomenda</strong></div><div><span>Protocolo de autoriza&ccedil;&atilde;o de uso</span><strong data-receipt-protocol></strong></div><div><span>CNPJ do emitente</span><strong data-danfe-emitente-cnpj></strong></div></div>
+        <h3>Destinat&aacute;rio / Remetente</h3>
+        <div class="danfe-row"><div><span>Nome / Raz&atilde;o social</span><strong data-danfe-dest></strong></div><div><span>CNPJ/CPF</span><strong data-danfe-dest-doc></strong></div><div><span>Data de emiss&atilde;o</span><strong data-receipt-date></strong></div></div>
+        <div class="danfe-row"><div><span>Endere&ccedil;o de entrega</span><strong data-receipt-address></strong></div><div><span>Fone</span><strong data-danfe-dest-fone></strong></div><div><span>Prazo de entrega</span><strong data-receipt-deadline></strong></div></div>
+        <h3>Faturas</h3>
+        <div class="danfe-row"><div><span>N&uacute;mero</span><strong data-receipt-protocol-2></strong></div><div><span>Forma de pagamento</span><strong data-receipt-method></strong></div><div><span>Valor</span><strong data-receipt-total></strong></div></div>
+        <h3>C&aacute;lculo do imposto</h3>
+        <div class="danfe-row"><div><span>Valor total dos produtos</span><strong data-danfe-produtos></strong></div><div><span>Valor do frete</span><strong data-danfe-frete></strong></div><div><span>Taxa da plataforma (3,5%)</span><strong data-danfe-taxa></strong></div><div><span>Valor total da nota</span><strong data-danfe-total></strong></div></div>
+        <h3>Itens da nota fiscal</h3>
+        <div class="table-wrap receipt-table"><table><thead><tr><th>C&oacute;digo</th><th>Descri&ccedil;&atilde;o do produto</th><th>UN</th><th>Qtde</th><th>Pre&ccedil;o un.</th><th>Pre&ccedil;o total</th></tr></thead><tbody data-receipt-items></tbody></table></div>
+        <h3>Dados adicionais</h3>
+        <div class="danfe-obs"><span>Pedido de compra n.&ordm; <strong data-order-number></strong> &middot; Garantia: 90 dias ap&oacute;s a entrega</span><small>Documento gerado em ambiente de testes do UsinaLink, sem valor fiscal.</small></div>
+        <footer class="receipt-footer"><span>Suporte: atendimento@usinalink.test</span><span>Protocolo: <strong data-receipt-protocol-3></strong></span></footer>
       </section>
     </main>
   </div>
