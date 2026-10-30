@@ -246,7 +246,7 @@
     }
     passo.innerHTML = `<h2>Proximo passo</h2><p>${ui.escapeHtml(proximoPasso(order, isUsina))}</p>`;
     const receiptButton = document.querySelector("[data-detail-receipt]");
-    if (receiptButton) receiptButton.hidden = isUsina || order.statusPagamento !== "Pago";
+    if (receiptButton) receiptButton.hidden = order.statusPagamento !== "Pago";
     if (receiptButton) receiptButton.href = receiptLink(order);
     const payButton = document.querySelector("[data-detail-pay]");
     if (payButton) {
@@ -255,7 +255,7 @@
     }
     const confirmButton = document.querySelector("[data-detail-confirm-delivery]");
     if (confirmButton) {
-      confirmButton.hidden = isUsina || order.statusPedido !== "em_producao";
+      confirmButton.hidden = order.statusPedido !== "em_producao";
       confirmButton.onclick = async () => {
         confirmButton.disabled = true;
         confirmButton.textContent = "Confirmando...";

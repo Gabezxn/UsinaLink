@@ -122,13 +122,21 @@ export class PedidoService {
   }
 
   async confirmarEntrega(id: number | string, user: any) {
-    if (!user.tipoUsuario?.includes('empresa') && user.tipoUsuario !== 'pessoa_fisica') throw new ForbiddenException();
+    if (!user.tipoUsuario?.includes('empresa') && user.tipoUsuario !== 'pessoa_fisica' && !user.tipoUsuario?.includes('usina')) throw new ForbiddenException();
     const pedido = await this.detalhe(id, user);
     if (pedido.status !== 'em_producao') throw new ForbiddenException('Pedido ainda nao esta em producao.');
+    if (user.tipoUsuario?.includes('usina')) {
+      const idUsina = await this.ctx.obterUsinaId(user.sub);
+      if (!pedido.propostas?.some(p => p.status === 'aceita' && p.idUsina === idUsina)) throw new ForbiddenException('Somente a usina com a proposta aceita pode confirmar a entrega.');
+    }
     await this.pedidos.update({ idPedido: Number(id) }, { status: 'concluido', dataEntregaReal: new Date() });
-    await this.historico.save(this.historico.create({ idPedido: Number(id), statusNovo: 'concluido', idUsuarioResponsavel: user.sub, observacao: 'Entrega confirmada pelo comprador' }));
+    await this.historico.save(this.historico.create({ idPedido: Number(id), statusNovo: 'concluido', idUsuarioResponsavel: user.sub, observacao: user.tipoUsuario?.includes('usina') ? 'Entrega confirmada pela usina' : 'Entrega confirmada pelo comprador' }));
     const aceita = pedido.propostas?.find(p => p.status === 'aceita');
-    this.notificacoes.criar(await this.ctx.idUsuarioDaUsina(aceita?.idUsina), 'Entrega confirmada', `O comprador confirmou a entrega do pedido ${pedido.numeroPedido || '#' + pedido.idPedido}.`, 'historico-pedidos.html');
+    if (user.tipoUsuario?.includes('usina')) {
+      this.notificacoes.criar(pedido.idUsuarioSolicitante, 'Entrega confirmada', `A usina confirmou a entrega do pedido ${pedido.numeroPedido || '#' + pedido.idPedido}.`, 'historico-pedidos.html');
+    } else {
+      this.notificacoes.criar(await this.ctx.idUsuarioDaUsina(aceita?.idUsina), 'Entrega confirmada', `O comprador confirmou a entrega do pedido ${pedido.numeroPedido || '#' + pedido.idPedido}.`, 'historico-pedidos.html');
+    }
     return this.detalhe(id, user);
   }
 

@@ -3567,3 +3567,5 @@ body.pf-mode .check-chip input { accent-color: #0f766e; }
 .peca-foto { width: 100%; height: 150px; object-fit: cover; border-radius: 10px; margin-bottom: 10px; background: #f1f5f9; }
 .peca-foto-mini { width: 36px; height: 36px; object-fit: cover; border-radius: 6px; vertical-align: middle; margin-right: 8px; }
 [data-categorias] { display: flex; flex-wrap: wrap; gap: 4px 6px; }
+
+.row-actions { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }

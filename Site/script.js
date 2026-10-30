@@ -352,7 +352,18 @@ if (signupForm) {
       }
       await window.UsinaLinkApi.post(`/cadastro/${type === "pessoa" ? "pessoa_fisica" : type}`, payload);
       showToast("Cadastro realizado com sucesso");
-      window.setTimeout(() => { window.location.href = signupForm.dataset.redirect; }, 800);
+      // Entra direto na conta recem-criada; se o login automatico falhar, cai na tela de entrar.
+      let destino = signupForm.dataset.redirect;
+      try {
+        const login = await window.UsinaLinkApi.post("/auth/login/" + payload.tipo, { email: payload.email, senha: payload.senha });
+        ["usinalinkSession", "accessToken", "tipoUsuario", "nome"].forEach((key) => localStorage.removeItem(key));
+        sessionStorage.setItem("accessToken", login.accessToken || login.access_token);
+        sessionStorage.setItem("tipoUsuario", login.tipoUsuario);
+        sessionStorage.setItem("nome", login.nome || "");
+        sessionStorage.setItem("usinalinkSession", JSON.stringify({ tipo: login.tipoUsuario, nome: login.nome || "", empresaId: login.empresa?.idEmpresa, usinaId: login.usina?.idUsina }));
+        destino = { usina: "dashboard-usina.html", empresa: "dashboard-empresa.html", pessoa_fisica: "dashboard-pessoa-fisica.html" }[payload.tipo] || destino;
+      } catch { /* mantem o redirecionamento para o login */ }
+      window.setTimeout(() => { window.location.href = destino; }, 800);
     } catch (error) {
       if (error instanceof TypeError) {
         showToast("Nao foi possivel conectar ao servidor.");
@@ -752,13 +763,16 @@ function applySessionContext() {
 
 function proposalActionsMarkup(status) {
   const locked = ["Aceita", "Cancelada"].includes(status);
-  const actions = locked ? ["Ver detalhes"] : ["Ver detalhes", "Editar proposta", "Cancelar proposta"];
+  const extras = locked ? [] : ["Editar proposta", "Cancelar proposta"];
   return `
-    <div class="actions-menu">
-      <button class="icon-action" type="button" aria-label="Abrir acoes da proposta">...</button>
-      <div class="actions-menu-list" role="menu">
-        ${actions.map(action => `<button class="table-action js-alert" type="button" role="menuitem">${action}</button>`).join("")}
-      </div>
+    <div class="row-actions">
+      <button class="table-action js-alert" type="button">Ver detalhes</button>
+      ${extras.length ? `<div class="actions-menu">
+        <button class="icon-action" type="button" aria-label="Mais acoes da proposta">...</button>
+        <div class="actions-menu-list" role="menu">
+          ${extras.map(action => `<button class="table-action js-alert" type="button" role="menuitem">${action}</button>`).join("")}
+        </div>
+      </div>` : ""}
     </div>`;
 }
 
@@ -801,8 +815,12 @@ function proposalCardMarkup(item, best) {
   const status = item.status || "enviada";
   const aceita = status === "aceita";
   const travada = propostaEstaTravada(status);
-  const decisaoBtn = aceita
-    ? `<a class="btn" href="detalhes-pedido.html?pedidoId=${encodeURIComponent(item.idPedido)}">Pagar e acompanhar pedido</a>`
+  const statusPedido = item.pedido?.status;
+  const rotuloAceita = statusPedido === "em_producao" ? "Acompanhar pedido" : "Pagar pedido";
+  const decisaoBtn = aceita && statusPedido === "concluido"
+    ? `<a class="btn btn-ghost" href="detalhes-pedido.html?pedidoId=${encodeURIComponent(item.idPedido)}">Pedido concluído</a>`
+    : aceita
+    ? `<a class="btn" href="detalhes-pedido.html?pedidoId=${encodeURIComponent(item.idPedido)}">${rotuloAceita}</a>`
     : travada
       ? `<button class="btn btn-ghost" type="button" disabled>${escapeHtml(statusPropostaLabel(status))}</button>`
       : '<button class="btn js-alert" type="button">Aceitar proposta</button>';
