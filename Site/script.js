@@ -1118,7 +1118,6 @@ function applyOrderFilter(container, filter) {
   rows.forEach((row) => {
     let visible = true;
     if (filter === "alta") visible = row.dataset.urgency === "alta";
-    if (filter === "sudeste") visible = row.dataset.region === "sudeste";
     row.classList.toggle("is-hidden", !visible);
   });
   if (filter === "prazo") {
@@ -1290,3 +1289,19 @@ function setupRoleLabel() {
 setupPasswordToggles();
 setupRoleLabel();
 document.addEventListener("DOMContentLoaded", () => { setupPasswordToggles(); setupRoleLabel(); });
+
+// Filtro por estados (caixinhas) em Pedidos disponiveis.
+(function () {
+  const painel = document.querySelector(".uf-filter");
+  if (!painel) return;
+  const aplicar = () => {
+    const marcados = [...painel.querySelectorAll("[data-uf-check]:checked")].map((c) => c.value);
+    painel.querySelector("[data-uf-count]").textContent = marcados.length ? "(" + marcados.length + ")" : "";
+    document.querySelectorAll(".order-card-grid [data-search-row], [data-usina-pedidos-body] [data-search-row]").forEach((row) => {
+      row.classList.toggle("uf-hidden", marcados.length > 0 && !marcados.includes(row.dataset.region));
+    });
+  };
+  painel.addEventListener("change", aplicar);
+  painel.querySelector("[data-uf-clear]").addEventListener("click", () => { painel.querySelectorAll("[data-uf-check]").forEach((c) => { c.checked = false; }); aplicar(); });
+  document.addEventListener("usinalink:pedidos-carregados", aplicar);
+}());

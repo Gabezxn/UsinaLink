@@ -58,7 +58,7 @@
       valor: payment?.valor || proposta.valor || totals.total,
       frete: 0,
       prazo: proposta.prazo || "A definir",
-      endereco: order.endereco || "Endereco de entrega em validacao",
+      endereco: order.localEntrega || order.endereco || "Endereco de entrega em validacao",
       arquivo: (order.arquivos && order.arquivos[0]?.nomeArquivo) || "",
       formaPagamento: payment?.metodo || "Nao selecionada",
       statusPagamento,

@@ -3551,3 +3551,14 @@ body.pf-mode .brand-role { color: #0f766e; background: #e6f6f3; }
 @media (min-width: 981px) {
   .app-layout > .sidebar { position: sticky; top: 0; height: 100vh; overflow-y: auto; align-self: start; }
 }
+
+/* Filtro por estados e categorias com caixinhas */
+.uf-hidden, .cat-hidden { display: none !important; }
+.uf-filter { margin: 4px 0 14px; border: 1px solid var(--line, #dbe3ef); border-radius: 12px; padding: 10px 14px; background: #fff; }
+.uf-filter summary { cursor: pointer; font-weight: 700; }
+.uf-groups { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 12px 0; }
+.uf-group { border: 1px solid #e2e8f0; border-radius: 10px; padding: 8px 10px; margin: 0; }
+.uf-group legend { font-size: .74rem; font-weight: 800; text-transform: uppercase; color: #64748b; padding: 0 4px; }
+.check-chip { display: inline-flex; align-items: center; gap: 4px; margin: 3px 8px 3px 0; font-size: .86rem; cursor: pointer; }
+.check-chip input { width: auto; accent-color: #c2410c; }
+body.pf-mode .check-chip input { accent-color: #0f766e; }

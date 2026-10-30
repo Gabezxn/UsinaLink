@@ -44,6 +44,7 @@ export class SolicitacaoService {
       idSolicitacao: solicitacao.idSolicitacao,
       urgencia: dto.urgencia,
       observacoes: dto.descricao,
+      localEntrega: dto.localEntrega,
       prazoEntregaDias: diasAte(dto.prazoDesejado),
       itens: [{ nome: dto.peca, categoria: dto.categoria, material: dto.material, quantidade: dto.quantidade }],
       arquivo: dto.arquivoTecnico ? { url: dto.arquivoTecnico, nome: dto.arquivoTecnicoNome } : undefined,

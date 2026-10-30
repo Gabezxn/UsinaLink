@@ -149,6 +149,7 @@ export class Pedido {
   @Column({ default: 'aberto' }) status: string;
   @Column({ type: 'text', nullable: true }) observacoes?: string;
   @Column({ name: 'prazo_entrega_dias', nullable: true }) prazoEntregaDias?: number;
+  @Column({ name: 'local_entrega', nullable: true }) localEntrega?: string;
   @Column({ name: 'data_pedido', type: 'timestamp', nullable: true }) dataPedido?: Date;
   @Column({ name: 'data_prevista_entrega', type: 'timestamp', nullable: true }) dataPrevistaEntrega?: Date;
   @Column({ name: 'data_entrega_real', type: 'timestamp', nullable: true }) dataEntregaReal?: Date;

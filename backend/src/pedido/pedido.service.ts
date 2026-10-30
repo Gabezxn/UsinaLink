@@ -55,6 +55,7 @@ export class PedidoService {
       urgencia: dto.urgencia,
       status: 'aberto',
       observacoes: dto.observacoes || dto.descricao,
+      localEntrega: dto.localEntrega,
       prazoEntregaDias: prazoDigits ? Number(prazoDigits) : undefined,
       dataPedido: new Date(),
     }));

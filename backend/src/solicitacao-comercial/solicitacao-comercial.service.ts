@@ -117,6 +117,15 @@ export class SolicitacaoComercialService {
           this.exigir(row, ['aceita'], 'pagar');
           const total = Number(row.valorUnitario ?? 0) * Number(row.quantidade ?? 1);
           if (!(total > 0)) throw new BadRequestException('Esta peça está sob consulta e não tem valor definido para pagamento.');
+          // Baixa automatica no estoque do catalogo quando a compra e paga.
+          if (row.idPecaComercial) {
+            const peca = await this.pecas.findOne({ where: { idPecaComercial: row.idPecaComercial } });
+            const qtd = Number(row.quantidade ?? 1);
+            if (peca && peca.estoque != null) {
+              if (peca.estoque < qtd) throw new BadRequestException(`Estoque insuficiente: restam ${peca.estoque} unidade(s) desta peça.`);
+              await this.pecas.update({ idPecaComercial: peca.idPecaComercial }, { estoque: peca.estoque - qtd });
+            }
+          }
           proximo = 'paga';
           extra.pago = true;
           extra.metodoPagamento = dto.metodo || 'PIX';
