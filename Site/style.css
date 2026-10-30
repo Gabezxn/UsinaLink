@@ -3546,3 +3546,8 @@ body.pf-mode .brand-role { color: #0f766e; background: #e6f6f3; }
 .danfe-obs { padding: 10px 14px; display: flex; flex-direction: column; gap: 4px; font-size: .88rem; }
 .danfe .receipt-footer { padding: 10px 14px; border-top: 1px solid #cbd5e1; }
 @media (max-width: 720px) { .danfe-head { grid-template-columns: 1fr; } .danfe-canhoto { grid-template-columns: 1fr; } .danfe-canhoto .danfe-nf { grid-column: 1; grid-row: auto; } }
+
+/* Menu lateral fixo com rolagem propria: o perfil nao fica "la embaixo" */
+@media (min-width: 981px) {
+  .app-layout > .sidebar { position: sticky; top: 0; height: 100vh; overflow-y: auto; align-self: start; }
+}

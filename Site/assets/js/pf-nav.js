@@ -12,17 +12,16 @@
 
   const itens = [
     ["dashboard-pessoa-fisica.html", "D", "Início"],
+    ["perfil-pessoa-fisica.html", "I", "Perfil"],
     ["catalogo-pessoa-fisica.html", "P", "Peças comerciais"],
     ["usinas-pessoa-fisica.html", "U", "Usinas"],
     ["favoritos-pessoa-fisica.html", "F", "Favoritos"],
     ["compras-pessoa-fisica.html", "C", "Minhas compras"],
     ["solicitacoes.html", "S", "Pedido sob medida"],
-    ["propostas.html", "R", "Propostas recebidas"],
     ["historico-pedidos.html", "H", "Meus pedidos"],
     ["pagamentos-pessoa-fisica.html", "$", "Pagamentos"],
     ["avaliacoes-pessoa-fisica.html", "A", "Avaliações"],
     ["notificacoes-pessoa-fisica.html", "N", "Notificações"],
-    ["perfil-pessoa-fisica.html", "I", "Perfil"],
   ];
 
   // paginas internas destacam o item "pai" do menu

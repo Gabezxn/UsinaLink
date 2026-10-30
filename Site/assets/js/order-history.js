@@ -60,7 +60,7 @@
     nav.dataset.roleNav = isUsina ? "usina" : "empresa";
     nav.className = isUsina ? "side-nav orange-nav" : "side-nav";
     nav.innerHTML = isUsina ? `
-        <a href="dashboard-usina.html" data-icon="D">Dashboard usina</a>
+        <a href="dashboard-usina.html" data-icon="D">Início</a>
         <a href="perfil-usina.html" data-icon="I">Perfil</a>
         <a href="funcionarios-usina.html" data-icon="F">Funcion&aacute;rios</a>
         <a href="pedidos-disponiveis.html" data-icon="P">Pedidos dispon&iacute;veis</a>
@@ -70,7 +70,7 @@
         <a class="active" href="historico-pedidos.html" data-icon="H">Hist&oacute;rico relacionado</a>
         <a href="avaliacoes-usina.html" data-icon="A">Avalia&ccedil;&otilde;es recebidas</a>
         <a href="index.html" data-icon="X">Sair</a>` : `
-        <a href="dashboard-empresa.html" data-icon="D">Dashboard empresa</a>
+        <a href="dashboard-empresa.html" data-icon="D">Início</a>
         <a href="dashboard-pessoa-juridica.html" data-icon="P">Pe&ccedil;as comerciais</a>
         <a href="perfil-empresa.html" data-icon="I">Perfil</a>
         <a href="funcionarios.html" data-icon="F">Funcion&aacute;rios</a>

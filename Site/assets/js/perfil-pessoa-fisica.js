@@ -33,6 +33,8 @@
     applyValuesToSection('contato', { email: perfil.email, telefone });
     const titulo = document.querySelector('.profile-head h1');
     if (titulo && perfil.nome) titulo.textContent = perfil.nome;
+    const sub = document.querySelector(".profile-head p");
+    if (sub && cpf) sub.textContent = "CPF " + cpf;
     const avatar = document.querySelector('[data-profile-avatar]');
     if (avatar) avatar.textContent = iniciais(perfil.nome);
   }
