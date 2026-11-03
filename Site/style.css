@@ -3569,3 +3569,23 @@ body.pf-mode .check-chip input { accent-color: #0f766e; }
 [data-categorias] { display: flex; flex-wrap: wrap; gap: 4px 6px; }
 
 .row-actions { display: inline-flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+
+/* Parceiros e chat de contato (pagina inicial) */
+.partner-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 14px; }
+.partner-card { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 20px 14px; border: 1px solid var(--line, #dbe3ef); border-radius: 14px; background: #fff; text-align: center; }
+.partner-logo { display: grid; place-items: center; width: 54px; height: 54px; border-radius: 14px; background: #eaf1ff; color: #1d4ed8; font-weight: 800; }
+.partner-card small { color: #64748b; }
+.chat-contato { position: fixed; right: 18px; bottom: 18px; z-index: 80; display: flex; flex-direction: column; align-items: flex-end; gap: 10px; }
+.chat-abrir { border: 0; border-radius: 999px; padding: 12px 20px; background: #1d4ed8; color: #fff; font: inherit; font-weight: 700; cursor: pointer; box-shadow: 0 8px 24px rgba(15, 23, 42, .25); }
+.chat-painel { width: min(340px, calc(100vw - 36px)); background: #fff; border: 1px solid #dbe3ef; border-radius: 16px; box-shadow: 0 16px 40px rgba(15, 23, 42, .25); overflow: hidden; }
+.chat-painel[hidden] { display: none; }
+.chat-painel header { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: #1d4ed8; color: #fff; }
+.chat-painel header button { border: 0; background: transparent; color: #fff; font-size: 1rem; cursor: pointer; }
+.chat-mensagens { max-height: 220px; overflow-y: auto; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.chat-mensagens p { margin: 0; padding: 8px 12px; border-radius: 12px; font-size: .88rem; max-width: 88%; }
+.chat-bot { background: #f1f5f9; align-self: flex-start; }
+.chat-user { background: #dbeafe; align-self: flex-end; }
+.chat-atalhos { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 12px 12px; }
+.chat-form { display: grid; gap: 8px; padding: 0 12px 12px; }
+.chat-form[hidden] { display: none; }
+.chat-form input, .chat-form textarea { width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font: inherit; box-sizing: border-box; }

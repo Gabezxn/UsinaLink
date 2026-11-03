@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Comprador, ContextoUsuarioService } from '../contexto-usuario/contexto-usuario.service';
 import { NotificacaoService } from '../notificacao/notificacao.service';
-import { Pedido, ItemPedido, ArquivoPedido, HistoricoStatusPedido, Proposta, Empresa, PessoaFisica, Solicitacao } from '../common/entities/core.entities';
+import { Pedido, ItemPedido, ArquivoPedido, HistoricoStatusPedido, Proposta, Empresa, PessoaFisica, Solicitacao, Usina } from '../common/entities/core.entities';
 
 const STATUS_ABERTOS = ['aberto', 'em_negociacao'];
 
@@ -18,6 +18,7 @@ export class PedidoService {
     @InjectRepository(Empresa) private readonly empresas: Repository<Empresa>,
     @InjectRepository(PessoaFisica) private readonly pessoasFisicas: Repository<PessoaFisica>,
     @InjectRepository(Solicitacao) private readonly solicitacoes: Repository<Solicitacao>,
+    @InjectRepository(Usina) private readonly usinas: Repository<Usina>,
     private readonly ctx: ContextoUsuarioService,
     private readonly notificacoes: NotificacaoService,
   ) {}
@@ -82,6 +83,9 @@ export class PedidoService {
     }
 
     await this.historico.save(this.historico.create({ idPedido: pedido.idPedido, statusNovo: 'aberto', idUsuarioResponsavel: user.sub, observacao: 'Pedido criado' }));
+    // Avisa as usinas de que ha um novo pedido para responder.
+    const titulo = itensDto[0]?.nome || 'peça industrial';
+    this.usinas.find({ select: ['idUsuario'] }).then(lista => Promise.all(lista.map(u => this.notificacoes.criar(u.idUsuario, 'Novo pedido disponível', `Há um novo pedido de ${titulo} aguardando propostas.`, 'pedidos-disponiveis.html')))).catch(() => undefined);
     return this.enrich(pedido);
   }
 

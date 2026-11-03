@@ -473,7 +473,7 @@ const profileData = {
     cancel: "dashboard-usina.html",
     button: "btn-orange",
     sections: {
-      gerais: { title: "Informa\u00e7\u00f5es gerais", subtitle: "Dados industriais exibidos para empresas compradoras.", fields: [["Raz\u00e3o social", "text", "", null, "razaoSocial"], ["Nome fantasia", "text", "", null, "nomeFantasia"], ["Especialidade principal", "text", "", null, "especialidade"], ["Capacidade produtiva", "text", "", null, "capacidadeProducao"], ["Descri\u00e7\u00e3o industrial", "textarea", "", null, "descricao"]] },
+      gerais: { title: "Informa\u00e7\u00f5es gerais", subtitle: "Dados industriais exibidos para empresas compradoras.", fields: [["Nome da usina", "text", "", null, "nomeFantasia"], ["Especialidade principal", "text", "", null, "especialidade"], ["Capacidade produtiva", "text", "", null, "capacidadeProducao"], ["Descri\u00e7\u00e3o industrial", "textarea", "", null, "descricao"]] },
       contato: { title: "Contato", subtitle: "Canais da equipe comercial da usina.", fields: [["E-mail industrial", "email", "", null, "email"], ["Telefone", "tel", "", null, "telefone"], ["Respons\u00e1vel comercial", "text", "", null, "responsavel"]] },
       endereco: { title: "Endere\u00e7o", subtitle: "Localiza\u00e7\u00e3o operacional da usina.", fields: [["CEP", "text", "", null, "cep"], ["Rua", "text", "", null, "rua"], ["N\u00famero", "text", "", null, "numero"], ["Bairro", "text", "", null, "bairro"], ["Cidade", "text", "", null, "cidade"], ["Estado", "select", "", ["MG", "SP", "RJ", "PR", "SC", "RS"], "estado"], ["Complemento", "text", "", null, "complemento"]] },
       producao: { title: "Produ\u00e7\u00e3o", subtitle: "Capacidade operacional para avaliar pedidos.", fields: [["M\u00e1quinas dispon\u00edveis", "textarea", "", null, "maquinasDisponiveis"], ["Capacidade mensal", "text", "", null, "capacidadeMensal"], ["Turnos", "select", "", ["1 turno", "2 turnos", "3 turnos"], "turnos"], ["Prazo m\u00e9dio", "text", "", null, "prazoMedio"]] },
@@ -1323,3 +1323,33 @@ document.addEventListener("DOMContentLoaded", () => { setupPasswordToggles(); se
   painel.querySelector("[data-uf-clear]").addEventListener("click", () => { painel.querySelectorAll("[data-uf-check]").forEach((c) => { c.checked = false; }); aplicar(); });
   document.addEventListener("usinalink:pedidos-carregados", aplicar);
 }());
+
+// Notificacoes nas atividades do menu lateral: cada notificacao nao lida marca o item do menu a que ela se refere.
+async function setupNavNotifications() {
+  const nav = document.querySelector(".sidebar [data-role-nav]");
+  const session = currentSession();
+  if (!nav || !session.tipo || session.tipo === "pessoa_fisica" || !window.UsinaLinkApi?.get) return;
+  const role = document.body?.dataset.userRole || "";
+  if (role && !role.split(",").map((r) => r.trim()).includes(session.tipo)) return;
+  const pintar = async () => {
+    let lista = [];
+    try { lista = await window.UsinaLinkApi.get("/notificacoes"); } catch { return; }
+    nav.querySelectorAll(".nav-count").forEach((el) => el.remove());
+    const naoLidas = lista.filter((n) => !n.lida);
+    const porLink = {};
+    naoLidas.forEach((n) => { const chave = (n.link || "").split("?")[0]; if (chave) (porLink[chave] ||= []).push(n); });
+    Object.entries(porLink).forEach(([href, itens]) => {
+      const link = nav.querySelector(`a[href="${href}"]`);
+      if (!link) return;
+      link.insertAdjacentHTML("beforeend", ` <span class="badge info nav-count" title="${escapeHtml(itens[0].titulo)}">${itens.length}</span>`);
+      link.addEventListener("click", () => { itens.forEach((n) => window.UsinaLinkApi.patch(`/notificacoes/${n.idNotificacao}/ler`, {}).catch(() => {})); }, { once: true });
+    });
+    const novas = naoLidas.filter((n) => !pintar.vistas.has(n.idNotificacao));
+    if (pintar.vistas.size && novas.length) showToast(novas[0].titulo + (novas.length > 1 ? ` (+${novas.length - 1})` : ""));
+    naoLidas.forEach((n) => pintar.vistas.add(n.idNotificacao));
+  };
+  pintar.vistas = new Set();
+  await pintar();
+  window.setInterval(pintar, 30000);
+}
+setupNavNotifications();

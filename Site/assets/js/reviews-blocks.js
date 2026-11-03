@@ -90,7 +90,7 @@
         </div>
         <p>${ui.escapeHtml ? ui.escapeHtml(review.comentario || "Sem comentario.") : review.comentario || "Sem comentario."}</p>
         ${review.respostaDaUsina ? `<div class="review-reply"><strong>Resposta da usina</strong><span>${ui.escapeHtml ? ui.escapeHtml(review.respostaDaUsina) : review.respostaDaUsina}</span></div>` : ""}
-        ${canReply && !review.respostaDaUsina ? `<form class="review-reply-form"><label class="field">Responder avaliacao<span class="input-wrap"><input name="respostaDaUsina" type="text" minlength="3" required placeholder="Escreva uma resposta profissional"></span></label><button class="btn btn-small" type="submit">Responder</button></form>` : ""}
+        ${canReply ? `<form class="review-reply-form" ${review.respostaDaUsina ? "hidden" : ""}><label class="field">${review.respostaDaUsina ? "Editar resposta" : "Responder avaliacao"}<span class="input-wrap"><input name="respostaDaUsina" type="text" minlength="3" required placeholder="Escreva uma resposta profissional" value="${ui.escapeHtml ? ui.escapeHtml(review.respostaDaUsina || "") : ""}"></span></label><button class="btn btn-small" type="submit">${review.respostaDaUsina ? "Salvar resposta" : "Responder"}</button></form>${review.respostaDaUsina ? `<button class="btn btn-ghost btn-small" type="button" data-editar-resposta>Editar resposta</button>` : ""}` : ""}
       </article>`;
   }
 
@@ -179,13 +179,19 @@
       document.querySelector("[data-review-deadline]").textContent = summary.mediaPrazo || "0";
       document.querySelector("[data-review-communication]").textContent = summary.mediaComunicacao || "0";
       root.innerHTML = reviews.length ? reviews.map(review => renderReviewCard(review, true)).join("") : '<div class="empty-state"><strong>Nenhuma avaliacao recebida</strong><span>As avaliacoes dos pedidos concluidos aparecem aqui.</span></div>';
+      root.querySelectorAll("[data-editar-resposta]").forEach(botao => botao.addEventListener("click", () => {
+        const card = botao.closest("[data-review-id]");
+        card.querySelector(".review-reply-form").hidden = false;
+        botao.hidden = true;
+        card.querySelector(".review-reply-form input").focus();
+      }));
       root.querySelectorAll(".review-reply-form").forEach(form => {
         form.addEventListener("submit", async (event) => {
           event.preventDefault();
           const card = form.closest("[data-review-id]");
           const data = new FormData(form);
           await apiPost(`/avaliacoes/${card.dataset.reviewId}/resposta`, { respostaDaUsina: data.get("respostaDaUsina") });
-          notify("Resposta publicada.", "success");
+          notify("Resposta salva.", "success");
           await loadPlantReviews();
         });
       });

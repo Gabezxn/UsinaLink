@@ -106,7 +106,31 @@
     });
   }
 
-  loadPedido();
+
+  // Frete estimado: mesmo estado, mesma regiao ou outra regiao, mais um adicional por quantidade.
+  const REGIAO = { AC: "N", AP: "N", AM: "N", PA: "N", RO: "N", RR: "N", TO: "N", AL: "NE", BA: "NE", CE: "NE", MA: "NE", PB: "NE", PE: "NE", PI: "NE", RN: "NE", SE: "NE", DF: "CO", GO: "CO", MT: "CO", MS: "CO", ES: "SE", MG: "SE", RJ: "SE", SP: "SE", PR: "S", RS: "S", SC: "S" };
+  function ufDe(texto) {
+    const achados = (String(texto || "").toUpperCase().match(/[A-Z]{2}/g) || []).filter((uf) => REGIAO[uf]);
+    return achados.length ? achados[achados.length - 1] : "";
+  }
+  function calcularFrete(ufOrigem, ufDestino, quantidade) {
+    const base = !ufOrigem || !ufDestino ? 500 : ufOrigem === ufDestino ? 150 : REGIAO[ufOrigem] === REGIAO[ufDestino] ? 400 : 750;
+    return base + Math.min(Math.max(Number(quantidade) || 1, 1) * 5, 300);
+  }
+  async function aplicarFrete(pedido) {
+    const campo = document.querySelector("#proposal-freight");
+    if (!campo || !pedido) return;
+    let ufOrigem = "";
+    try {
+      const perfil = await window.UsinaLinkApi.get("/usinas/perfil");
+      ufOrigem = ufDe((perfil.endereco && perfil.endereco.estado) || perfil.estado);
+    } catch { /* sem endereco da usina: usa o valor base */ }
+    const valor = calcularFrete(ufOrigem, ufDe(pedido.localEntrega), pedido.itens && pedido.itens[0] && pedido.itens[0].quantidade);
+    campo.value = valor.toFixed(2).replace(".", ",");
+    campo.dispatchEvent(new Event("input", { bubbles: true }));
+  }
+
+  loadPedido().then(aplicarFrete);
   bindPreview();
   bindSubmit();
 }());
