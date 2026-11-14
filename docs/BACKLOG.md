@@ -5,7 +5,7 @@ Severidade: P0 derruba/compromete segurança; P1 quebra fluxo ou barreira de ace
 Verificar: `node qa/backlog-lint.mjs`.
 
 ## Progresso das tasks
-Tasks 1-9 concluídas (0 P0, 0 P1). Próxima: Task 10 (headers/Cloudflare), 11 (reauditoria + PRONTO-PARA-APRESENTAR). Baseline axe: 262 nós color-contrast + 1 scrollable-region (qa/baseline.txt). Backend: THROTTLE_LIMIT env (QA usa 100000).
+Tasks 1-10 concluídas (0 P0, 0 P1). Próxima: Task 11 (bateria qa/run-all.mjs --fresh, reauditoria, PRONTO-PARA-APRESENTAR.md). (antes: Task 10 (headers/Cloudflare), 11 (reauditoria + PRONTO-PARA-APRESENTAR). Baseline axe: 262 nós color-contrast + 1 scrollable-region (qa/baseline.txt). Backend: THROTTLE_LIMIT env (QA usa 100000).
 
 ## Achados
 | ID | Sev | Área | Onde (arquivo:linha) | Problema + como reproduzir | Correção sugerida | Status |

@@ -198,11 +198,11 @@ Cada linha abaixo tem um teste dentro da task indicada.
 **Files:**
 - Create: `Site/_headers`, `docs/DEPLOY-CLOUDFLARE-PAGES.md`, `qa/flows/headers.mjs`
 
-- [ ] **Step 1: Write the failing test `qa/flows/headers.mjs`:** com `static.mjs` aplicando `_headers`, todas as páginas carregam sem erro de CSP no console, e as respostas trazem `Content-Security-Policy`, `X-Content-Type-Options: nosniff`, `Referrer-Policy` e `X-Frame-Options`/`frame-ancestors`.
-- [ ] **Step 2: Run to verify it fails.**
-- [ ] **Step 3: Implement `_headers`.** O CSP deve permitir `self`, a API do Render (`connect-src`), os domínios do VLibras (`vlibras.gov.br` em `script-src`, `style-src`, `img-src`, `connect-src` e `frame-src`) e os estilos inline que o site usar hoje. O `docs/DEPLOY-CLOUDFLARE-PAGES.md` explica em passos curtos: criar o projeto Pages apontando para `Site/` (sem build), nome `usinalink` (gera `usinalink.pages.dev`) e adicionar a URL em `ALLOWED_ORIGINS` no Render.
-- [ ] **Step 4: Run to verify it passes** (`headers.mjs` e `axe.mjs` continuam OK).
-- [ ] **Step 5: Commit** e `git push`.
+- [x] **Step 1: Write the failing test `qa/flows/headers.mjs`:** com `static.mjs` aplicando `_headers`, todas as páginas carregam sem erro de CSP no console, e as respostas trazem `Content-Security-Policy`, `X-Content-Type-Options: nosniff`, `Referrer-Policy` e `X-Frame-Options`/`frame-ancestors`.
+- [x] **Step 2: Run to verify it fails.**
+- [x] **Step 3: Implement `_headers`.** O CSP deve permitir `self`, a API do Render (`connect-src`), os domínios do VLibras (`vlibras.gov.br` em `script-src`, `style-src`, `img-src`, `connect-src` e `frame-src`) e os estilos inline que o site usar hoje. O `docs/DEPLOY-CLOUDFLARE-PAGES.md` explica em passos curtos: criar o projeto Pages apontando para `Site/` (sem build), nome `usinalink` (gera `usinalink.pages.dev`) e adicionar a URL em `ALLOWED_ORIGINS` no Render.
+- [x] **Step 4: Run to verify it passes** (`headers.mjs` e `axe.mjs` continuam OK).
+- [x] **Step 5: Commit** e `git push`.
 
 ### Task 11: Reauditoria e fechamento
 
