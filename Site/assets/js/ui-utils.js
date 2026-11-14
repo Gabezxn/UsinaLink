@@ -71,12 +71,15 @@
     if (!toast) {
       toast = document.createElement("div");
       toast.className = "toast";
+      toast.setAttribute("role", "status");
+      toast.setAttribute("aria-live", "polite");
+      toast.setAttribute("aria-atomic", "true");
       document.body.appendChild(toast);
     }
     toast.textContent = message;
     toast.dataset.type = type;
     toast.classList.add("show");
-    window.setTimeout(() => toast.classList.remove("show"), 2800);
+    window.setTimeout(() => toast.classList.remove("show"), 7000);
   }
 
   window.UsinaLinkUi = {

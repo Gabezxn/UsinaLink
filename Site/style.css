@@ -2,6 +2,7 @@
   --blue: #1e3a8a;
   --purple: #6b21a8;
   --orange: #ff7a1a;
+  --orange-text: #a84a00; /* laranja escuro para texto: contraste >= 4.5:1 em fundos claros */
   --text: #0f172a;
   --muted: #64748b;
   --bg: #f8fafc;
@@ -256,7 +257,7 @@ textarea:focus {
 }
 
 .orange-text {
-  color: var(--orange);
+  color: var(--orange-text);
 }
 
 .grid {
@@ -511,7 +512,7 @@ textarea {
 
 .orange-nav a.active,
 .orange-nav a:hover {
-  color: var(--orange);
+  color: var(--orange-text);
   background: #fff7ed;
 }
 
@@ -865,7 +866,7 @@ dd {
 .rating-score {
   font-size: 3rem;
   font-weight: 800;
-  color: var(--orange);
+  color: var(--orange-text);
 }
 
 .rating-stars {
@@ -1379,7 +1380,7 @@ tbody tr:hover {
 
 .orange-mode .table-action,
 .table-action.orange-text {
-  color: var(--orange);
+  color: var(--orange-text);
 }
 
 @media (max-width: 980px) {
@@ -1942,7 +1943,7 @@ select::-ms-expand {
 }
 
 .quote-kicker {
-  color: var(--orange);
+  color: var(--orange-text);
   font-size: 0.78rem;
   font-weight: 900;
   letter-spacing: 0.08em;
@@ -2156,7 +2157,7 @@ select::-ms-expand {
 }
 
 .choice-card.orange .choice-icon {
-  color: var(--orange);
+  color: var(--orange-text);
 }
 
 .choice-check {
@@ -2269,7 +2270,7 @@ td:last-child .btn {
 }
 
 .orange-mode .modal-price {
-  color: var(--orange);
+  color: var(--orange-text);
 }
 
 .action-modal-grid {
@@ -2325,7 +2326,7 @@ td:last-child .btn {
   --background: #f4f6fb;
   --surface: #ffffff;
   --text-primary: #17233c;
-  --text-secondary: #65718b;
+  --text-secondary: #55607a;
   --border-soft: #dfe4ef;
 }
 
@@ -2801,7 +2802,7 @@ textarea:focus-visible {
   --purple: #4c3fb3;
   --orange: #ff7a1a;
   --text: #17233c;
-  --muted: #6b7890;
+  --muted: #4f5d75;
   --bg: #f5f7fb;
   --border: #dbe2ea;
   --card: #ffffff;
@@ -2890,7 +2891,7 @@ select:disabled,
 textarea:disabled,
 input[readonly],
 textarea[readonly] {
-  color: #8994a8;
+  color: #55607a;
   background: #f3f6fa;
   cursor: not-allowed;
 }
@@ -3421,7 +3422,7 @@ body[data-user-role="usina"] .side-nav a:not([href="index.html"]):hover,
 body[data-user-role="usina"] .side-nav a:not([href="index.html"]).active,
 .orange-nav a:not([href="index.html"]):hover,
 .orange-nav a:not([href="index.html"]).active {
-  color: var(--orange);
+  color: var(--orange-text);
   background: #fff7ed;
 }
 

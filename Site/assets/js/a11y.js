@@ -154,7 +154,103 @@
     document.head.appendChild(s);
   }
 
-  function init() { skipLink(); build(); vlibras(); apply(); }
+  /* ---------- Melhorias automáticas (idempotentes): tabelas, landmarks, autocomplete ---------- */
+  function setAttr(node, name, value) { if (node.getAttribute(name) !== value) node.setAttribute(name, value); }
+  function labelText(input) {
+    var l = input.closest("label, .field");
+    return l ? (l.textContent || "") : "";
+  }
+  function enhance() {
+    // Tabelas: legenda (só leitor de tela) e escopo dos cabeçalhos
+    Array.prototype.forEach.call(document.querySelectorAll("table"), function (tb) {
+      var cap = tb.querySelector("caption");
+      if (!cap) {
+        var box = tb.closest("section, article, .card");
+        var h = (box && box.querySelector("h2, h3")) || document.querySelector("h1");
+        cap = document.createElement("caption");
+        cap.className = "a11y-sr-only";
+        cap.textContent = tb.getAttribute("aria-label") || (h && h.textContent.trim()) || "Tabela de dados";
+        tb.insertBefore(cap, tb.firstChild);
+      }
+      Array.prototype.forEach.call(tb.querySelectorAll("th"), function (th) {
+        if (!th.hasAttribute("scope")) th.setAttribute("scope", th.closest("thead") || th.parentElement === tb.rows[0] ? "col" : "row");
+      });
+      var wrap = tb.closest(".table-wrap");
+      if (wrap && wrap.scrollWidth > wrap.clientWidth) {
+        setAttr(wrap, "tabindex", "0"); setAttr(wrap, "role", "region"); setAttr(wrap, "aria-label", cap.textContent);
+      }
+    });
+    // Landmarks com nome e página atual no menu
+    Array.prototype.forEach.call(document.querySelectorAll("nav:not([aria-label]):not([aria-labelledby])"), function (n) { n.setAttribute("aria-label", n.classList.contains("side-nav") ? "Menu principal" : "Navegação"); });
+    Array.prototype.forEach.call(document.querySelectorAll("aside:not([aria-label]):not([aria-labelledby])"), function (a) { a.setAttribute("aria-label", "Barra lateral"); });
+    Array.prototype.forEach.call(document.querySelectorAll("nav a.active"), function (a) { setAttr(a, "aria-current", "page"); });
+    // Autocomplete (WCAG 1.3.5)
+    Array.prototype.forEach.call(document.querySelectorAll("input:not([autocomplete])"), function (i) {
+      var login = i.form && i.form.classList.contains("js-login-form"), ac = null;
+      if (i.type === "email") ac = login ? "username" : "email";
+      else if (i.type === "password") ac = login || /atual/i.test(labelText(i)) ? "current-password" : "new-password";
+      else if (i.type === "tel") ac = "tel";
+      else if (i.dataset.fieldKey === "nome") ac = /empresa|usina/.test((i.form && i.form.dataset.accountType) || "") ? "organization" : "name";
+      else if (i.dataset.fieldKey === "cargo") ac = "organization-title";
+      if (ac) i.setAttribute("autocomplete", ac);
+    });
+  }
+
+  /* ---------- Modais: foco entra, fica preso, ESC fecha e o foco volta ao botão que abriu ---------- */
+  var tracked = [];  // [{ backdrop, opener }]
+  var pendingOpener = null;
+  document.addEventListener("click", function (e) { pendingOpener = (e.target.closest && e.target.closest("button, a, [role='button']")) || null; }, true);
+  function visibleBackdrops() {
+    return Array.prototype.filter.call(document.querySelectorAll(".modal-backdrop"), function (b) { return !b.hidden && getComputedStyle(b).display !== "none"; });
+  }
+  function focusablesIn(root) {
+    return Array.prototype.filter.call(root.querySelectorAll("button, [href], input:not([type='hidden']), select, textarea, [tabindex]:not([tabindex='-1'])"), function (n) { return !n.disabled && !n.hidden && n.offsetParent !== null; });
+  }
+  function closeButton(b) { return b.querySelector(".modal-close, [data-m-close], .js-action-modal-close, button[aria-label='Fechar']"); }
+  function syncModals() {
+    var vis = visibleBackdrops();
+    vis.forEach(function (b) {
+      if (tracked.some(function (t) { return t.backdrop === b; })) return;
+      tracked.push({ backdrop: b, opener: pendingOpener || document.activeElement });
+      var dlg = b.querySelector("[role='dialog']") || b;
+      if (!dlg.getAttribute("aria-label") && !dlg.getAttribute("aria-labelledby")) { var h = dlg.querySelector("h1, h2, h3"); if (h) dlg.setAttribute("aria-label", h.textContent.trim()); }
+      setAttr(dlg, "aria-modal", "true");
+      dlg.setAttribute("tabindex", "-1");
+      var f = focusablesIn(dlg).filter(function (n) { return n !== closeButton(b); });
+      (f[0] || closeButton(b) || dlg).focus();
+    });
+    tracked = tracked.filter(function (t) {
+      if (vis.indexOf(t.backdrop) >= 0) return true;
+      if (t.opener && document.contains(t.opener) && t.opener.focus) t.opener.focus();
+      return false;
+    });
+  }
+  document.addEventListener("keydown", function (e) {
+    if (!tracked.length || (panel && !panel.hidden)) return;
+    var top = tracked[tracked.length - 1].backdrop;
+    if (e.key === "Escape") {
+      e.preventDefault();
+      var c = closeButton(top);
+      if (c) c.click(); else top.hidden = true;
+      return;
+    }
+    if (e.key === "Tab") {
+      var dlg = top.querySelector("[role='dialog']") || top, f = focusablesIn(dlg);
+      if (!f.length) { e.preventDefault(); dlg.focus(); return; }
+      if (e.shiftKey && (document.activeElement === f[0] || document.activeElement === dlg)) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+      else if (!dlg.contains(document.activeElement)) { e.preventDefault(); f[0].focus(); }
+    }
+  }, true);
+  var pending = false;
+  function schedule() { if (pending) return; pending = true; window.requestAnimationFrame(function () { pending = false; enhance(); syncModals(); }); }
+  function observe() {
+    if (!window.MutationObserver) return;
+    new MutationObserver(schedule).observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["hidden", "class", "style"] });
+    window.addEventListener("resize", schedule);
+  }
+
+  function init() { skipLink(); build(); vlibras(); apply(); enhance(); syncModals(); observe(); }
   apply();
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init); else init();
 })();

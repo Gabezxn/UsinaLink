@@ -5,7 +5,7 @@ Severidade: P0 derruba/compromete segurança; P1 quebra fluxo ou barreira de ace
 Verificar: `node qa/backlog-lint.mjs`.
 
 ## Progresso das tasks
-Tasks 1-7 concluídas (0 P0, 0 P1 de fluxo/segurança). Próxima: Task 8 (P1 de acessibilidade A11Y-1,2,3,4,5,7,8,10), depois Task 9 (resiliência), 10 (headers/Cloudflare), 11 (reauditoria). Baseline axe: 262 nós color-contrast + 1 scrollable-region (qa/baseline.txt). Backend: THROTTLE_LIMIT env (QA usa 100000).
+Tasks 1-8 concluídas (0 P0, 0 P1; axe=0 serious/critical). Próxima: Task 9 (resiliência: /api/health, cold start, keepalive, 404), 10 (headers/Cloudflare), 11 (reauditoria + PRONTO-PARA-APRESENTAR). Baseline axe: 262 nós color-contrast + 1 scrollable-region (qa/baseline.txt). Backend: THROTTLE_LIMIT env (QA usa 100000).
 
 ## Achados
 | ID | Sev | Área | Onde (arquivo:linha) | Problema + como reproduzir | Correção sugerida | Status |
@@ -38,14 +38,14 @@ Tasks 1-7 concluídas (0 P0, 0 P1 de fluxo/segurança). Próxima: Task 8 (P1 de 
 | SEC-24 | P2 | Authz | backend/src/proposta/proposta.service.ts:92-107; pedido.service.ts:107-118 | admin/outro tipo recebe 500 em vez de 403. | 403 explícito | aberto |
 | BUG-2 | P2 | Disponibilidade | backend/src/pedido/pedido.service.ts:92-105 | Listas sem paginação, N+1 em enrich(), base64 nas listas (escala demo pequena). | Paginar/projetar | aberto |
 | BUG-4 | P2 | Validação | backend/src/main.ts:12 | forbidNonWhitelisted:false, sem @MaxLength. | Restringir | aberto |
-| A11Y-1 | P1 | Contraste | Site/style.css:4,6,94,119,167 | ~123 violações axe color-contrast: --muted #64748b, --text-secondary, laranja #ff7a1a como texto/fundo. | Escurecer --muted/--text-secondary, criar --orange-text; revalidar axe | aberto |
-| A11Y-2 | P1 | Toasts | Site/script.js:1-25; assets/js/ui-utils.js:70-79; pf-common.js:24 | .toast sem role/aria-live e some em ~2.6s. | role=status/alert, 6s+, pausa em hover/foco; unificar helper | aberto |
-| A11Y-3 | P1 | Modais | Site/script.js:619-646,1159-1217; pf-common.js:146-166; pecas-comerciais-usina.js:96-102 | Modais sem foco ao abrir, sem foco preso, sem ESC (exceto pf-common), sem devolver foco, alguns sem aria-labelledby. | Helper openModal/closeModal compartilhado | aberto |
-| A11Y-4 | P1 | Erros de formulário | Site/script.js:124-136,335-336; pagamento-pedido.html:67-70 | field-message sem id/aria-describedby/role=alert; obrigatório só por atributo. | Ligar com aria-describedby, role=alert, marcar obrigatórios | aberto |
-| A11Y-5 | P1 | Autocomplete | Site/login*.html; cadastro*.html | Nenhum input com autocomplete (WCAG 1.3.5). | username/current-password/new-password/name/email/organization | aberto |
-| A11Y-7 | P1 | Menu lateral | Site/assets/js/pf-nav.js:44-46; script.js:6-17,555-562 | nav sem aria-label, ativo sem aria-current, botão Menu sem aria-expanded/controls. | aria-label, aria-current=page, aria-expanded/controls, ESC | aberto |
-| A11Y-8 | P1 | Tabelas | Site/dashboard-*.html; funcionarios*.html; propostas*.html; solicitacoes*.html; compras-pessoa-fisica.html; historico-pedidos.html | 15 páginas com table sem caption e th sem scope; .table-wrap rola sem foco (axe scrollable-region-focusable). | caption, scope=col, .table-wrap tabindex=0 role=region aria-label | aberto |
-| A11Y-10 | P1 | Estrutura | Site/confirmacao-pedido.html:28-46; <aside> de todas as páginas | Sem h1 (h1→h3); aside/nav sem nome. | Adicionar h1, aria-label em aside/nav | aberto |
+| A11Y-1 | P1 | Contraste | Site/style.css:4,6,94,119,167 | ~123 violações axe color-contrast: --muted #64748b, --text-secondary, laranja #ff7a1a como texto/fundo. | Escurecer --muted/--text-secondary, criar --orange-text; revalidar axe | corrigido |
+| A11Y-2 | P1 | Toasts | Site/script.js:1-25; assets/js/ui-utils.js:70-79; pf-common.js:24 | .toast sem role/aria-live e some em ~2.6s. | role=status/alert, 6s+, pausa em hover/foco; unificar helper | corrigido |
+| A11Y-3 | P1 | Modais | Site/script.js:619-646,1159-1217; pf-common.js:146-166; pecas-comerciais-usina.js:96-102 | Modais sem foco ao abrir, sem foco preso, sem ESC (exceto pf-common), sem devolver foco, alguns sem aria-labelledby. | Helper openModal/closeModal compartilhado | corrigido |
+| A11Y-4 | P1 | Erros de formulário | Site/script.js:124-136,335-336; pagamento-pedido.html:67-70 | field-message sem id/aria-describedby/role=alert; obrigatório só por atributo. | Ligar com aria-describedby, role=alert, marcar obrigatórios | corrigido |
+| A11Y-5 | P1 | Autocomplete | Site/login*.html; cadastro*.html | Nenhum input com autocomplete (WCAG 1.3.5). | username/current-password/new-password/name/email/organization | corrigido |
+| A11Y-7 | P1 | Menu lateral | Site/assets/js/pf-nav.js:44-46; script.js:6-17,555-562 | nav sem aria-label, ativo sem aria-current, botão Menu sem aria-expanded/controls. | aria-label, aria-current=page, aria-expanded/controls, ESC | corrigido |
+| A11Y-8 | P1 | Tabelas | Site/dashboard-*.html; funcionarios*.html; propostas*.html; solicitacoes*.html; compras-pessoa-fisica.html; historico-pedidos.html | 15 páginas com table sem caption e th sem scope; .table-wrap rola sem foco (axe scrollable-region-focusable). | caption, scope=col, .table-wrap tabindex=0 role=region aria-label | corrigido |
+| A11Y-10 | P1 | Estrutura | Site/confirmacao-pedido.html:28-46; <aside> de todas as páginas | Sem h1 (h1→h3); aside/nav sem nome. | Adicionar h1, aria-label em aside/nav | corrigido |
 | A11Y-6 | P2 | Rótulos | Site/cadastro*.html; login*.html; script.js:504-508 | span.input-symbol dentro do label lido no nome. | aria-hidden nos spans decorativos | aberto |
 | A11Y-9 | P2 | aria-live | listas/tbody dinâmicos; aceitar-convite-funcionario.html:19 | Busca/filtro/carregamento sem aviso. | aria-live=polite | aberto |
 | A11Y-11 | P2 | Títulos | cadastro*.html, dashboard-*.html, pagamentos*.html | <title> repetido entre perfis. | Títulos distintos | aberto |

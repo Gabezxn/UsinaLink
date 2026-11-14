@@ -171,11 +171,11 @@ Cada linha abaixo tem um teste dentro da task indicada.
 **Files:**
 - Modify: `Site/*.html`, `Site/assets/js/pf-nav.js`, `Site/assets/js/ui-utils.js` e outros apontados pelo axe
 
-- [ ] **Step 1: Write the failing test:** `node qa/checks/axe.mjs` lista as violações restantes (`serious|critical`) e as barreiras manuais P1 do BACKLOG (`A11Y-*`).
-- [ ] **Step 2: Run to verify it fails.**
-- [ ] **Step 3: Implement primeiro nos pontos compartilhados** (menu lateral gerado por JS, modais com foco preso e devolvido, avisos em `aria-live`, erros de formulário ligados por `aria-describedby`, botões de ícone com nome, `alt`, ordem de títulos, `<caption>` em tabelas), depois nos casos isolados.
-- [ ] **Step 4: Run to verify it passes:** `axe.mjs` sai com 0 em todas as páginas e os 3 papéis. Teste adicional **(Review Focus 5)**: com o `sessionStorage` com token inválido, abrir um dashboard leva ao login com mensagem visível, sem laço de redirecionamento.
-- [ ] **Step 5: Commit por lote** e `git push`.
+- [x] **Step 1: Write the failing test:** `node qa/checks/axe.mjs` lista as violações restantes (`serious|critical`) e as barreiras manuais P1 do BACKLOG (`A11Y-*`).
+- [x] **Step 2: Run to verify it fails.**
+- [x] **Step 3: Implement primeiro nos pontos compartilhados** (menu lateral gerado por JS, modais com foco preso e devolvido, avisos em `aria-live`, erros de formulário ligados por `aria-describedby`, botões de ícone com nome, `alt`, ordem de títulos, `<caption>` em tabelas), depois nos casos isolados.
+- [x] **Step 4: Run to verify it passes:** `axe.mjs` sai com 0 em todas as páginas e os 3 papéis. Teste adicional **(Review Focus 5)**: com o `sessionStorage` com token inválido, abrir um dashboard leva ao login com mensagem visível, sem laço de redirecionamento.
+- [x] **Step 5: Commit por lote** e `git push`.
 
 ### Task 9: Resiliência para a apresentação
 

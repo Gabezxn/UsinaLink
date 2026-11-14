@@ -1,5 +1,8 @@
 const toast = document.createElement("div");
 toast.className = "toast";
+toast.setAttribute("role", "status");
+toast.setAttribute("aria-live", "polite");
+toast.setAttribute("aria-atomic", "true");
 document.body.appendChild(toast);
 
 document.querySelectorAll(".sidebar").forEach((sidebar) => {
@@ -10,6 +13,9 @@ document.querySelectorAll(".sidebar").forEach((sidebar) => {
   toggle.className = "sidebar-toggle";
   toggle.type = "button";
   toggle.setAttribute("aria-label", "Abrir ou fechar menu");
+  toggle.setAttribute("aria-expanded", "false");
+  if (!nav.id) nav.id = "menu-lateral";
+  toggle.setAttribute("aria-controls", nav.id);
   toggle.textContent = "Menu";
   brand.insertAdjacentElement("afterend", toggle);
   toggle.addEventListener("click", () => {
@@ -21,7 +27,7 @@ document.querySelectorAll(".sidebar").forEach((sidebar) => {
 function showToast(message) {
   toast.textContent = message;
   toast.classList.add("show");
-  window.setTimeout(() => toast.classList.remove("show"), 2600);
+  window.setTimeout(() => toast.classList.remove("show"), 7000);
 }
 
 const signupConfig = {
@@ -130,6 +136,9 @@ function setFieldState(input, message) {
     messageElement.className = "field-message";
     field.appendChild(messageElement);
   }
+  if (!messageElement.id) messageElement.id = "field-msg-" + (window.__fieldMsgSeq = (window.__fieldMsgSeq || 0) + 1);
+  messageElement.setAttribute("role", "alert");
+  if (message) input.setAttribute("aria-describedby", messageElement.id); else input.removeAttribute("aria-describedby");
   field.classList.toggle("has-error", Boolean(message));
   field.classList.toggle("has-success", !message && Boolean(input.value.trim()));
   input.setAttribute("aria-invalid", message ? "true" : "false");
