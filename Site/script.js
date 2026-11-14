@@ -765,8 +765,8 @@ function applySessionContext() {
 }
 
 function proposalActionsMarkup(status) {
-  const locked = ["Aceita", "Cancelada"].includes(status);
-  const extras = locked ? [] : ["Editar proposta", "Cancelar proposta"];
+  const locked = ["Aceita", "Cancelada", "Recusada"].includes(status);
+  const extras = locked ? [] : ["Cancelar proposta"];
   return `
     <div class="row-actions">
       <button class="table-action js-alert" type="button">Ver detalhes</button>

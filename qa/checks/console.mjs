@@ -8,7 +8,8 @@ const lines = new Set(); let current = '';
 const browser = await chromium.launch();
 const add = (t, d) => lines.add(`${current} | ${t} | ${String(d).slice(0, 160)}`);
 function hook(page) {
-  page.on('console', (m) => { if (m.type() === 'error') add('console', m.text()); });
+  // O sandbox não alcança a internet (VLibras): falhas de rede externa não contam como erro do site.
+  page.on('console', (m) => { if (m.type() === 'error' && !/ERR_TUNNEL_CONNECTION_FAILED|ERR_NAME_NOT_RESOLVED|ERR_INTERNET_DISCONNECTED/.test(m.text())) add('console', m.text()); });
   page.on('pageerror', (e) => add('excecao', e.message));
   page.on('response', (r) => { if (r.status() >= 400 && (r.url().startsWith(SITE) || r.url().startsWith(API))) add(`http-${r.status()}`, r.url().replace(SITE, '').replace(API, 'API')); });
 }

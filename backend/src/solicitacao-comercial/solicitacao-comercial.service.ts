@@ -40,6 +40,7 @@ export class SolicitacaoComercialService {
     const comprador = await this.ctx.obterComprador(user.sub);
     // Com o id da peca, a usina vem do catalogo (nao do texto enviado pelo navegador).
     const peca = dto.pecaId ? await this.pecas.findOne({ where: { idPecaComercial: Number(dto.pecaId), ativo: true } }) : null;
+    if (peca && (peca.valorUnitario === null || peca.valorUnitario === undefined)) throw new BadRequestException('Esta peça está sob consulta e ainda não tem valor definido. Peça a cotação diretamente com a usina.');
     const usina = peca ? await this.usinas.findOne({ where: { idUsina: peca.idUsina } }) : null;
     const quantidade = dto.quantidade ? Number(dto.quantidade) : 1;
     if (!Number.isInteger(quantidade) || quantidade < 1) throw new BadRequestException('Quantidade deve ser um número inteiro maior que zero.');

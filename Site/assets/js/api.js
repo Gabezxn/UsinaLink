@@ -23,6 +23,35 @@
     }
   }
 
+  const LOGIN_BY_ROLE = { empresa: 'login-empresa.html', usina: 'login-usina.html', pessoa_fisica: 'login-pessoa-fisica.html', 'pessoa-fisica': 'login-pessoa-fisica.html' };
+  const SESSION_MESSAGE = 'Sua sessão expirou. Entre novamente para continuar.';
+
+  // Token expirado/inválido: limpa a sessão e leva ao login do perfil, com aviso (sem laço de redirecionamento).
+  let encerrando = false;
+  function sessionExpired() {
+    if (encerrando) return; // várias chamadas em paralelo recebem 401: só a primeira redireciona
+    encerrando = true;
+    let tipo = null;
+    try { tipo = (JSON.parse(sessionStorage.getItem('usinalinkSession') || localStorage.getItem('usinalinkSession') || 'null') || {}).tipo; } catch { /* sem sessão legível */ }
+    ['usinalinkSession', 'accessToken', 'tipoUsuario', 'nome'].forEach((k) => { try { sessionStorage.removeItem(k); localStorage.removeItem(k); } catch { /* sem armazenamento */ } });
+    try { sessionStorage.setItem('usinalinkNotice', SESSION_MESSAGE); } catch { /* sem armazenamento */ }
+    if (!/\/login[^/]*\.html$|\/index\.html$|\/$/.test(window.location.pathname)) window.location.href = LOGIN_BY_ROLE[tipo] || 'login.html';
+  }
+
+  // Mostra o aviso guardado (ex.: sessão expirada) na tela de login.
+  document.addEventListener('DOMContentLoaded', () => {
+    let msg = null;
+    try { msg = sessionStorage.getItem('usinalinkNotice'); sessionStorage.removeItem('usinalinkNotice'); } catch { /* sem armazenamento */ }
+    const alvo = msg && document.querySelector('form.js-login-form');
+    if (!alvo) return;
+    const p = document.createElement('p');
+    p.className = 'form-notice';
+    p.setAttribute('role', 'alert');
+    p.style.cssText = 'margin:0 0 16px;padding:12px 14px;border:2px solid #92400e;border-radius:10px;background:#fffbeb;color:#451a03;font-weight:600';
+    p.textContent = msg;
+    alvo.insertBefore(p, alvo.firstChild);
+  });
+
   async function apiRequest(endpoint, options = {}) {
     const token = getAccessToken();
     const response = await fetch(buildUrl(endpoint), {
@@ -36,6 +65,11 @@
 
     const contentType = response.headers.get('content-type');
     const data = contentType?.includes('application/json') ? await response.json() : null;
+
+    if (response.status === 401 && !/\/?(auth\/login|cadastro)/.test(String(endpoint))) {
+      sessionExpired();
+      throw new Error(SESSION_MESSAGE);
+    }
 
     if (!response.ok) {
       throw new Error(extractErrorMessage(data));

@@ -108,7 +108,7 @@
         </div>
         <div class="card-actions">
           <a class="btn btn-ghost" href="${detailsLink(order)}">Ver detalhes</a>
-          <a class="btn" href="${paymentLink(order)}">${order.statusPagamento === "Pago" ? "Ver pagamento" : "Pagar pedido"}</a>
+          ${order.statusPagamento === "Pago" ? `<a class="btn" href="${paymentLink(order)}">Ver pagamento</a>` : order.statusPedido === "proposta_aceita" ? `<a class="btn" href="${paymentLink(order)}">Pagar pedido</a>` : ""}
         </div>
       </article>
     `).join("");
@@ -185,7 +185,26 @@
     if (!root) return;
     const order = await service.getOrder(params.get("pedidoId"));
     if (!order) return;
-    const payment = order.pagamento || await service.savePayment(order, "PIX");
+    const raw = order.pagamento;
+    if (!raw) {
+      // Nunca paga sozinho ao abrir a tela: sem pagamento, orienta o usuário.
+      const aviso = document.createElement("div");
+      aviso.className = "empty-state";
+      aviso.setAttribute("role", "status");
+      aviso.innerHTML = '<strong>Este pedido ainda não foi pago</strong><span>O comprovante aparece depois do pagamento.</span>';
+      const link = document.createElement("a");
+      link.className = "btn btn-primary";
+      link.href = "pagamento-pedido.html?pedidoId=" + encodeURIComponent(params.get("pedidoId") || "");
+      link.textContent = "Ir para o pagamento";
+      aviso.appendChild(link);
+      root.replaceChildren(aviso);
+      return;
+    }
+    const payment = {
+      method: raw.metodo || raw.method || "PIX",
+      protocol: raw.protocol || "USL-" + String(raw.idPagamento ?? raw.id ?? "").padStart(6, "0"),
+      createdAt: raw.dataPagamento || raw.createdAt || new Date().toISOString(),
+    };
     const set = (sel, val) => document.querySelectorAll(sel).forEach(el => { el.textContent = val; });
     const usina = order.usinaDados || {};
     const comprador = order.empresaDados || {};

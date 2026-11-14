@@ -16,6 +16,10 @@ button, .btn, [role="button"], .table-action { min-width: 44px; }
 nav a, aside a { min-height: 44px; display: flex; align-items: center; }
 input[type="checkbox"], input[type="radio"] { width: 24px; height: 24px; }
 
+/* Espaço para o botão fixo não cobrir botões no fim da página */
+html { scroll-padding-bottom: 96px; }
+body { padding-bottom: 88px; }
+
 /* Botão e painel */
 .a11y-toggle { position: fixed; right: 16px; bottom: 16px; z-index: 99990; display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border: 2px solid #fff; border-radius: 999px; background: #123273; color: #fff; font: 700 1rem/1.2 inherit; font-family: inherit; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.35); }
 .a11y-toggle:hover { background: #0b2150; }

@@ -157,14 +157,14 @@ Cada linha abaixo tem um teste dentro da task indicada.
 - Modify: conforme BACKLOG (`FLX-*`, `BUG-*` com P1)
 - Create: `qa/flows/pf.mjs`, `qa/flows/empresa-usina.mjs`
 
-- [ ] **Step 1: Write the failing E2E** (Playwright, usando `loginAs`):
+- [x] **Step 1: Write the failing E2E** (Playwright, usando `loginAs`):
   - **`pf.mjs`:** catálogo → solicitar compra → usina aceita → pagar → usina confirma entrega → PF vê a compra concluída e pode avaliar;
   - **`empresa-usina.mjs`:** nova solicitação → usina envia proposta → empresa aceita → pagamento → usina confirma entrega → histórico.
   Cada fluxo mede e imprime o número de cliques até concluir. A meta de simplicidade é reduzir passos citados no BACKLOG, sem adicionar telas.
-- [ ] **Step 2: Run to verify they fail** onde houver bug P1 aberto.
-- [ ] **Step 3: Implement** as correções em ordem de prioridade, refazendo trechos de código quando o BACKLOG indicar que o conserto é pior do que a reescrita.
-- [ ] **Step 4: Run to verify they pass.** Os dois fluxos terminam com 0 erros de console (`console.mjs`).
-- [ ] **Step 5: Commit por lote** e `git push`.
+- [x] **Step 2: Run to verify they fail** onde houver bug P1 aberto.
+- [x] **Step 3: Implement** as correções em ordem de prioridade, refazendo trechos de código quando o BACKLOG indicar que o conserto é pior do que a reescrita.
+- [x] **Step 4: Run to verify they pass.** Os dois fluxos terminam com 0 erros de console (`console.mjs`).
+- [x] **Step 5: Commit por lote** e `git push`.
 
 ### Task 8: Correções P1 de acessibilidade por página
 

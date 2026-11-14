@@ -9,6 +9,6 @@ export class CreatePecaComercialDto {
   @IsOptional() @IsString() @IsImagem() imagem?: string;
   @IsOptional() @IsNumberString({}, { message: 'Estoque deve ser numérico.' }) estoque?: string;
   @IsOptional() @IsString() unidadeEstoque?: string;
-  @IsOptional() @IsNumberString({}, { message: 'Valor unitário deve ser numérico.' }) valorUnitario?: string;
+  @IsNotEmpty({ message: 'Informe o valor unitário da peça.' }) @IsNumberString({}, { message: 'Valor unitário deve ser numérico.' }) valorUnitario: string;
   @IsOptional() @IsNumberString({}, { message: 'Prazo de entrega deve ser numérico.' }) prazoEntregaDias?: string;
 }
