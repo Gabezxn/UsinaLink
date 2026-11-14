@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsNumberString, IsString } from 'class-validator';
+import { IsAnexo } from '../../common/anexo';
 
 export class CreateSolicitacaoDto {
   @IsNotEmpty({ message: 'Informe o nome da peça.' }) @IsString() peca: string;
@@ -9,6 +10,6 @@ export class CreateSolicitacaoDto {
   @IsNotEmpty({ message: 'Selecione a urgência.' }) @IsString() urgencia: string;
   @IsNotEmpty({ message: 'Informe o local de entrega.' }) @IsString() localEntrega: string;
   @IsNotEmpty({ message: 'Informe a descrição técnica.' }) @IsString() descricao: string;
-  @IsNotEmpty({ message: 'Anexe um arquivo técnico.' }) @IsString() arquivoTecnico: string;
+  @IsNotEmpty({ message: 'Anexe um arquivo técnico.' }) @IsString() @IsAnexo() arquivoTecnico: string;
   @IsNotEmpty({ message: 'Anexe um arquivo técnico.' }) @IsString() arquivoTecnicoNome: string;
 }

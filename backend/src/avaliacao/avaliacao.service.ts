@@ -7,7 +7,7 @@ import { CreateAvaliacaoDto } from './dto/create-avaliacao.dto';
 import { UpdateAvaliacaoDto } from './dto/update-avaliacao.dto';
 import { ResponderAvaliacaoDto } from './dto/responder-avaliacao.dto';
 
-const STATUS_CONCLUIDO = ['concluido', 'concluida', 'em_negociacao'];
+const STATUS_CONCLUIDO = ['concluido', 'concluida'];
 
 @Injectable()
 export class AvaliacaoService {
@@ -33,7 +33,7 @@ export class AvaliacaoService {
       ? pedido.idPessoaFisicaCompradora === comprador.idPessoaFisica
       : !!comprador.idEmpresa && pedido.idEmpresaCompradora === comprador.idEmpresa;
     if (!dono) throw new ForbiddenException('Pedido nao pertence a sua conta.');
-    const proposta = await this.propostas.findOne({ where: { idPedido: pedido.idPedido, status: In(['aceita', 'enviada']) } });
+    const proposta = await this.propostas.findOne({ where: { idPedido: pedido.idPedido, status: 'aceita' } });
     if (await this.avaliacoes.findOne({ where: { idPedido: pedido.idPedido } })) throw new BadRequestException('Pedido ja avaliado.');
     return this.avaliacoes.save(this.avaliacoes.create({
       idPedido: pedido.idPedido,
@@ -76,16 +76,30 @@ export class AvaliacaoService {
     return this.avaliacoes.find({ where: c.idPessoaFisica ? { idPessoaFisicaAvaliadora: c.idPessoaFisica } : { idEmpresaAvaliadora: c.idEmpresa }, order: { criadoEm: 'DESC' } });
   }
 
-  findByUsina(idUsinaAvaliada: number) {
-    return this.avaliacoes.find({ where: { idUsinaAvaliada } });
+  /** Avaliações de uma usina. Quem não é a própria usina não vê quem avaliou. */
+  async findByUsina(idUsinaAvaliada: number, user?: any) {
+    const rows = await this.avaliacoes.find({ where: { idUsinaAvaliada } });
+    const propria = user?.tipoUsuario?.includes('usina') && (await this.ctx.obterUsinaId(user.sub).catch(() => undefined)) === idUsinaAvaliada;
+    return propria ? rows : rows.map(({ idEmpresaAvaliadora, idPessoaFisicaAvaliadora, ...resto }) => resto);
   }
 
-  findByEmpresa(idEmpresaAvaliadora: number) {
+  async findByEmpresa(idEmpresaAvaliadora: number, user: any) {
+    const idEmpresa = await this.ctx.obterEmpresaId(user.sub).catch(() => undefined);
+    if (!idEmpresa || idEmpresa !== idEmpresaAvaliadora) throw new ForbiddenException();
     return this.avaliacoes.find({ where: { idEmpresaAvaliadora } });
   }
 
-  findByPedido(idPedido: number) {
-    return this.avaliacoes.findOne({ where: { idPedido } });
+  async findByPedido(idPedido: number, user: any) {
+    const a = await this.avaliacoes.findOne({ where: { idPedido } });
+    if (!a) return null;
+    if (user?.tipoUsuario?.includes('usina')) {
+      if ((await this.ctx.obterUsinaId(user.sub).catch(() => undefined)) !== a.idUsinaAvaliada) throw new ForbiddenException();
+      return a;
+    }
+    const c = await this.ctx.obterComprador(user.sub);
+    const dona = c.idPessoaFisica ? a.idPessoaFisicaAvaliadora === c.idPessoaFisica : !!c.idEmpresa && a.idEmpresaAvaliadora === c.idEmpresa;
+    if (!dona) throw new ForbiddenException();
+    return a;
   }
 
   async update(id: number, dto: UpdateAvaliacaoDto, user: any) {
@@ -114,7 +128,7 @@ export class AvaliacaoService {
   }
 
   async summary(idUsinaAvaliada: number) {
-    const rows = await this.findByUsina(idUsinaAvaliada);
+    const rows = await this.avaliacoes.find({ where: { idUsinaAvaliada } });
     const media = (campo: 'nota' | 'qualidade' | 'prazo' | 'comunicacao') => {
       const valores = rows.map(r => r[campo]).filter((v): v is number => typeof v === 'number');
       return valores.length ? Math.round((valores.reduce((a, b) => a + b, 0) / valores.length) * 10) / 10 : 0;

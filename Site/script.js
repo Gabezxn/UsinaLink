@@ -277,6 +277,9 @@ const signupForm = document.querySelector(".signup-dynamic-form");
 if (signupForm) {
   let signupLookupTimer;
   const lookupSignupOrganization = async () => {
+    // Desativado por privacidade: o cadastro não consulta mais dados de outras empresas/usinas (SEC-13).
+    return;
+    // eslint-disable-next-line no-unreachable
     const type = signupForm.dataset.accountType;
     if (!["empresa", "usina"].includes(type) || !window.UsinaLinkApi) return;
     const nameInput = signupForm.querySelector('[data-field-key="nome"]');

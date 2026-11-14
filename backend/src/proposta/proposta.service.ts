@@ -66,11 +66,13 @@ export class PropostaService {
       throw new ConflictException('Ja existe proposta desta usina para este pedido.');
     }
 
+    const valor = Number(dto.valor);
+    if (!Number.isFinite(valor) || valor <= 0 || valor > 1_000_000_000) throw new BadRequestException('Informe um valor de proposta maior que zero.');
     const proposta = await this.propostas.save(this.propostas.create({
       idPedido: pedido.idPedido,
       idUsina,
       idUsuarioResponsavel: user.sub,
-      valor: Number(dto.valor),
+      valor,
       prazo: dto.prazo,
       frete: dto.frete !== undefined && dto.frete !== '' ? Number(dto.frete) : undefined,
       observacao: dto.observacao,

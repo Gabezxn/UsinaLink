@@ -115,7 +115,7 @@
       const orders = ordersRaw.map(normalizeOrder);
       const proposals = proposalsRaw.map(normalizeProposal);
       const reviewed = new Set(reviews.map(item => item.pedidoId));
-      const STATUS_AVALIAVEIS = ["concluido", "concluida", "em_negociacao"];
+      const STATUS_AVALIAVEIS = ["concluido", "concluida"];
       const available = orders.filter(order => STATUS_AVALIAVEIS.includes(order.status) && proposals.some(proposal => proposal.pedidoId === order.id && proposal.status === "aceita") && !reviewed.has(order.id));
       if (select) {
         select.innerHTML = available.length
