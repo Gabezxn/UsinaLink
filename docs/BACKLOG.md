@@ -5,7 +5,7 @@ Severidade: P0 derruba/compromete segurança; P1 quebra fluxo ou barreira de ace
 Verificar: `node qa/backlog-lint.mjs`.
 
 ## Progresso das tasks
-Task 1 concluída.
+Tasks 1-2 concluídas.
 
 ## Achados
 | ID | Sev | Área | Onde (arquivo:linha) | Problema + como reproduzir | Correção sugerida | Status |

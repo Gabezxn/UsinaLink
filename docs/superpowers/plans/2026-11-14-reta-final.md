@@ -74,11 +74,11 @@ Cada linha abaixo tem um teste dentro da task indicada.
 - Produces: `loginAs(page: Page, role: 'empresa'|'usina'|'pessoa_fisica'): Promise<void>` em `qa/lib/login.mjs`, que faz login pela UI com a conta demo e espera o dashboard.
 - Produces: `static.mjs` serve `Site/` aplicando as regras de `Site/_headers` quando o arquivo existir (usado na Task 10).
 
-- [ ] **Step 1: Write the failing test `qa/env/smoke.mjs`:** `GET API/` responde 200; `POST /api/auth/login/empresa` com `empresa@demo.com`/`Demo@123` retorna token; `GET SITE/index.html` responde 200.
-- [ ] **Step 2: Run it to verify it fails** (`npm --prefix qa run smoke` falha porque nada está no ar).
-- [ ] **Step 3: Implement `up.mjs`.** Ordem de decisão do banco: (a) `apt-get install -y postgresql` e `initdb`/`pg_ctl` num diretório do scratchpad, com `DB_TYPE=postgres`, `DB_SSL=false`; (b) se o apt estiver bloqueado, adicionar `DB_TYPE=sqlite` (`better-sqlite3`) em `database.module.ts`, só para teste. Nunca ler `.env` de produção nem usar credenciais reais.
-- [ ] **Step 4: Run to verify it passes** (`up`, depois `smoke` retorna `OK`, depois `down`).
-- [ ] **Step 5: Commit.**
+- [x] **Step 1: Write the failing test `qa/env/smoke.mjs`:** `GET API/` responde 200; `POST /api/auth/login/empresa` com `empresa@demo.com`/`Demo@123` retorna token; `GET SITE/index.html` responde 200.
+- [x] **Step 2: Run it to verify it fails** (`npm --prefix qa run smoke` falha porque nada está no ar).
+- [x] **Step 3: Implement `up.mjs`.** Ordem de decisão do banco: (a) `apt-get install -y postgresql` e `initdb`/`pg_ctl` num diretório do scratchpad, com `DB_TYPE=postgres`, `DB_SSL=false`; (b) se o apt estiver bloqueado, adicionar `DB_TYPE=sqlite` (`better-sqlite3`) em `database.module.ts`, só para teste. Nunca ler `.env` de produção nem usar credenciais reais.
+- [x] **Step 4: Run to verify it passes** (`up`, depois `smoke` retorna `OK`, depois `down`).
+- [x] **Step 5: Commit.**
 
 ### Task 3: Verificadores automáticos (axe, console e links)
 
