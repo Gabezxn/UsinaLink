@@ -31,25 +31,30 @@ describe('AvaliacaoService', () => {
     await expect(service.create({ pedidoId: '1', notaGeral: 9, qualidade: 5, prazo: 5, comunicacao: 5 } as any, user)).rejects.toThrow(BadRequestException);
   });
 
+  it('rejeita avaliar pedido ainda em negociacao (SEC-10)', async () => {
+    pedidos.findOne.mockResolvedValue({ idPedido: 1, status: 'em_negociacao', idEmpresaCompradora: 1 });
+    await expect(service.create({ pedidoId: '1', notaGeral: 1, qualidade: 1, prazo: 1, comunicacao: 1 } as any, user)).rejects.toThrow(BadRequestException);
+  });
+
   it('rejeita quando o pedido nao existe ou nao esta em status avaliavel', async () => {
     pedidos.findOne.mockResolvedValue(null);
     await expect(service.create({ pedidoId: '1', notaGeral: 5, qualidade: 5, prazo: 5, comunicacao: 5 } as any, user)).rejects.toThrow(BadRequestException);
   });
 
   it('rejeita quando o pedido nao pertence a empresa do token (nao deixa avaliar pedido de outra empresa)', async () => {
-    pedidos.findOne.mockResolvedValue({ idPedido: 1, status: 'em_negociacao', idEmpresaCompradora: 999 });
+    pedidos.findOne.mockResolvedValue({ idPedido: 1, status: 'concluido', idEmpresaCompradora: 999 });
     await expect(service.create({ pedidoId: '1', notaGeral: 5, qualidade: 5, prazo: 5, comunicacao: 5 } as any, user)).rejects.toThrow(ForbiddenException);
   });
 
   it('rejeita quando o pedido ja foi avaliado', async () => {
-    pedidos.findOne.mockResolvedValue({ idPedido: 1, status: 'em_negociacao', idEmpresaCompradora: 1 });
+    pedidos.findOne.mockResolvedValue({ idPedido: 1, status: 'concluido', idEmpresaCompradora: 1 });
     propostas.findOne.mockResolvedValue({ idUsina: 5 });
     avaliacoes.findOne.mockResolvedValue({ idAvaliacao: 1 });
     await expect(service.create({ pedidoId: '1', notaGeral: 5, qualidade: 5, prazo: 5, comunicacao: 5 } as any, user)).rejects.toThrow(BadRequestException);
   });
 
   it('cria a avaliacao com as 4 notas quando tudo esta correto', async () => {
-    pedidos.findOne.mockResolvedValue({ idPedido: 1, status: 'em_negociacao', idEmpresaCompradora: 1 });
+    pedidos.findOne.mockResolvedValue({ idPedido: 1, status: 'concluido', idEmpresaCompradora: 1 });
     propostas.findOne.mockResolvedValue({ idUsina: 5 });
     avaliacoes.findOne.mockResolvedValue(null);
     const resultado = await service.create({ pedidoId: '1', notaGeral: 4, qualidade: 3, prazo: 5, comunicacao: 2, comentario: 'ok' } as any, user);
