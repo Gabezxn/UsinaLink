@@ -5,7 +5,7 @@ Severidade: P0 derruba/compromete segurança; P1 quebra fluxo ou barreira de ace
 Verificar: `node qa/backlog-lint.mjs`.
 
 ## Progresso das tasks
-Tasks 1-8 concluídas (0 P0, 0 P1; axe=0 serious/critical). Próxima: Task 9 (resiliência: /api/health, cold start, keepalive, 404), 10 (headers/Cloudflare), 11 (reauditoria + PRONTO-PARA-APRESENTAR). Baseline axe: 262 nós color-contrast + 1 scrollable-region (qa/baseline.txt). Backend: THROTTLE_LIMIT env (QA usa 100000).
+Tasks 1-9 concluídas (0 P0, 0 P1). Próxima: Task 10 (headers/Cloudflare), 11 (reauditoria + PRONTO-PARA-APRESENTAR). Baseline axe: 262 nós color-contrast + 1 scrollable-region (qa/baseline.txt). Backend: THROTTLE_LIMIT env (QA usa 100000).
 
 ## Achados
 | ID | Sev | Área | Onde (arquivo:linha) | Problema + como reproduzir | Correção sugerida | Status |
@@ -61,7 +61,7 @@ Tasks 1-8 concluídas (0 P0, 0 P1; axe=0 serious/critical). Próxima: Task 9 (re
 | BUG-7 | P1 | Empresa/PF | Site/assets/js/order-history.js:188 | Abrir confirmacao-pedido.html?pedidoId=N de pedido não pago faz POST /pagamentos em PIX sozinho (F5/URL colada). | Sem pagamento: mostrar 'Pedido ainda não pago' + link; nunca pagar ao abrir | corrigido |
 | BUG-8 | P1 | Usina | Site/assets/js/enviar-proposta.js:13-17; pecas-comerciais-usina.js:41 | parseMoney apaga pontos: '1500.50' vira R$ 150.050,00; '380.5' vira 3805. | Vírgula = decimal; sem vírgula, ponto com até 2 casas = decimal | corrigido |
 | BUG-5 | P2 | Backend | proposta.service.ts / pedido.service.ts | (Duplicado de SEC-3/5/6 reportado pelo revisor de fluxos.) | Coberto por SEC-3/5/6 | descartado |
-| FLX-20 | P2 | Todas | Site/assets/js/api.js:12-16,40-42 | Sem tratamento de 401/rede (duplica BUG-1): 'Unauthorized'/'Failed to fetch' dentro das tabelas; mensagens de rede em português faltam. | No apiRequest: 401 limpa sessão e vai ao login; mensagem de rede amigável (junto ao BUG-1 e Task 9) | aberto |
+| FLX-20 | P2 | Todas | Site/assets/js/api.js:12-16,40-42 | Sem tratamento de 401/rede (duplica BUG-1): 'Unauthorized'/'Failed to fetch' dentro das tabelas; mensagens de rede em português faltam. | No apiRequest: 401 limpa sessão e vai ao login; mensagem de rede amigável (junto ao BUG-1 e Task 9) | corrigido |
 | FLX-6 | P2 | Empresa/PF | Site/script.js:819-826,985-994 | Após aceitar proposta: 3 cliques até pagar. | Aceitar leva direto a pagamento-pedido.html | aberto |
 | FLX-7 | P2 | Empresa/PF | Site/script.js:880,1045 | Card de proposta só tem Aceitar; confirmação sem usina/valor. | Botão Recusar e texto com usina/valor/prazo | aberto |
 | FLX-8 | P2 | Usina | Site/assets/js/order-history.js:37,40,301 | Usina vê 'Confirmar entrega' mas texto diz que a empresa confirma. | Alinhar texto/botão/backend | aberto |

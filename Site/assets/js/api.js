@@ -52,9 +52,60 @@
     alvo.insertBefore(p, alvo.firstChild);
   });
 
+  // ---- Servidor dormindo (Render gratuito): aviso após 4 s e novas tentativas com espera crescente ----
+  const WAKE_AFTER_MS = 4000;
+  const RETRY_DELAYS = [1500, 3000, 6000];
+  const WAKE_MESSAGE = 'Acordando o servidor, isso pode levar até 1 minuto…';
+  const NETWORK_MESSAGE = 'Não foi possível conectar ao servidor. Verifique sua internet e tente de novo.';
+  let wakeUsers = 0;
+
+  function wakeNotice() {
+    let el = document.getElementById('api-wake-notice');
+    if (!el && document.body) {
+      el = document.createElement('div');
+      el.id = 'api-wake-notice';
+      el.setAttribute('role', 'status');
+      el.setAttribute('aria-live', 'polite');
+      el.style.cssText = 'position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:100001;max-width:calc(100vw - 32px);padding:12px 18px;border-radius:12px;background:#123273;color:#fff;font:600 15px/1.4 system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);text-align:center';
+      el.textContent = WAKE_MESSAGE;
+      document.body.appendChild(el);
+    }
+    return el;
+  }
+  function wakeShow() { wakeUsers++; wakeNotice(); }
+  function wakeHide() { wakeUsers = Math.max(0, wakeUsers - 1); if (!wakeUsers) { const el = document.getElementById('api-wake-notice'); if (el) el.remove(); } }
+  const dormir = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+  // Repete em 502/503/504 (servidor acordando) e, só para leituras (GET), em falha de rede.
+  async function fetchResiliente(url, init) {
+    const metodo = String(init.method || 'GET').toUpperCase();
+    let mostrando = false;
+    const timer = window.setTimeout(() => { mostrando = true; wakeShow(); }, WAKE_AFTER_MS);
+    try {
+      for (let tentativa = 0; ; tentativa++) {
+        let resposta;
+        try {
+          resposta = await fetch(url, init);
+        } catch (erro) {
+          if (metodo === 'GET' && tentativa < RETRY_DELAYS.length) { if (!mostrando) { mostrando = true; wakeShow(); } await dormir(RETRY_DELAYS[tentativa]); continue; }
+          throw new TypeError(NETWORK_MESSAGE);
+        }
+        if ([502, 503, 504].includes(resposta.status) && tentativa < RETRY_DELAYS.length) {
+          if (!mostrando) { mostrando = true; wakeShow(); }
+          await dormir(RETRY_DELAYS[tentativa]);
+          continue;
+        }
+        return resposta;
+      }
+    } finally {
+      window.clearTimeout(timer);
+      if (mostrando) wakeHide();
+    }
+  }
+
   async function apiRequest(endpoint, options = {}) {
     const token = getAccessToken();
-    const response = await fetch(buildUrl(endpoint), {
+    const response = await fetchResiliente(buildUrl(endpoint), {
       ...options,
       headers: {
         'Content-Type': 'application/json',

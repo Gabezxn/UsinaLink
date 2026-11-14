@@ -187,11 +187,11 @@ Cada linha abaixo tem um teste dentro da task indicada.
 - Produces: `GET /api/health` responde `{ ok: true, db: true }` depois de um `SELECT 1`, ou 503 se o banco cair. Sem autenticação e sem dados sensíveis.
 - Produces: `api.js` mostra um aviso `role="status"` "Acordando o servidor, isso pode levar até 1 minuto…" se uma requisição passar de 4 s, e tenta de novo até 3 vezes com espera crescente.
 
-- [ ] **Step 1: Write the failing test `qa/flows/cold-start.mjs` (Review Focus 1):** com `page.route` atrasando a primeira resposta da API em 6 s, o aviso aparece, some quando a resposta chega e o login conclui com sucesso. Mais um teste de `GET /api/health` (200 e `db: true`).
-- [ ] **Step 2: Run to verify it fails.**
-- [ ] **Step 3: Implement.** O workflow chama `GET https://usinalink-orbz.onrender.com/api/health` a cada 10 min (`cron: "*/10 * * * *"`), o que também mantém o Supabase ativo.
-- [ ] **Step 4: Run to verify it passes.**
-- [ ] **Step 5: Commit** e `git push`. No checklist do usuário: o cron do Actions só roda no branch padrão do repositório, então depende do merge (Task 11).
+- [x] **Step 1: Write the failing test `qa/flows/cold-start.mjs` (Review Focus 1):** com `page.route` atrasando a primeira resposta da API em 6 s, o aviso aparece, some quando a resposta chega e o login conclui com sucesso. Mais um teste de `GET /api/health` (200 e `db: true`).
+- [x] **Step 2: Run to verify it fails.**
+- [x] **Step 3: Implement.** O workflow chama `GET https://usinalink-orbz.onrender.com/api/health` a cada 10 min (`cron: "*/10 * * * *"`), o que também mantém o Supabase ativo.
+- [x] **Step 4: Run to verify it passes.**
+- [x] **Step 5: Commit** e `git push`. No checklist do usuário: o cron do Actions só roda no branch padrão do repositório, então depende do merge (Task 11).
 
 ### Task 10: Cabeçalhos de segurança e configuração do Cloudflare Pages
 

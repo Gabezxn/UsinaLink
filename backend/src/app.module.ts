@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { HealthModule } from './health/health.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AppThrottlerGuard } from './common/login-throttler.guard';
 import { AppController } from './app.controller';
@@ -64,7 +65,8 @@ import { FavoritoModule } from './favorito/favorito.module';
     PecaComercialModule,
     NotificacaoModule,
     PagamentoModule,
-    FavoritoModule
+    FavoritoModule,
+    HealthModule
   ],
   controllers: [AppController],
   providers: [{ provide: APP_GUARD, useClass: AppThrottlerGuard }]
