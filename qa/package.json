@@ -7,5 +7,7 @@
     "down": "node env/down.mjs",
     "smoke": "node env/smoke.mjs"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "axe-core": "^4.10.2"
+  }
 }

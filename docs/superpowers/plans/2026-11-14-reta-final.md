@@ -90,11 +90,11 @@ Cada linha abaixo tem um teste dentro da task indicada.
 - Produces: `node qa/checks/axe.mjs [--role=<papel>]` visita todas as páginas de `Site/*.html`, com login quando a página tem `data-user-role`, e imprime uma linha por violação `serious|critical`: `pagina | regra | seletor`. Sai com 1 se houver alguma. `console.mjs` imprime erros de console, requisições 4xx/5xx e links quebrados (`pagina | tipo | detalhe`).
 - Produces: `qa/baseline.txt` guarda o resultado inicial, para medir a evolução.
 
-- [ ] **Step 1: Write the failing test:** rodar `axe.mjs` na `Site/index.html` atual. Esperado: pelo menos 1 violação (o site não tem `alt` nem skip link). Se vier 0, o verificador está errado.
-- [ ] **Step 2: Run it to verify it fails** (inexistente).
-- [ ] **Step 3: Implement os dois scripts.** Injetar `axe-core` por `page.addScriptTag({ path: require.resolve('axe-core') })` e usar o `playwright` global. Imprimir só falhas.
-- [ ] **Step 4: Run to verify it passes:** `baseline.txt` gerado com contagem por regra. Os scripts rodam todas as páginas em menos de 3 min.
-- [ ] **Step 5: Commit.**
+- [x] **Step 1: Write the failing test:** rodar `axe.mjs` na `Site/index.html` atual. Esperado: pelo menos 1 violação (o site não tem `alt` nem skip link). Se vier 0, o verificador está errado.
+- [x] **Step 2: Run it to verify it fails** (inexistente).
+- [x] **Step 3: Implement os dois scripts.** Injetar `axe-core` por `page.addScriptTag({ path: require.resolve('axe-core') })` e usar o `playwright` global. Imprimir só falhas.
+- [x] **Step 4: Run to verify it passes:** `baseline.txt` gerado com contagem por regra. Os scripts rodam todas as páginas em menos de 3 min.
+- [x] **Step 5: Commit.**
 
 ### Task 4: Base de acessibilidade (a11y.css + a11y.js)
 

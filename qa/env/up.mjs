@@ -39,7 +39,7 @@ try { asPg(join(PGBIN, 'pg_ctl'), ['-D', PGDATA, 'status']); } catch {
 try { asPg(join(PGBIN, 'createdb'), ['-h', 'localhost', '-p', String(PGPORT), 'usinalink_qa']); } catch {}
 
 // 2) Backend
-const env = { ...process.env, PORT: '3000', DB_TYPE: 'postgres', DB_HOST: 'localhost', DB_PORT: String(PGPORT), DB_USERNAME: 'postgres', DB_PASSWORD: '', DB_NAME: 'usinalink_qa', DB_SSL: 'false', DB_SYNCHRONIZE: 'true', JWT_SECRET: 'qa-only-secret', ALLOWED_ORIGINS: 'http://localhost:5500,http://127.0.0.1:5500,http://localhost:3000' };
+const env = { ...process.env, PORT: '3000', DB_TYPE: 'postgres', DB_HOST: 'localhost', DB_PORT: String(PGPORT), DB_USERNAME: 'postgres', DB_PASSWORD: '', DB_NAME: 'usinalink_qa', DB_SSL: 'false', DB_SYNCHRONIZE: 'true', JWT_SECRET: 'qa-only-secret', THROTTLE_LIMIT: '100000', ALLOWED_ORIGINS: 'http://localhost:5500,http://127.0.0.1:5500,http://localhost:3000' };
 const logB = openSync(join(WORK, 'backend.log'), 'a');
 const be = spawn('npx', ['ts-node', '--transpile-only', 'src/main.ts'], { cwd: join(ROOT, 'backend'), env, detached: true, stdio: ['ignore', logB, logB] });
 pids.backend = be.pid; be.unref();
