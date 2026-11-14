@@ -5,7 +5,7 @@ Severidade: P0 derruba/compromete segurança; P1 quebra fluxo ou barreira de ace
 Verificar: `node qa/backlog-lint.mjs`.
 
 ## Progresso das tasks
-Tasks 1-3 concluídas. Baseline axe: 262 nós color-contrast + 1 scrollable-region (qa/baseline.txt). Backend: THROTTLE_LIMIT env (QA usa 100000).
+Tasks 1-4 concluídas. Próxima: Task 5 (auditoria rodada 1). Baseline axe: 262 nós color-contrast + 1 scrollable-region (qa/baseline.txt). Backend: THROTTLE_LIMIT env (QA usa 100000).
 
 ## Achados
 | ID | Sev | Área | Onde (arquivo:linha) | Problema + como reproduzir | Correção sugerida | Status |

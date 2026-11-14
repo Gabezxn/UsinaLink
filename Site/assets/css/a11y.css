@@ -1,0 +1,65 @@
+/* UsinaLink: base de acessibilidade (WCAG 2.1 AA / eMAG). Classes são aplicadas em <html> por a11y.js. */
+:root { --a11y-focus: #0b57d0; --a11y-panel-bg: #fff; --a11y-panel-fg: #0f172a; --a11y-panel-border: #94a3b8; }
+
+/* Pular para o conteúdo */
+.a11y-skip { position: fixed; top: 8px; left: 8px; z-index: 100000; padding: 12px 18px; background: #000; color: #fff !important; font-weight: 700; border-radius: 8px; text-decoration: underline; transform: translateY(-200%); }
+.a11y-skip:focus { transform: none; }
+
+/* Foco visível forte */
+:focus-visible { outline: 3px solid var(--a11y-focus) !important; outline-offset: 3px !important; box-shadow: 0 0 0 2px #fff; }
+main:focus { outline: none !important; box-shadow: none; }
+
+/* Alvos de toque >= 44px */
+button, .btn, [role="button"], input[type="submit"], input[type="button"], select, .table-action,
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]) { min-height: 44px; }
+button, .btn, [role="button"], .table-action { min-width: 44px; }
+nav a, aside a { min-height: 44px; display: flex; align-items: center; }
+input[type="checkbox"], input[type="radio"] { width: 24px; height: 24px; }
+
+/* Botão e painel */
+.a11y-toggle { position: fixed; right: 16px; bottom: 16px; z-index: 99990; display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border: 2px solid #fff; border-radius: 999px; background: #123273; color: #fff; font: 700 1rem/1.2 inherit; font-family: inherit; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.35); }
+.a11y-toggle:hover { background: #0b2150; }
+.a11y-panel { position: fixed; right: 16px; bottom: 76px; z-index: 99991; width: min(360px, calc(100vw - 32px)); max-height: calc(100vh - 100px); overflow: auto; padding: 16px; background: var(--a11y-panel-bg); color: var(--a11y-panel-fg); border: 2px solid var(--a11y-panel-border); border-radius: 16px; box-shadow: 0 12px 36px rgba(0,0,0,.35); font-size: 1rem; line-height: 1.4; }
+.a11y-panel[hidden] { display: none; }
+.a11y-panel h2 { margin: 0 0 12px; font-size: 1.15rem; }
+.a11y-panel fieldset { margin: 0 0 12px; padding: 0; border: 0; }
+.a11y-panel legend { padding: 0; margin-bottom: 6px; font-weight: 700; }
+.a11y-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.a11y-panel button, .a11y-panel select { padding: 8px 12px; border: 2px solid #475569; border-radius: 8px; background: #fff; color: #0f172a; font: inherit; cursor: pointer; }
+.a11y-panel button[aria-pressed="true"] { background: #123273; color: #fff; border-color: #123273; }
+.a11y-panel label { display: flex; align-items: center; gap: 8px; margin: 4px 0; min-height: 44px; cursor: pointer; }
+.a11y-close { float: right; }
+.a11y-actions { display: flex; gap: 8px; margin-top: 8px; }
+
+/* Espaçamento de texto (WCAG 1.4.12) */
+html.a11y-spacing body, html.a11y-spacing body * { line-height: 1.8 !important; letter-spacing: .12em !important; word-spacing: .16em !important; }
+html.a11y-spacing p { margin-bottom: 2em !important; }
+/* Fonte para dislexia */
+html.a11y-dyslexia body, html.a11y-dyslexia body * { font-family: "OpenDyslexic", "Atkinson Hyperlegible", "Lexend", Verdana, "Comic Sans MS", sans-serif !important; }
+/* Destacar links */
+html.a11y-links a { text-decoration: underline !important; text-decoration-thickness: 3px !important; background: #fff59d !important; color: #000 !important; outline: 1px solid #000; }
+/* Reduzir animações (preferência do usuário ou do sistema) */
+html.a11y-reduce-motion *, html.a11y-reduce-motion *::before, html.a11y-reduce-motion *::after { animation-duration: 0s !important; animation-iteration-count: 1 !important; transition-duration: 0s !important; scroll-behavior: auto !important; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0s !important; animation-iteration-count: 1 !important; transition-duration: 0s !important; scroll-behavior: auto !important; }
+}
+
+/* Alto contraste: preto sobre branco, links azuis sublinhados, botões pretos */
+html.a11y-contrast-high, html.a11y-contrast-high body { background: #fff !important; color: #000 !important; }
+html.a11y-contrast-high body *:not(img):not(svg):not(svg *):not(video):not(canvas):not([vw]):not([vw] *) { background-color: #fff !important; background-image: none !important; color: #000 !important; border-color: #000 !important; box-shadow: none !important; text-shadow: none !important; opacity: 1 !important; }
+html.a11y-contrast-high a, html.a11y-contrast-high a * { color: #0000b3 !important; text-decoration: underline !important; }
+html.a11y-contrast-high button, html.a11y-contrast-high .btn, html.a11y-contrast-high a.btn,
+html.a11y-contrast-high input[type="submit"], html.a11y-contrast-high input[type="button"] { background-color: #000 !important; color: #fff !important; border: 2px solid #000 !important; }
+html.a11y-contrast-high button *, html.a11y-contrast-high .btn *, html.a11y-contrast-high a.btn * { background-color: transparent !important; color: #fff !important; }
+html.a11y-contrast-high .a11y-toggle, html.a11y-contrast-high .a11y-skip { background-color: #000 !important; color: #fff !important; }
+html.a11y-contrast-high .a11y-panel button[aria-pressed="true"] { background-color: #000 !important; color: #fff !important; }
+html.a11y-contrast-high input, html.a11y-contrast-high select, html.a11y-contrast-high textarea { border: 2px solid #000 !important; }
+
+/* Modo escuro: inversão de cores (o site tem milhares de cores fixas), mídia re-invertida */
+html.a11y-dark { filter: invert(1) hue-rotate(180deg); background: #fff; }
+html.a11y-dark img, html.a11y-dark video, html.a11y-dark canvas, html.a11y-dark [vw], html.a11y-dark svg image, html.a11y-dark [style*="background-image"] { filter: invert(1) hue-rotate(180deg); }
+
+/* Responsividade (reflow 320px / zoom 200%) */
+img, video { max-width: 100%; height: auto; }
+.table-wrap { overflow-x: auto; }
+@media (max-width: 480px) { .a11y-toggle span.a11y-label { display: none; } }

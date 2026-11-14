@@ -107,17 +107,17 @@ Cada linha abaixo tem um teste dentro da task indicada.
 - Produces: botão fixo "Acessibilidade" (`aria-expanded`, painel `role="dialog"`, ESC fecha, foco devolvido), link "Pular para o conteúdo" como primeiro foco apontando para `main` (recebe `id="conteudo"` se faltar), VLibras carregado de `https://vlibras.gov.br/app/vlibras-plugin.js` (o `<div vw>` padrão), respeito a `prefers-reduced-motion` e `prefers-color-scheme`, `:focus-visible` forte, alvos de toque ≥ 44 px.
 - Produces: `node scripts/inject-assets.mjs` insere `<link>` e `<script defer>` em cada `Site/*.html`, de forma idempotente (rodar 2 vezes não duplica).
 
-- [ ] **Step 1: Write the failing test `qa/flows/a11y-base.mjs`** (Playwright) com estas asserções em `index.html` e em um dashboard logado:
+- [x] **Step 1: Write the failing test `qa/flows/a11y-base.mjs`** (Playwright) com estas asserções em `index.html` e em um dashboard logado:
   - o primeiro `Tab` foca o link `Pular para o conteúdo`;
   - `UsinaA11y.set({ fontScale: 150 })` faz o `font-size` de `<html>` ser 150% e o valor persiste após reload;
   - `contrast: 'high'` altera o fundo do `body` e passa no axe `color-contrast`;
   - com `reduceMotion` ativo, `animation-duration` computada é `0s`;
   - o elemento `[vw]` do VLibras existe;
   - **teclado (Review Focus 4):** abrir o painel com Enter, o foco fica preso no painel, ESC fecha e o foco volta ao botão.
-- [ ] **Step 2: Run to verify it fails.**
-- [ ] **Step 3: Implement** os dois arquivos e rodar `inject-assets.mjs`. O CSS usa variáveis (`--a11y-*`) e classes no `<html>` (`a11y-contrast-high`, `a11y-dark`, etc.).
-- [ ] **Step 4: Run to verify it passes**, e rodar `qa/checks/axe.mjs` para confirmar que as violações caíram em relação à baseline.
-- [ ] **Step 5: Commit.**
+- [x] **Step 2: Run to verify it fails.**
+- [x] **Step 3: Implement** os dois arquivos e rodar `inject-assets.mjs`. O CSS usa variáveis (`--a11y-*`) e classes no `<html>` (`a11y-contrast-high`, `a11y-dark`, etc.).
+- [x] **Step 4: Run to verify it passes**, e rodar `qa/checks/axe.mjs` para confirmar que as violações caíram em relação à baseline.
+- [x] **Step 5: Commit.**
 
 ### Task 5: Auditoria rodada 1 (3 subagentes só-leitura, em paralelo)
 
