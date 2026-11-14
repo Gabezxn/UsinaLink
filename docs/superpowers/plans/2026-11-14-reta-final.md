@@ -53,15 +53,15 @@ Cada linha abaixo tem um teste dentro da task indicada.
 - Produces: formato de achado no BACKLOG, uma linha de tabela: `| ID | Sev | Área | Onde (arquivo:linha) | Problema + como reproduzir | Correção sugerida | Status |`. IDs: `SEC-n`, `FLX-n`, `A11Y-n`, `BUG-n`. Status: `aberto|corrigido|descartado`.
 - Produces: `node qa/backlog-lint.mjs` sai com código 1 se houver linha sem os 7 campos ou Sev fora de P0/P1/P2, e imprime a contagem de P0/P1 abertos.
 
-- [ ] **Step 1: Write the failing test.** Rodar `node qa/backlog-lint.mjs` com um `docs/BACKLOG.md` de teste contendo a linha malformada `| SEC-1 | P9 | x |`. Esperado: código de saída 1 e a mensagem `linha 1: Sev inválida`.
-- [ ] **Step 2: Run it to verify it fails** (o script ainda não existe: `Cannot find module`).
-- [ ] **Step 3: Implement `qa/backlog-lint.mjs`** (Node puro, sem dependências) e escrever os 4 papéis (cada um ≤ 40 linhas: missão, o que olhar, o que NÃO fazer, formato de saída, regra de economia de tokens) e o `README.md` (como retomar após o limite do Pro: ler só `BACKLOG.md` e `git log -5`). Os papéis têm este foco:
+- [x] **Step 1: Write the failing test.** Rodar `node qa/backlog-lint.mjs` com um `docs/BACKLOG.md` de teste contendo a linha malformada `| SEC-1 | P9 | x |`. Esperado: código de saída 1 e a mensagem `linha 1: Sev inválida`.
+- [x] **Step 2: Run it to verify it fails** (o script ainda não existe: `Cannot find module`).
+- [x] **Step 3: Implement `qa/backlog-lint.mjs`** (Node puro, sem dependências) e escrever os 4 papéis (cada um ≤ 40 linhas: missão, o que olhar, o que NÃO fazer, formato de saída, regra de economia de tokens) e o `README.md` (como retomar após o limite do Pro: ler só `BACKLOG.md` e `git log -5`). Os papéis têm este foco:
   - `cacador-falhas`: segurança e quebras (autorização por conta, XSS, CORS, segredos no repositório e no histórico, upload, rate limit, JWT, validação).
   - `revisor-fluxos`: passos e cliques a mais, mensagens confusas, becos sem saída, por conta.
   - `auditor-a11y`: teclado, zoom 200% e reflow em 320 px, leitor de tela e contraste.
   - `dev-senior`: implementa por prioridade, teste primeiro e commit por lote.
-- [ ] **Step 4: Run it to verify it passes.** Com um `BACKLOG.md` vazio (só o cabeçalho), `node qa/backlog-lint.mjs` imprime `P0 abertos: 0, P1 abertos: 0` e sai com 0.
-- [ ] **Step 5: Commit** `docs/agentes docs/BACKLOG.md qa/backlog-lint.mjs`.
+- [x] **Step 4: Run it to verify it passes.** Com um `BACKLOG.md` vazio (só o cabeçalho), `node qa/backlog-lint.mjs` imprime `P0 abertos: 0, P1 abertos: 0` e sai com 0.
+- [x] **Step 5: Commit** `docs/agentes docs/BACKLOG.md qa/backlog-lint.mjs`.
 
 ### Task 2: Ambiente de QA local
 
