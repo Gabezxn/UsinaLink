@@ -128,11 +128,11 @@ Cada linha abaixo tem um teste dentro da task indicada.
 - Consumes: papéis da Task 1, relatórios de `qa/checks` e ambiente de QA no ar (Task 2).
 - Produces: achados no formato da Task 1.
 
-- [ ] **Step 1: Subir o ambiente** (`npm --prefix qa run up`) e rodar `axe.mjs` e `console.mjs`, guardando só o resumo.
-- [ ] **Step 2: Disparar 3 subagentes na mesma resposta**, `model: "sonnet"`, cada um com o conteúdo do seu papel e o escopo de arquivos. `cacador-falhas` recebe `backend/src/**` e `Site/assets/js/**`, mais o `docs/relatorio-seguranca.md`; `revisor-fluxos` recebe as 3 jornadas; `auditor-a11y` recebe os resultados do axe e o `a11y.js`. Cada um devolve ≤ 40 linhas de tabela. O `cacador-falhas` também verifica o histórico do git atrás de segredos.
-- [ ] **Step 3: Consolidar no `docs/BACKLOG.md`** sem duplicados, com severidade revista pelo dev.
-- [ ] **Step 4: Verify:** `node qa/backlog-lint.mjs` sai com 0 e imprime a contagem de P0/P1.
-- [ ] **Step 5: Commit.**
+- [x] **Step 1: Subir o ambiente** (`npm --prefix qa run up`) e rodar `axe.mjs` e `console.mjs`, guardando só o resumo.
+- [x] **Step 2: Disparar 3 subagentes na mesma resposta**, `model: "sonnet"`, cada um com o conteúdo do seu papel e o escopo de arquivos. `cacador-falhas` recebe `backend/src/**` e `Site/assets/js/**`, mais o `docs/relatorio-seguranca.md`; `revisor-fluxos` recebe as 3 jornadas; `auditor-a11y` recebe os resultados do axe e o `a11y.js`. Cada um devolve ≤ 40 linhas de tabela. O `cacador-falhas` também verifica o histórico do git atrás de segredos.
+- [x] **Step 3: Consolidar no `docs/BACKLOG.md`** sem duplicados, com severidade revista pelo dev.
+- [x] **Step 4: Verify:** `node qa/backlog-lint.mjs` sai com 0 e imprime a contagem de P0/P1.
+- [x] **Step 5: Commit.**
 
 ### Task 6: Correções P0 (segurança e disponibilidade)
 

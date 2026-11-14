@@ -5,7 +5,7 @@ Severidade: P0 derruba/compromete segurança; P1 quebra fluxo ou barreira de ace
 Verificar: `node qa/backlog-lint.mjs`.
 
 ## Progresso das tasks
-Tasks 1-4 concluídas. Próxima: Task 5 (auditoria rodada 1). Baseline axe: 262 nós color-contrast + 1 scrollable-region (qa/baseline.txt). Backend: THROTTLE_LIMIT env (QA usa 100000).
+Tasks 1-5 concluídas. Próxima: Task 6 (P0: SEC-1..8,19,20). Baseline axe: 262 nós color-contrast + 1 scrollable-region (qa/baseline.txt). Backend: THROTTLE_LIMIT env (QA usa 100000).
 
 ## Achados
 | ID | Sev | Área | Onde (arquivo:linha) | Problema + como reproduzir | Correção sugerida | Status |
@@ -52,3 +52,31 @@ Tasks 1-4 concluídas. Próxima: Task 5 (auditoria rodada 1). Baseline axe: 262 
 | A11Y-12 | P2 | Botões de ícone | Site/script.js:684,771; pf-common.js:151 | 'Abrir acoes' repetido sem contexto; glifo x/... sem aria-hidden. | aria-label contextual | aberto |
 | A11Y-13 | P2 | Chat | Site/assets/js/chat-contato.js:10-15,47 | Painel sem nome/aria-expanded/ESC. | role=dialog + ESC | aberto |
 | A11Y-14 | P2 | Movimento | Site/style.css:958-961,2764 | Spinner infinito (já coberto por reduzir animações). | aria-busy | aberto |
+| FLX-1 | P1 | Empresa | Site/dashboard-pessoa-juridica.html:60-72; assets/js/pecas-comerciais.js:57; compra-pessoa-fisica.html:10 | Compra de peça do catálogo pela empresa termina em beco sem saída: tabela 'Minhas solicitações comerciais' mostra 'Registrada' fixo, sem link/Pagar; acompanhar/pagar só aceita PF. | Mostrar status real, linkar ao acompanhamento; liberar compra-pessoa-fisica.html para empresa,pessoa_fisica com menu da empresa | aberto |
+| FLX-2 | P1 | PF/Usina | Site/pecas-comerciais-usina.html:61; assets/js/solicitacoes-pecas-usina.js:36; backend/src/solicitacao-comercial/solicitacao-comercial.service.ts:119 | Peça sem valor: usina aceita, PF clica Pagar agora e recebe 'peça sob consulta sem valor'; só resta cancelar. | Exigir valor ao cadastrar peça (ou bloquear solicitar/aceitar sem valor com mensagem) | aberto |
+| FLX-3 | P1 | Empresa | Site/assets/js/order-history.js:96-113; pagamento-pedido.html:34; pagamentos.html | pagamentos.html lista TODOS os pedidos com 'Pagar pedido' (aberto/cancelado/concluído); pagar pedido em negociação o põe em produção (backend tolerante, ver SEC-9). | Listar só proposta_aceita para pagar; backend via SEC-9 | aberto |
+| FLX-4 | P1 | Usina | Site/script.js:765-766,947-975 | 'Editar proposta' é falso: modal com frete/observação fixos, salvar só muda texto, F5 reverte, sem API. | Remover 'Editar proposta' do menu; manter Cancelar e reenviar | aberto |
+| FLX-5 | P1 | PF | Site/pagamento-pedido.html:34 | Voltar de pagamento-pedido.html vai a pagamentos.html (só empresa): PF cai em login-empresa. | Voltar para historico-pedidos.html | aberto |
+| BUG-6 | P1 | Empresa/PF | Site/assets/js/order-history.js:188-201; payment-service.js:67 | Comprovante após pagar mostra 'undefined' em forma de pagamento/protocolo (lê method/protocol/createdAt; API devolve metodo/idPagamento/dataPagamento). | Mapear campos no payment-service | aberto |
+| BUG-7 | P1 | Empresa/PF | Site/assets/js/order-history.js:188 | Abrir confirmacao-pedido.html?pedidoId=N de pedido não pago faz POST /pagamentos em PIX sozinho (F5/URL colada). | Sem pagamento: mostrar 'Pedido ainda não pago' + link; nunca pagar ao abrir | aberto |
+| BUG-8 | P1 | Usina | Site/assets/js/enviar-proposta.js:13-17; pecas-comerciais-usina.js:41 | parseMoney apaga pontos: '1500.50' vira R$ 150.050,00; '380.5' vira 3805. | Vírgula = decimal; sem vírgula, ponto com até 2 casas = decimal | aberto |
+| BUG-5 | P2 | Backend | proposta.service.ts / pedido.service.ts | (Duplicado de SEC-3/5/6 reportado pelo revisor de fluxos.) | Coberto por SEC-3/5/6 | descartado |
+| FLX-20 | P2 | Todas | Site/assets/js/api.js:12-16,40-42 | Sem tratamento de 401/rede (duplica BUG-1): 'Unauthorized'/'Failed to fetch' dentro das tabelas; mensagens de rede em português faltam. | No apiRequest: 401 limpa sessão e vai ao login; mensagem de rede amigável (junto ao BUG-1 e Task 9) | aberto |
+| FLX-6 | P2 | Empresa/PF | Site/script.js:819-826,985-994 | Após aceitar proposta: 3 cliques até pagar. | Aceitar leva direto a pagamento-pedido.html | aberto |
+| FLX-7 | P2 | Empresa/PF | Site/script.js:880,1045 | Card de proposta só tem Aceitar; confirmação sem usina/valor. | Botão Recusar e texto com usina/valor/prazo | aberto |
+| FLX-8 | P2 | Usina | Site/assets/js/order-history.js:37,40,301 | Usina vê 'Confirmar entrega' mas texto diz que a empresa confirma. | Alinhar texto/botão/backend | aberto |
+| FLX-9 | P2 | Empresa/PF | Site/detalhes-pedido.html:30; order-history.js:299-315 | Sem próximo passo após confirmar entrega (avaliar). | Botão 'Avaliar usina' | aberto |
+| FLX-10 | P2 | PF | Site/assets/js/pf-nav.js:13-25; solicitacoes.js:177,203 | Pedido sob medida da PF: 'Ver' mostra status cru, sem link para propostas. | Link 'Ver propostas', rótulo amigável | aberto |
+| FLX-11 | P2 | Empresa/Usina | Site/assets/js/dashboard-empresa.js:35-43; dashboard-usina.js:31-38 | Dashboards sem ação sugerida. | Cards como links com pendências | aberto |
+| FLX-12 | P2 | PF | Site/assets/js/compras-pessoa-fisica.js:16-17; dashboard-pessoa-fisica.js:43 | Ações duplicadas; Avaliar vai para a lista. | Ação principal única | aberto |
+| FLX-13 | P2 | PF | Site/assets/js/peca-pessoa-fisica.js:31,53 | Peça com estoque 0 ainda mostra Solicitar. | 'Sem estoque' e botão desabilitado | aberto |
+| FLX-14 | P2 | Empresa/PF | Site/assets/js/ui-utils.js:59-67; pagamento.service.ts:54 | Três totais diferentes (taxa 3,5% inventada). | Uma fórmula, igual ao backend | aberto |
+| FLX-15 | P2 | Empresa/PF | Site/pagamento-pedido.html:92; pagamentos.html:38 | Texto falso 'dados salvos no navegador (localStorage)'. | 'Pagamento simulado, registrado na sua conta' | aberto |
+| FLX-16 | P2 | PF | Site/assets/js/payment-service.js:33,53; order-history.js:204-206 | PF aparece como 'Empresa: Cliente' e doc '-'. | Nome/CPF e rótulo 'Comprador' | aberto |
+| FLX-17 | P2 | Empresa/PF | Site/historico-pedidos.html:38-44; order-history.js:242 | Filtros do histórico imprecisos. | Filtros por status real | aberto |
+| FLX-18 | P2 | Usina | Site/assets/js/enviar-proposta.js:85-86,110-131 | Frete somente leitura/inventado; erro só em toast. | Frete editável; erro no campo | aberto |
+| FLX-19 | P2 | Empresa/Usina | Site/script.js:678,1105-1106,1230-1240; aceitar-convite-funcionario.html | Funcionários: rótulos, convite sem login dá Unauthorized. | Ajustes | aberto |
+| FLX-21 | P2 | Todas | Site/login-empresa.html:31; login-pessoa-fisica.html:30 | 'Criar nova conta' abre cadastro com Empresa marcada. | cadastro.html?tipo= | aberto |
+| FLX-22 | P2 | Todas | Site/perfil-*.html; script.js:524-563 | Perfil: botões de tipo sem ação; Segurança só após Editar. | Simplificar | aberto |
+| FLX-23 | P2 | Empresa | Site/avaliacoes.html:31; reviews-blocks.js:117,125 | Avaliável inclui em_negociacao; texto confuso. | Só concluído | aberto |
+| FLX-24 | P2 | Usina | Site/script.js:765; proposta.service.ts:46,119-124 | Proposta recusada mostra Editar/Cancelar; sem aviso de recusa/bloqueio. | Bloquear ações | aberto |
