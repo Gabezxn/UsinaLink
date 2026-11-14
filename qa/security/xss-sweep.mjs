@@ -14,8 +14,8 @@ const idUsina = up.full.usina?.idUsina;
 const seed = [];
 const tryCall = async (nome, ...a) => { const r = await call(...a); if (r.status >= 300) seed.push(`${nome}: status ${r.status}`); return r; };
 
-const peca = (await tryCall('peca', 'POST', '/api/pecas-comerciais', up.token, { nome: P, material: P, categoria: P, descricao: P, imagem: ATTR, estoque: '10', unidadeEstoque: P, valorUnitario: '10', prazoEntregaDias: '5' })).json;
-const ped = await novoPedido(ep.token, { peca: P, categoria: P, material: P, descricao: P, prazo: '15 dias', regiao: P, arquivo: JS, urgencia: P, quantidade: '5' });
+const peca = (await tryCall('peca', 'POST', '/api/pecas-comerciais', up.token, { nome: P, material: P, categoria: P, descricao: P, imagem: 'data:image/png;base64,iVBORw0KGgo=', estoque: '10', unidadeEstoque: P, valorUnitario: '10', prazoEntregaDias: '5' })).json;
+const ped = await novoPedido(ep.token, { peca: P, categoria: P, material: P, descricao: P, prazo: '15 dias', regiao: P, arquivo: 'data:application/pdf;base64,JVBERi0xLjQK', urgencia: P, quantidade: '5' });
 const prop = await novaProposta(up.token, ped.idPedido, { observacao: P, prazo: P, valor: '1000', frete: '10' });
 await tryCall('aceitar', 'PATCH', `/api/propostas/${prop.idProposta}/aceitar`, ep.token);
 await tryCall('pagar', 'POST', '/api/pagamentos', ep.token, { pedidoId: String(ped.idPedido), metodo: P });
@@ -23,8 +23,8 @@ await tryCall('entrega', 'PATCH', `/api/pedidos/${ped.idPedido}/confirmar-entreg
 const av = (await tryCall('avaliar', 'POST', '/api/avaliacoes', ep.token, { pedidoId: String(ped.idPedido), notaGeral: 4, qualidade: 4, prazo: 4, comunicacao: 4, comentario: P })).json;
 if (av?.idAvaliacao) await tryCall('responder', 'POST', `/api/avaliacoes/${av.idAvaliacao}/resposta`, up.token, { respostaDaUsina: P });
 // pedido sob medida da PF
-await tryCall('solicitacao', 'POST', '/api/solicitacoes', fp.token, { peca: P, categoria: P, material: P, quantidade: '2', prazoDesejado: '2026-12-01', urgencia: 'media', localEntrega: P, descricao: P, arquivoTecnico: ATTR, arquivoTecnicoNome: P });
-await tryCall('solicitacao2', 'POST', '/api/solicitacoes', fp.token, { peca: 'Peca JS', categoria: 'x', material: 'y', quantidade: '2', prazoDesejado: '2026-12-02', urgencia: 'media', localEntrega: 'x', descricao: 'x', arquivoTecnico: JS, arquivoTecnicoNome: 'a.pdf' });
+await tryCall('solicitacao', 'POST', '/api/solicitacoes', fp.token, { peca: P, categoria: P, material: P, quantidade: '2', prazoDesejado: '2026-12-01', urgencia: 'media', localEntrega: P, descricao: P, arquivoTecnico: 'data:application/pdf;base64,JVBERi0xLjQK', arquivoTecnicoNome: P });
+await tryCall('solicitacao2', 'POST', '/api/solicitacoes', fp.token, { peca: 'Peca JS', categoria: 'x', material: 'y', quantidade: '2', prazoDesejado: '2026-12-02', urgencia: 'media', localEntrega: 'x', descricao: 'x', arquivoTecnico: 'data:application/pdf;base64,JVBERi0xLjQK', arquivoTecnicoNome: 'a.pdf' });
 const pedFp = (await call('GET', '/api/pedidos/meus', fp.token)).json?.[0];
 if (pedFp) await novaProposta(up.token, pedFp.idPedido, { observacao: P, prazo: P }).catch(() => {});
 // compra de peça comercial, favoritos, bloqueio, funcionário

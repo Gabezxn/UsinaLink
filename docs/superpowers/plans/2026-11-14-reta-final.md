@@ -210,8 +210,8 @@ Cada linha abaixo tem um teste dentro da task indicada.
 - Modify: `docs/BACKLOG.md`
 - Create: `docs/PRONTO-PARA-APRESENTAR.md`
 
-- [ ] **Step 1: Rodar tudo:** `backend npm test`, `qa/security/*`, `qa/flows/*`, `axe.mjs`, `console.mjs`, `backlog-lint.mjs`.
-- [ ] **Step 2: Disparar 2 subagentes só-leitura** (`cacador-falhas` e `revisor-fluxos`, `model: "sonnet"`), apenas sobre o que mudou desde a Task 5 (`git diff --stat` mais lista de arquivos), cada um com ≤ 25 linhas de saída. Consolidar no BACKLOG e corrigir os P0/P1 novos com teste primeiro.
-- [ ] **Step 3: Escrever `PRONTO-PARA-APRESENTAR.md`** com: status ("pronto" só se `backlog-lint` mostrar `P0 abertos: 0, P1 abertos: 0`); contas demo; roteiro sugerido de apresentação por conta; limitações conhecidas (os P2 abertos); **checklist do usuário:** criar o projeto no Cloudflare Pages, adicionar a URL em `ALLOWED_ORIGINS` no Render, fazer o merge para o branch padrão do repositório (para o keep-alive rodar), conferir que o Supabase não pausou, rotacionar segredos se o BACKLOG indicar, e abrir o site 2 min antes de apresentar.
-- [ ] **Step 4: Verify:** `node qa/backlog-lint.mjs` mostra 0 P0 e 0 P1 abertos, e todos os scripts acima saem com 0.
-- [ ] **Step 5: Commit** e `git push`. Avisar o usuário com a lista curta do que só ele pode fazer.
+- [x] **Step 1: Rodar tudo:** `backend npm test`, `qa/security/*`, `qa/flows/*`, `axe.mjs`, `console.mjs`, `backlog-lint.mjs`.
+- [x] **Step 2: Disparar 2 subagentes só-leitura** (`cacador-falhas` e `revisor-fluxos`, `model: "sonnet"`), apenas sobre o que mudou desde a Task 5 (`git diff --stat` mais lista de arquivos), cada um com ≤ 25 linhas de saída. Consolidar no BACKLOG e corrigir os P0/P1 novos com teste primeiro.
+- [x] **Step 3: Escrever `PRONTO-PARA-APRESENTAR.md`** com: status ("pronto" só se `backlog-lint` mostrar `P0 abertos: 0, P1 abertos: 0`); contas demo; roteiro sugerido de apresentação por conta; limitações conhecidas (os P2 abertos); **checklist do usuário:** criar o projeto no Cloudflare Pages, adicionar a URL em `ALLOWED_ORIGINS` no Render, fazer o merge para o branch padrão do repositório (para o keep-alive rodar), conferir que o Supabase não pausou, rotacionar segredos se o BACKLOG indicar, e abrir o site 2 min antes de apresentar.
+- [x] **Step 4: Verify:** `node qa/backlog-lint.mjs` mostra 0 P0 e 0 P1 abertos, e todos os scripts acima saem com 0.
+- [x] **Step 5: Commit** e `git push`. Avisar o usuário com a lista curta do que só ele pode fazer.
