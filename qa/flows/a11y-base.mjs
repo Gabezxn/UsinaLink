@@ -58,8 +58,8 @@ async function suite(nome, page, url) {
   ok(await page.evaluate(() => document.activeElement === document.getElementById('a11y-toggle')), t('ESC deveria devolver o foco ao botão'));
 }
 
-{ const ctx = await browser.newContext(); const page = await ctx.newPage(); await suite('index', page, `${SITE}/index.html`); await ctx.close(); }
-{ const ctx = await browser.newContext(); const page = await ctx.newPage(); await loginAs(page, 'empresa'); await suite('dashboard-empresa', page, `${SITE}/dashboard-empresa.html`); await ctx.close(); }
+{ const ctx = await browser.newContext({ bypassCSP: true }); const page = await ctx.newPage(); await suite('index', page, `${SITE}/index.html`); await ctx.close(); }
+{ const ctx = await browser.newContext({ bypassCSP: true }); const page = await ctx.newPage(); await loginAs(page, 'empresa'); await suite('dashboard-empresa', page, `${SITE}/dashboard-empresa.html`); await ctx.close(); }
 await browser.close();
 if (fails.length) { console.log(fails.join('\n')); process.exit(1); }
 console.log('OK a11y-base');

@@ -23,7 +23,7 @@ async function scan(page, file) {
 const seen = new Set();
 // Páginas públicas
 {
-  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } }); const page = await ctx.newPage();
+  const ctx = await browser.newContext({ bypassCSP: true, viewport: { width: 1280, height: 900 } }); const page = await ctx.newPage();
   for (const p of pages.filter((p) => !p.roles.length)) {
     try { await page.goto(`${SITE}/${p.file}`, { waitUntil: 'load' }); await page.waitForTimeout(300); await scan(page, p.file); seen.add(p.file); }
     catch (e) { lines.push(`${p.file} | erro-de-visita | ${String(e.message).split('\n')[0]}`); }
@@ -32,7 +32,7 @@ const seen = new Set();
 }
 // Páginas protegidas, por papel
 for (const role of ROLES) {
-  const ctx = await browser.newContext({ viewport: { width: 1280, height: 900 } }); const page = await ctx.newPage();
+  const ctx = await browser.newContext({ bypassCSP: true, viewport: { width: 1280, height: 900 } }); const page = await ctx.newPage();
   try { await loginAs(page, role); } catch (e) { lines.push(`login-${role} | erro-de-login | ${String(e.message).split('\n')[0]}`); await ctx.close(); continue; }
   for (const p of pages.filter((p) => p.roles.includes(role))) {
     const key = `${role}:${p.file}`;
