@@ -31,8 +31,11 @@
     event.preventDefault();
     let blob;
     try { blob = arquivo.url.startsWith("data:") ? dataUrlParaBlob(arquivo.url) : null; } catch (e) { blob = null; }
+    // Só abre no navegador PDF ou imagem; qualquer outro tipo é baixado (nunca executado). URLs externas só https.
+    const tipoSeguro = !!blob && /^(application\/pdf|image\/(png|jpe?g|webp|gif))$/.test(blob.type);
+    if (!blob && !/^https:\/\//.test(String(arquivo.url))) return;
     const href = blob ? URL.createObjectURL(blob) : arquivo.url;
-    if (botao.dataset.arquivoAcao === "baixar") {
+    if (botao.dataset.arquivoAcao === "baixar" || (blob && !tipoSeguro)) {
       const link = document.createElement("a");
       link.href = href;
       link.download = arquivo.nome;

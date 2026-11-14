@@ -37,4 +37,19 @@ describe('TokenService sem segredo configurado (SEC-2)', () => {
     const service = new TokenService(new JwtService(), { get: jest.fn().mockReturnValue('usinalink-dev-secret') } as any);
     expect(() => service.verify(forjado())).toThrow(UnauthorizedException);
   });
+
+  it.each(['troque-por-um-valor-aleatorio-com-pelo-menos-32-caracteres', 'curto123', 'usinalink-producao-2026-segredo-longo-demais'])(
+    'rejeita token forjado quando JWT_SECRET é fraco ou público (%s) (SEC-26)',
+    (segredo) => {
+      const service = new TokenService(new JwtService(), { get: jest.fn().mockReturnValue(segredo) } as any);
+      const forjado = new JwtService().sign({ sub: 1, tipoUsuario: 'admin' }, { secret: segredo });
+      expect(() => service.verify(forjado)).toThrow(UnauthorizedException);
+    },
+  );
+
+  it('aceita um segredo forte configurado', () => {
+    const forte = 'a3f9c1d27b8e4f60918273645abcdef0123456789abcdef0123456789abcdef0';
+    const service = new TokenService(new JwtService(), { get: jest.fn().mockReturnValue(forte) } as any);
+    expect((service.verify(service.sign({ sub: 5 })) as any).sub).toBe(5);
+  });
 });

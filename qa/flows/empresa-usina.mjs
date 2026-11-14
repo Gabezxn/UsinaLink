@@ -61,6 +61,11 @@ try {
   // 5) Pagamento só lista o que aguarda pagamento (FLX-3) e comprovante sem undefined (BUG-6)
   const ped = (await call('GET', '/api/pedidos/meus', await login('empresa'))).json.find((p) => p.itens?.some((i) => i.nome === peca));
   await pE.goto(`${SITE}/pagamento-pedido.html?pedidoId=${ped.idPedido}`); clicks++; await pE.waitForTimeout(1200);
+  { // BUG-14: o total exibido bate com valor + frete (+ taxa de 3,5%), sem erro de casas decimais
+    const frete = Number(prop?.frete || 0);
+    const total = Number((await pE.locator('[data-payment-total]').first().innerText()).replace(/[^\d,]/g, '').replace(',', '.'));
+    t.ok(total >= valorProposta + frete - 0.01 && total <= (valorProposta + frete) * 1.04, `BUG-14 total exibido ${total} fora do esperado (valor ${valorProposta} + frete ${frete})`);
+  }
   await clique(pE.getByRole('button', { name: /confirmar pagamento/i }), 'Confirmar pagamento');
   await pE.waitForURL(/confirmacao-pedido/, { timeout: 10000 }).catch(() => t.ok(false, 'após pagar deveria abrir a confirmação'));
   await pE.waitForTimeout(800);

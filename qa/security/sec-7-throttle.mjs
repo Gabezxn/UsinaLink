@@ -18,6 +18,10 @@ try {
   t.ok(limitou, 'SEC-7 tentativas erradas em excesso deveriam receber 429');
   const outroIp = await login('9.9.9.2', 'empresa@demo.com', 'Demo@123');
   t.ok(outroIp < 300, `SEC-7 outro cliente (IP diferente) foi bloqueado por culpa de terceiros (status ${outroIp})`);
+  // SEC-25: password spraying (e-mails diferentes, mesmo IP) também é limitado
+  let spray429 = false;
+  for (let i = 0; i < 90 && !spray429; i++) if ((await login('7.7.7.7', `spray${i}@teste.com`, 'senha-comum')) === 429) spray429 = true;
+  t.ok(spray429, 'SEC-25 90 tentativas com e-mails diferentes do mesmo IP não receberam 429');
   const outroEmail = await login('9.9.9.1', 'outra-pessoa@teste.com', 'qualquer');
   t.ok(outroEmail !== 429, 'SEC-7 limite deveria ser por IP+e-mail, não só por IP');
 } finally { try { process.kill(-be.pid, 'SIGTERM'); } catch {} }

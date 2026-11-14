@@ -67,6 +67,14 @@ t.ok(r.status < 300, `SEC-18 PDF válido recusado (status ${r.status} ${JSON.str
 r = await call('POST', '/api/pecas-comerciais', usiA, { nome: 'p', imagem: 'javascript:alert(1)', valorUnitario: '10', estoque: '1' });
 t.ok(is4xx(r), `SEC-18 imagem de peça com javascript: aceita (status ${r.status})`);
 
+// SEC-27: anexo do pedido (POST /api/pedidos) também é validado
+for (const ruim of ['data:text/html;base64,PHNjcmlwdD4=', 'javascript:alert(1)']) {
+  r = await call('POST', '/api/pedidos', empA, { peca: 'x', categoria: 'x', material: 'x', quantidade: '1', arquivo: ruim });
+  t.ok(is4xx(r), `SEC-27 pedido com anexo "${ruim.slice(0, 22)}" aceito (status ${r.status})`);
+}
+r = await call('POST', '/api/pedidos', empA, { peca: 'x', categoria: 'x', material: 'x', quantidade: '1', arquivo: 'data:application/pdf;base64,JVBERi0xLjQK' });
+t.ok(r.status < 300, `SEC-27 PDF válido recusado (status ${r.status})`);
+
 // BUG-3: valor da proposta positivo e com teto
 const pv = await novoPedido(empA);
 for (const v of ['-5', '0', '99999999999']) {

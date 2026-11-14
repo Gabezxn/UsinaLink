@@ -24,12 +24,14 @@ export class TokenService {
 
   private secret() {
     const configurado = this.config.get<string>('JWT_SECRET');
-    if (configurado && configurado !== SEGREDO_CONHECIDO) return configurado;
+    // Segredos públicos (exemplos do repositório) ou curtos demais são tratados como ausentes.
+    const fraco = !configurado || configurado.length < 32 || /^(troque|usinalink)/i.test(configurado) || configurado === SEGREDO_CONHECIDO;
+    if (!fraco) return configurado as string;
     // Sem segredo (ou com o valor de exemplo, público no repositório): usa um segredo aleatório deste processo.
     // O site continua no ar; as sessões só não sobrevivem a reinícios até o JWT_SECRET ser definido.
     if (!this.segredoAleatorio) {
       this.segredoAleatorio = randomBytes(48).toString('hex');
-      new Logger('TokenService').warn('JWT_SECRET ausente ou igual ao exemplo público: usando segredo aleatório temporário. Defina JWT_SECRET no ambiente.');
+      new Logger('TokenService').warn('JWT_SECRET ausente, curto (< 32 caracteres) ou igual a um exemplo público: usando segredo aleatório temporário. Defina um JWT_SECRET forte no ambiente.');
     }
     return this.segredoAleatorio;
   }

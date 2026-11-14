@@ -7,7 +7,10 @@
 
   function parseCurrency(value) {
     if (typeof value === "number") return value;
-    const clean = String(value || "").replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", ".");
+    const bruto = String(value || "").trim();
+    // A API devolve números como "1500.50" (ponto decimal); em texto brasileiro a vírgula é o decimal e o ponto é milhar.
+    if (/^-?\d+(\.\d+)?$/.test(bruto) && !/^-?\d{1,3}(\.\d{3})+$/.test(bruto)) return Number(bruto);
+    const clean = bruto.replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", ".");
     const number = Number(clean);
     return Number.isFinite(number) ? number : 0;
   }

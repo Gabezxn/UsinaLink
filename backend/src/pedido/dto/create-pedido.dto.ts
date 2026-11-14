@@ -1,4 +1,5 @@
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsAnexo } from '../../common/anexo';
 
 export class CreatePedidoDto {
   @IsOptional() @IsString() empresaId?: string;
@@ -12,5 +13,5 @@ export class CreatePedidoDto {
   @IsOptional() @IsString() regiao?: string;
   @IsOptional() @IsString() urgencia?: string;
   @IsOptional() @IsString() descricao?: string;
-  @IsOptional() @IsString() arquivo?: string;
+  @IsOptional() @IsString() @IsAnexo() arquivo?: string;
 }
