@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { Comprador, ContextoUsuarioService } from '../contexto-usuario/contexto-usuario.service';
@@ -29,7 +29,26 @@ export class PedidoService {
       : !!c.idEmpresa && pedido.idEmpresaCompradora === c.idEmpresa;
   }
 
-  private async enrich(pedido: Pedido) {
+  /** Dados do comprador que uma usina pode ver (sem contato, documento ou anexos). */
+  private compradorPublico(e: any) {
+    return e ? { nomeFantasia: e.nomeFantasia, razaoSocial: e.razaoSocial, tipoComprador: e.tipoComprador } : null;
+  }
+
+  private ehComprador(user: any) {
+    return user?.tipoUsuario === 'pessoa_fisica' || !!user?.tipoUsuario?.includes('empresa');
+  }
+
+  /** Só o comprador dono do pedido pode alterar ou cancelar. */
+  private async exigirDono(id: number | string, user: any) {
+    const pedido = await this.pedidos.findOne({ where: { idPedido: Number(id) } });
+    if (!pedido) throw new NotFoundException('Pedido não encontrado.');
+    if (!this.ehComprador(user)) throw new ForbiddenException();
+    const comprador = await this.ctx.obterComprador(user.sub);
+    if (!this.ehDoComprador(pedido, comprador)) throw new ForbiddenException();
+    return pedido;
+  }
+
+  private async enrich(pedido: Pedido, idUsinaViewer?: number) {
     const [propostas, empresa, pessoa, itens, arquivos] = await Promise.all([
       this.propostas.find({ where: { idPedido: pedido.idPedido } }),
       pedido.idEmpresaCompradora ? this.empresas.findOne({ where: { idEmpresa: pedido.idEmpresaCompradora } }) : null,
@@ -41,6 +60,10 @@ export class PedidoService {
     const empresaCompradora = empresa || (pessoa
       ? { nomeFantasia: pessoa.nome, razaoSocial: pessoa.nome, email: pessoa.email, telefone: pessoa.telefone, tipoComprador: 'pessoa_fisica' }
       : null);
+    if (idUsinaViewer !== undefined) {
+      // Usina só enxerga as próprias propostas e o nome público do comprador.
+      return { ...pedido, propostas: propostas.filter(p => p.idUsina === idUsinaViewer), empresaCompradora: this.compradorPublico(empresaCompradora), itens, arquivos };
+    }
     return { ...pedido, propostas, empresaCompradora, itens, arquivos };
   }
 
@@ -99,7 +122,7 @@ export class PedidoService {
   async disponiveis(user: any) {
     const idUsina = await this.ctx.obterUsinaId(user.sub);
     const pedidos = await this.pedidos.find({ where: { status: In(STATUS_ABERTOS) } });
-    const enriched = await Promise.all(pedidos.map(p => this.enrich(p)));
+    const enriched = await Promise.all(pedidos.map(p => this.enrich(p, idUsina)));
     // Pedido que esta usina ja respondeu com proposta (exceto cancelada) sai da lista.
     return enriched.filter(p => !p.propostas.some(pr => pr.idUsina === idUsina && pr.status !== 'cancelada'));
   }
@@ -107,21 +130,25 @@ export class PedidoService {
   async detalhe(id: number | string, user: any) {
     const pedido = await this.pedidos.findOne({ where: { idPedido: Number(id) } });
     if (!pedido) throw new NotFoundException('Pedido não encontrado.');
-    const enriched = await this.enrich(pedido);
-    if (user.tipoUsuario === 'pessoa_fisica' || user.tipoUsuario?.includes('empresa')) {
+    if (this.ehComprador(user)) {
       const comprador = await this.ctx.obterComprador(user.sub);
       if (!this.ehDoComprador(pedido, comprador)) throw new ForbiddenException();
-    } else {
-      const idUsina = await this.ctx.obterUsinaId(user.sub);
-      const temProposta = enriched.propostas?.some(p => p.idUsina === idUsina);
-      if (!STATUS_ABERTOS.includes(pedido.status) && !temProposta) throw new ForbiddenException();
+      return this.enrich(pedido);
     }
+    if (!user.tipoUsuario?.includes('usina')) throw new ForbiddenException();
+    const idUsina = await this.ctx.obterUsinaId(user.sub);
+    const enriched = await this.enrich(pedido, idUsina);
+    const temProposta = enriched.propostas?.some(p => p.idUsina === idUsina);
+    if (!STATUS_ABERTOS.includes(pedido.status) && !temProposta) throw new ForbiddenException();
     return enriched;
   }
 
   async atualizar(id: number | string, dto: any, user: any) {
-    await this.detalhe(id, user);
-    await this.pedidos.update({ idPedido: Number(id) }, dto);
+    await this.exigirDono(id, user);
+    // Só campos descritivos: o status muda apenas pelos fluxos próprios (proposta, pagamento, entrega, cancelamento).
+    const campos: Record<string, any> = {};
+    for (const k of ['urgencia', 'observacoes', 'prazoEntregaDias']) if (dto?.[k] !== undefined) campos[k] = dto[k];
+    if (Object.keys(campos).length) await this.pedidos.update({ idPedido: Number(id) }, campos);
     return this.detalhe(id, user);
   }
 
@@ -145,7 +172,8 @@ export class PedidoService {
   }
 
   async cancelar(id: number | string, user: any) {
-    const pedido = await this.detalhe(id, user);
+    const pedido = await this.exigirDono(id, user);
+    if (![...STATUS_ABERTOS, 'proposta_aceita'].includes(pedido.status)) throw new BadRequestException('Este pedido não pode mais ser cancelado.');
     await this.pedidos.update({ idPedido: Number(id) }, { status: 'cancelado' });
     if (pedido.idSolicitacao) {
       await this.solicitacoes.update({ idSolicitacao: pedido.idSolicitacao }, { status: 'cancelada' });

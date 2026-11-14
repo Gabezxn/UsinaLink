@@ -23,3 +23,18 @@ describe('TokenService', () => {
     expect(() => service.verify('token-invalido')).toThrow(UnauthorizedException);
   });
 });
+
+describe('TokenService sem segredo configurado (SEC-2)', () => {
+  const forjado = () => new JwtService().sign({ sub: 1, tipoUsuario: 'admin' }, { secret: 'usinalink-dev-secret' });
+
+  it('rejeita token forjado com o segredo padrão quando JWT_SECRET falta', () => {
+    const service = new TokenService(new JwtService(), { get: jest.fn().mockReturnValue(undefined) } as any);
+    expect(() => service.verify(forjado())).toThrow(UnauthorizedException);
+    expect((service.verify(service.sign({ sub: 2 })) as any).sub).toBe(2);
+  });
+
+  it('rejeita token forjado quando JWT_SECRET é o valor de exemplo conhecido', () => {
+    const service = new TokenService(new JwtService(), { get: jest.fn().mockReturnValue('usinalink-dev-secret') } as any);
+    expect(() => service.verify(forjado())).toThrow(UnauthorizedException);
+  });
+});

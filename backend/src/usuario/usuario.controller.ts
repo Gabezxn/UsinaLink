@@ -6,7 +6,7 @@ import { LoginDto } from './dto/login.dto';
 import { TrocarSenhaDto } from './dto/trocar-senha.dto';
 import { UsuarioService } from './usuario.service';
 
-const LOGIN_THROTTLE = { default: { limit: 5, ttl: 60000 } };
+const LOGIN_THROTTLE = { default: { limit: Number(process.env.LOGIN_THROTTLE_LIMIT) || 10, ttl: 60000 } };
 
 @Controller('api')
 export class UsuarioController {

@@ -4,10 +4,10 @@ import { existsSync, mkdirSync, writeFileSync, readFileSync, openSync, chmodSync
 import { tmpdir } from 'node:os';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { backendEnv, PGPORT } from './env.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const WORK = process.env.QA_DIR || join(tmpdir(), 'usinalink-qa');
-const PGPORT = 54329;
 const PGBIN = ['/usr/lib/postgresql/16/bin', '/usr/lib/postgresql/15/bin', '/usr/lib/postgresql/14/bin'].find(existsSync);
 if (!PGBIN) throw new Error('PostgreSQL não encontrado (instale com apt-get install -y postgresql)');
 mkdirSync(WORK, { recursive: true });
@@ -39,7 +39,7 @@ try { asPg(join(PGBIN, 'pg_ctl'), ['-D', PGDATA, 'status']); } catch {
 try { asPg(join(PGBIN, 'createdb'), ['-h', 'localhost', '-p', String(PGPORT), 'usinalink_qa']); } catch {}
 
 // 2) Backend
-const env = { ...process.env, PORT: '3000', DB_TYPE: 'postgres', DB_HOST: 'localhost', DB_PORT: String(PGPORT), DB_USERNAME: 'postgres', DB_PASSWORD: '', DB_NAME: 'usinalink_qa', DB_SSL: 'false', DB_SYNCHRONIZE: 'true', JWT_SECRET: 'qa-only-secret', THROTTLE_LIMIT: '100000', ALLOWED_ORIGINS: 'http://localhost:5500,http://127.0.0.1:5500,http://localhost:3000' };
+const env = backendEnv();
 const logB = openSync(join(WORK, 'backend.log'), 'a');
 const be = spawn('npx', ['ts-node', '--transpile-only', 'src/main.ts'], { cwd: join(ROOT, 'backend'), env, detached: true, stdio: ['ignore', logB, logB] });
 pids.backend = be.pid; be.unref();

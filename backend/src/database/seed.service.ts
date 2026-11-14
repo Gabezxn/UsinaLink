@@ -42,13 +42,25 @@ export class SeedService implements OnModuleInit {
     return this.garantir(this.usuarios, { email }, { nome, email, senhaHash, tipoUsuario, status: 'ativo' });
   }
 
+  async garantirAdminDemo(senha: string | undefined) {
+    const existente = await this.usuarios.findOne({ where: { email: 'admin@demo.com' } });
+    if (!senha) {
+      if (existente && existente.status === 'ativo') await this.usuarios.update({ idUsuario: existente.idUsuario }, { status: 'inativo' });
+      return;
+    }
+    const senhaHash = await this.passwords.hash(senha);
+    if (existente) await this.usuarios.update({ idUsuario: existente.idUsuario }, { senhaHash, status: 'ativo' });
+    else await this.usuarios.save(this.usuarios.create({ nome: 'Administrador Demo', email: 'admin@demo.com', senhaHash, tipoUsuario: 'admin', status: 'ativo' }));
+  }
+
   async onModuleInit() {
     const senhaHash = await this.passwords.hash('Demo@123');
 
     const empresaUsuario = await this.garantirUsuario('Metal Forte Ltda.', 'empresa@demo.com', 'empresa', senhaHash);
     const usinaUsuario = await this.garantirUsuario('Atlas Metais', 'usina@demo.com', 'usina', senhaHash);
     const pessoaUsuario = await this.garantirUsuario('Joao Demo', 'pessoa@demo.com', 'pessoa_fisica', senhaHash);
-    await this.garantirUsuario('Administrador Demo', 'admin@demo.com', 'admin', senhaHash);
+    // Admin demo só existe se SEED_ADMIN_PASSWORD estiver definido; senão qualquer admin demo antigo é desativado.
+    await this.garantirAdminDemo(process.env.SEED_ADMIN_PASSWORD);
 
     const empresa = await this.garantir(this.empresas, { idUsuario: empresaUsuario.idUsuario }, {
       idUsuario: empresaUsuario.idUsuario, razaoSocial: 'Metal Forte Ltda.', nomeFantasia: 'Metal Forte', cnpj: '11222333000181',
