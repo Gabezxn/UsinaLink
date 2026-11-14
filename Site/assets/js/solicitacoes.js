@@ -189,7 +189,7 @@
     if (!item || typeof openActionModal !== 'function') return;
 
     const arquivoInfo = item.arquivoTecnicoNome
-      ? `<a href="${item.arquivoTecnico}" download="${esc(item.arquivoTecnicoNome)}" class="text-link">${esc(item.arquivoTecnicoNome)}</a>`
+      ? `<a href="${window.SafeHtml.url(item.arquivoTecnico)}" download="${esc(item.arquivoTecnicoNome)}" class="text-link">${esc(item.arquivoTecnicoNome)}</a>`
       : 'Nenhum arquivo anexado';
 
     openActionModal({

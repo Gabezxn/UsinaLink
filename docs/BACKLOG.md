@@ -5,7 +5,7 @@ Severidade: P0 derruba/compromete segurança; P1 quebra fluxo ou barreira de ace
 Verificar: `node qa/backlog-lint.mjs`.
 
 ## Progresso das tasks
-Tasks 1-5 concluídas. Próxima: Task 6 (P0: SEC-1..8,19,20). Baseline axe: 262 nós color-contrast + 1 scrollable-region (qa/baseline.txt). Backend: THROTTLE_LIMIT env (QA usa 100000).
+Tasks 1-6 concluídas (0 P0 abertos). Próxima: Task 7 (P1 de fluxo, bugs e segurança P1). Baseline axe: 262 nós color-contrast + 1 scrollable-region (qa/baseline.txt). Backend: THROTTLE_LIMIT env (QA usa 100000).
 
 ## Achados
 | ID | Sev | Área | Onde (arquivo:linha) | Problema + como reproduzir | Correção sugerida | Status |
@@ -18,8 +18,8 @@ Tasks 1-5 concluídas. Próxima: Task 6 (P0: SEC-1..8,19,20). Baseline axe: 262 
 | SEC-6 | P0 | Proposta/estado | backend/src/proposta/proposta.service.ts:110-118 | aceitar() não confere status: reaceitar cancelada, aceitar em pedido cancelado/concluído regride status. | Validar proposta enviada e pedido em status aberto | corrigido |
 | SEC-7 | P0 | Rate limit/disponibilidade | backend/src/main.ts:10; app.module.ts:29; usuario.controller.ts:10 | Sem 'trust proxy': atrás do Render todos compartilham o IP; limite global 60/min e de login estouram para a plataforma toda (429 em massa, ou atacante bloqueia o login). | app.set('trust proxy',1); throttle de login por IP+e-mail (@Throttle); limite global maior | corrigido |
 | SEC-8 | P0 | Pedido/vazamento | backend/src/pedido/pedido.service.ts:32-46,99-120 | GET /api/pedidos/disponiveis e /:id para qualquer usina devolvem propostas das concorrentes e o objeto Empresa completo (cnpj, e-mail, telefone, anexos). | Para usina: só as próprias propostas e dados públicos do comprador (nome, cidade) | corrigido |
-| SEC-19 | P0 | XSS | Site/assets/js/solicitacoes.js:192 | href recebe item.arquivoTecnico sem escapar: valor 'x" onmouseover="alert(1)' ou 'javascript:' executa JS na tela de solicitações. | SafeHtml.escape no href e aceitar só data:/https: | aberto |
-| SEC-20 | P0 | XSS | Site/assets/js/reviews-blocks.js:81-83,121,219-221 | item.usina, item.peca, request.motivo, ids em innerHTML/options sem escape: usina com nomeFantasia '<img src=x onerror=...>' executa na tela da empresa (solicitacoes-bloqueio-usina.html). | escapar tudo (SafeHtml); varrer os ~96 innerHTML | aberto |
+| SEC-19 | P0 | XSS | Site/assets/js/solicitacoes.js:192 | href recebe item.arquivoTecnico sem escapar: valor 'x" onmouseover="alert(1)' ou 'javascript:' executa JS na tela de solicitações. | SafeHtml.escape no href e aceitar só data:/https: | corrigido |
+| SEC-20 | P0 | XSS | Site/assets/js/reviews-blocks.js:81-83,121,219-221 | item.usina, item.peca, request.motivo, ids em innerHTML/options sem escape: usina com nomeFantasia '<img src=x onerror=...>' executa na tela da empresa (solicitacoes-bloqueio-usina.html). | escapar tudo (SafeHtml); varrer os ~96 innerHTML | corrigido |
 | SEC-9 | P1 | Pagamento | backend/src/pagamento/pagamento.service.ts:40-62 | criar() aceita proposta 'enviada' e pedido cancelado; sem idempotência (duplo clique = 2 pagamentos). | Exigir proposta 'aceita' e pedido proposta_aceita; evitar duplicado | aberto |
 | SEC-10 | P1 | Avaliação | backend/src/avaliacao/avaliacao.service.ts:10,32 | STATUS_CONCLUIDO inclui 'em_negociacao': dá para avaliar (nota 1) usina sem entrega. | Só pedido concluído; usina da proposta aceita | aberto |
 | SEC-11 | P1 | Avaliação/vazamento | backend/src/avaliacao/avaliacao.controller.ts:24-36,51 | GET /api/avaliacoes/usina/:id, /empresa/:id, /pedido/:id sem JwtAuthGuard expõem ids e comentários. | JwtAuthGuard; resumo da usina público sem ids internos | aberto |

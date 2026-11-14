@@ -6,10 +6,10 @@ export async function call(method, path, token, body, headers = {}) {
   let json = null; try { json = await r.json(); } catch {}
   return { status: r.status, json };
 }
-export async function login(tipo, email = DEMO[tipo], senha = DEMO.senha) {
+export async function login(tipo, email = DEMO[tipo], senha = DEMO.senha, full = false) {
   const r = await call('POST', `/api/auth/login/${tipo}`, null, { email, senha });
   if (!r.json?.accessToken) throw new Error(`login ${tipo} ${email}: ${r.status} ${JSON.stringify(r.json)}`);
-  return r.json.accessToken;
+  return full ? r.json : r.json.accessToken;
 }
 const uid = () => `${Date.now()}${Math.floor(Math.random() * 1e6)}`;
 const digits = (n) => Array.from({ length: n }, () => Math.floor(Math.random() * 10)).join('');
@@ -19,7 +19,8 @@ export async function registrar(tipo, extra = {}) {
   const body = { tipo, nome: `QA ${tipo} ${uid()}`, email, senha: 'Demo@123', confirmarSenha: 'Demo@123', cnpj: digits(14), cpf: digits(11), telefone: '11999990000', responsavel: 'QA', ...extra };
   const r = await call('POST', `/api/cadastro/${tipo}`, null, body);
   if (r.status >= 300) throw new Error(`cadastro ${tipo}: ${r.status} ${JSON.stringify(r.json)}`);
-  return { token: await login(tipo, email), email, body };
+  const full = await login(tipo, email, 'Demo@123', true);
+  return { token: full.accessToken, email, body, full };
 }
 export function checker() {
   const fails = [];

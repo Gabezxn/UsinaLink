@@ -12,11 +12,11 @@ const ACCOUNTS = {
 };
 export const DEMO = { ...ACCOUNTS, senha: 'Demo@123' };
 /** Login pela UI com a conta demo e espera o dashboard. */
-export async function loginAs(page, role) {
+export async function loginAs(page, role, creds) {
   const a = ACCOUNTS[role];
   if (!a) throw new Error(`papel inválido: ${role}`);
   await page.goto(`${SITE}/${a.page}`);
-  await page.fill('input[name="email"]', a.email);
-  await page.fill('input[name="senha"]', 'Demo@123');
+  await page.fill('input[name="email"]', creds?.email || a.email);
+  await page.fill('input[name="senha"]', creds?.senha || 'Demo@123');
   await Promise.all([page.waitForURL(`**/${a.dash}`, { timeout: 120000 }), page.click('form.js-login-form [type="submit"]')]);
 }

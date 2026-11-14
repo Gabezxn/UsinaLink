@@ -143,13 +143,13 @@ Cada linha abaixo tem um teste dentro da task indicada.
 **Interfaces:**
 - Produces: `escapeHtml(value: unknown): string` em `safe-html.js`, exposto como `window.SafeHtml.escape`. Todo valor vindo do usuário ou da API que vai para `innerHTML` passa por ele.
 
-- [ ] **Step 1: Para cada P0, escrever o teste que falha** em `qa/security/<id>.mjs`. Exemplos obrigatórios, se confirmados no BACKLOG:
+- [x] **Step 1: Para cada P0, escrever o teste que falha** em `qa/security/<id>.mjs`. Exemplos obrigatórios, se confirmados no BACKLOG:
   - **(Review Focus 2)** `GET /api/pedidos/:id`, `/propostas/:id` e `/notificacoes` com o token da conta A para um recurso da conta B retornam 403 ou 404;
   - **(Review Focus 3)** cadastrar uma peça ou perfil com nome `<img src=x onerror=window.__xss=1>`, abrir a tela e verificar que `window.__xss` continua indefinido e que o texto aparece literal.
-- [ ] **Step 2: Run each to verify it fails.**
-- [ ] **Step 3: Implement as correções** na menor mudança possível (guardas de autorização no service, `escapeHtml`, validação de DTO, limites de upload e tipo, rate limit no login com `@nestjs/throttler`, que já é dependência, CORS restrito, segredos movidos para `.env`). Se houver segredo no histórico, registrar no BACKLOG como ação do usuário (rotacionar).
-- [ ] **Step 4: Run to verify they pass** e rodar `cd backend && npm test`. Esperado: tudo verde.
-- [ ] **Step 5: Commit por achado ou lote** e `git push`.
+- [x] **Step 2: Run each to verify it fails.**
+- [x] **Step 3: Implement as correções** na menor mudança possível (guardas de autorização no service, `escapeHtml`, validação de DTO, limites de upload e tipo, rate limit no login com `@nestjs/throttler`, que já é dependência, CORS restrito, segredos movidos para `.env`). Se houver segredo no histórico, registrar no BACKLOG como ação do usuário (rotacionar).
+- [x] **Step 4: Run to verify they pass** e rodar `cd backend && npm test`. Esperado: tudo verde.
+- [x] **Step 5: Commit por achado ou lote** e `git push`.
 
 ### Task 7: Correções P1 de fluxo e bugs
 

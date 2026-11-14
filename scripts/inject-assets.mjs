@@ -3,7 +3,7 @@ import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 const SITE = join(dirname(fileURLToPath(import.meta.url)), '..', 'Site');
-const LINKS = ['<link rel="stylesheet" href="assets/css/a11y.css">'];
+const LINKS = ['<link rel="stylesheet" href="assets/css/a11y.css">', '<script src="assets/js/safe-html.js"></script>'];
 const SCRIPTS = ['<script src="assets/js/a11y.js" defer></script>'];
 let changed = 0;
 for (const f of readdirSync(SITE).filter((n) => n.endsWith('.html'))) {
