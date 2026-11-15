@@ -37,6 +37,10 @@
       setStat("[data-stat-propostas-aceitas]", aceitas.length);
       setStat("[data-stat-faturamento]", money(faturamento));
 
+      const abertas = propostas.filter((p) => p.status === "enviada").length;
+      const small = document.querySelector("[data-stat-propostas-enviadas]")?.parentElement?.querySelector("small");
+      if (small && abertas > 0) { small.textContent = `${abertas} aguardando resposta`; small.classList.add("pending"); }
+
       if (typeof ultimasPropostasEnviadas !== "undefined") ultimasPropostasEnviadas = propostas;
 
       if (propostasBody) {

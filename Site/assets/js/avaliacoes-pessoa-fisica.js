@@ -40,6 +40,12 @@
       avaliar({ alvo: p.alvo, titulo: `Avaliar ${p.usina || "a usina"}`, aoConcluir: () => carregar().catch(() => {}) });
     }));
 
+    const alvoUrl = new URLSearchParams(location.search).get("compra");
+    if (alvoUrl && !carregar.aberto) {
+      carregar.aberto = true;
+      pendentesEl.querySelector(`[data-avaliar="${pendentes.findIndex((p) => p.alvo.solicitacaoComercialId === alvoUrl)}"]`)?.click();
+    }
+
     const descricao = (a) => {
       if (a.idSolicitacaoComercial) {
         const c = compras.find((x) => x.idSolicitacaoComercial === a.idSolicitacaoComercial);

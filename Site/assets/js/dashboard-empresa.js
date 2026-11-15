@@ -42,6 +42,10 @@
       setStat("[data-stat-pedidos-andamento]", emAndamento.length);
       setStat("[data-stat-pedidos-finalizados]", finalizados.length);
 
+      const pend = (selector, n, texto) => { const el = document.querySelector(selector)?.parentElement?.querySelector("small"); if (el && n > 0) { el.textContent = `${n} ${texto}`; el.classList.add("pending"); } };
+      pend("[data-stat-propostas-recebidas]", propostas.filter((p) => p.status === "enviada").length, "aguardando sua decisão");
+      pend("[data-stat-pedidos-andamento]", pedidos.filter((p) => p.status === "proposta_aceita").length, "aguardando pagamento");
+
       if (tableBody) {
         const recentes = [...solicitacoes].slice(0, 5);
         tableBody.innerHTML = recentes.length

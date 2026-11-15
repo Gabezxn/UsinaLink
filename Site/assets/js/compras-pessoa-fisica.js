@@ -13,8 +13,8 @@
   function acaoRapida(c) {
     const href = `compra-pessoa-fisica.html?id=${esc(c.idSolicitacaoComercial)}`;
     const principal = { aceita: "Pagar", enviada: "Confirmar entrega" }[c.status];
-    const avaliar = c.status === "entregue" && !c.avaliacao ? '<a class="table-action" href="avaliacoes-pessoa-fisica.html">Avaliar</a>' : "";
-    return `<a class="table-action" href="${href}">Acompanhar</a>${principal ? `<a class="table-action" href="${href}">${principal}</a>` : ""}${avaliar}`;
+    if (c.status === "entregue" && !c.avaliacao) return `<a class="table-action" href="avaliacoes-pessoa-fisica.html?compra=${esc(c.idSolicitacaoComercial)}">Avaliar</a>`;
+    return `<a class="table-action" href="${href}">${principal || "Acompanhar"}</a>`;
   }
 
   function render() {

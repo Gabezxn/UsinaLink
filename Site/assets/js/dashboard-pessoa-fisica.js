@@ -40,7 +40,7 @@
       const link = `compra-pessoa-fisica.html?id=${c.idSolicitacaoComercial}`;
       if (c.status === "aceita") acoes.push([`A usina aceitou <strong>${esc(c.peca)}</strong>. Pague para ela começar a separar.`, link, "Pagar"]);
       if (c.status === "enviada") acoes.push([`<strong>${esc(c.peca)}</strong> foi enviada. Confirme quando receber.`, link, "Confirmar entrega"]);
-      if (c.status === "entregue" && !c.avaliacao) acoes.push([`Como foi a compra de <strong>${esc(c.peca)}</strong>? Avalie a usina.`, "avaliacoes-pessoa-fisica.html", "Avaliar"]);
+      if (c.status === "entregue" && !c.avaliacao) acoes.push([`Como foi a compra de <strong>${esc(c.peca)}</strong>? Avalie a usina.`, `avaliacoes-pessoa-fisica.html?compra=${c.idSolicitacaoComercial}`, "Avaliar"]);
     });
     pedidosAPagar.forEach((p) => {
       acoes.push([`Proposta aceita no pedido <strong>${esc(p.itens?.[0]?.nome || p.numeroPedido || "#" + p.idPedido)}</strong>. Falta pagar.`, `pagamento-pedido.html?pedidoId=${p.idPedido}`, "Pagar pedido"]);
