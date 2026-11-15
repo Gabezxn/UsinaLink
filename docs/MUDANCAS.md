@@ -70,3 +70,10 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 |---|---|
 | Fiz o merge de tudo no `main` (PR nº 1, commit `62e5041`) | GitHub: <https://github.com/Gabezxn/UsinaLink/pull/1> |
 | Seu projeto no Cloudflare é do tipo "Workers" e a build falhava por falta de configuração. Criei o arquivo que diz para publicar a pasta `Site` | `wrangler.jsonc` (raiz do projeto) |
+
+## Pedido 4 (15/11): Cloudflare funcionando
+
+| Mudança | Onde |
+|---|---|
+| Build do Cloudflare passou com o `wrangler.jsonc`. Fiz o merge no `main` (PR nº 2, commit `5ccd393`) | GitHub: <https://github.com/Gabezxn/UsinaLink/pull/2> |
+| Nenhum código mudou nesta etapa | — |
