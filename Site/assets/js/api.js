@@ -123,7 +123,10 @@
     }
 
     if (!response.ok) {
-      throw new Error(extractErrorMessage(data));
+      const bruta = extractErrorMessage(data);
+      const ingles = /^(forbidden( resource)?|not found|unauthorized|bad request|internal server error|too many requests)$/i.test(bruta) || /^cannot (get|post|put|patch|delete) /i.test(bruta);
+      const porStatus = { 400: 'Dados inválidos. Confira e tente de novo.', 403: 'Você não tem permissão para fazer isso.', 404: 'Não encontramos o que você procurou.', 429: 'Muitas tentativas. Aguarde um instante e tente de novo.', 500: 'Erro no servidor. Tente de novo em instantes.' };
+      throw new Error(ingles ? (porStatus[response.status] || bruta) : bruta);
     }
 
     return data;

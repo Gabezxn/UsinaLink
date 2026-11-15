@@ -6,6 +6,15 @@
     if (window.showToast) window.showToast(message);
   }
 
+  function showError(message, field) {
+    const el = document.querySelector("#proposal-error");
+    document.querySelectorAll("#proposal-value, #proposal-deadline, #proposal-freight").forEach((i) => i.removeAttribute("aria-invalid"));
+    if (!el) { notify(message); return; }
+    el.textContent = message || "";
+    el.hidden = !message;
+    if (field && message) { field.setAttribute("aria-invalid", "true"); field.focus(); }
+  }
+
   function esc(value) {
     return typeof escapeHtml === "function" ? escapeHtml(value ?? "") : String(value ?? "");
   }
@@ -34,6 +43,10 @@
     }
     try {
       const pedido = await window.UsinaLinkApi.get(`/pedidos/${pedidoId}`);
+      if (!["aberto", "em_negociacao"].includes(pedido.status)) {
+        showError("Este pedido não recebe mais propostas.");
+        if (sendButton) sendButton.disabled = true;
+      }
       const item = (pedido.itens && pedido.itens[0]) || {};
       card.querySelector("h2").textContent = item.nome || "Pedido industrial";
       card.querySelector(".quote-facts").innerHTML = `
@@ -84,9 +97,10 @@
       const freight = document.querySelector("#proposal-freight");
       const note = document.querySelector("#proposal-note");
       const valorNum = parseMoney(value.value);
-      if (!pedidoId) { notify("Nenhum pedido selecionado."); return; }
-      if (!valorNum || valorNum <= 0) { notify("Informe um valor valido para a proposta."); return; }
-      if (!deadline.value.trim()) { notify("Informe o prazo de fabricacao."); return; }
+      showError("");
+      if (!pedidoId) { showError("Nenhum pedido selecionado."); return; }
+      if (!valorNum || valorNum <= 0) { showError("Informe um valor válido para a proposta.", value); return; }
+      if (!deadline.value.trim()) { showError("Informe o prazo de fabricação.", deadline); return; }
 
       const originalText = button.textContent;
       button.disabled = true;
@@ -102,7 +116,7 @@
         notify("Proposta enviada com sucesso");
         window.setTimeout(() => { window.location.href = "propostas-usina.html"; }, 800);
       } catch (error) {
-        notify(error.message);
+        showError(error.message);
         button.disabled = false;
         button.textContent = originalText;
       }

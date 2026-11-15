@@ -11,7 +11,7 @@ function renderInvite(item) {
   const owner = item.contexto === "usina" ? "Usina vinculada" : "Empresa vinculada";
   statusElement.textContent = "Revise os dados abaixo antes de aceitar o convite.";
   detailsElement.innerHTML = `
-    <div><span>${owner}</span><strong>${esc(item.ownerId || "Conta UsinaLink")}</strong></div>
+    <div><span>${owner}</span><strong>${"Conta UsinaLink"}</strong></div>
     <div><span>Nome</span><strong>${esc(item.nome || "")}</strong></div>
     <div><span>E-mail</span><strong>${esc(item.email || "")}</strong></div>
     <div><span>Cargo</span><strong>${esc(item.cargo || "")}</strong></div>
@@ -20,7 +20,14 @@ function renderInvite(item) {
 
 async function loadInvite() {
   if (!inviteId) {
-    statusElement.textContent = "Convite nao informado.";
+    statusElement.textContent = "Convite não informado. Abra o link recebido no convite.";
+    button.disabled = true;
+    return;
+  }
+  let logado = false;
+  try { logado = !!(sessionStorage.getItem("accessToken") || localStorage.getItem("accessToken")); } catch { /* sem armazenamento */ }
+  if (!logado) {
+    statusElement.innerHTML = 'Para aceitar o convite, entre na sua conta e abra este link de novo. <a class="text-link" href="login.html">Entrar</a>';
     button.disabled = true;
     return;
   }
@@ -36,7 +43,7 @@ button.addEventListener("click", async () => {
   if (!funcionario) return;
   try {
     await window.UsinaLinkApi.put(`/funcionarios/${encodeURIComponent(inviteId)}/aceitar-convite`, {});
-    statusElement.textContent = "Convite aceito com sucesso. Seu status agora e Ativo.";
+    statusElement.textContent = "Convite aceito com sucesso. Seu status agora é Ativo.";
     button.disabled = true;
   } catch (error) {
     statusElement.textContent = error.message;

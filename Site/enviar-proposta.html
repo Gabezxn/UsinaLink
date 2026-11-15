@@ -58,8 +58,8 @@
             </label>
             <label class="field">
               <span>Valor do frete</span>
-              <div class="input-wrap"><span class="input-symbol" aria-hidden="true">R$</span><input id="proposal-freight" type="text" placeholder="Calculado automaticamente" readonly></div>
-              <small class="field-hint" id="freight-hint">Calculado automaticamente pela dist&acirc;ncia entre a usina e o local de entrega.</small>
+              <div class="input-wrap"><span class="input-symbol" aria-hidden="true">R$</span><input id="proposal-freight" type="text" placeholder="Sugerido automaticamente"></div>
+              <small class="field-hint" id="freight-hint">Sugest&atilde;o calculada pela dist&acirc;ncia entre a usina e o local de entrega. Voc&ecirc; pode ajustar o valor.</small>
             </label>
             <label class="field span-2">
               <span>Observa&ccedil;&otilde;es t&eacute;cnicas</span>
@@ -81,6 +81,7 @@
         </article>
       </section>
 
+      <p class="form-error" id="proposal-error" role="alert" hidden></p>
       <div class="quote-actions">
         <a class="btn btn-ghost" href="pedidos-disponiveis.html">Cancelar</a>
         <button class="btn btn-orange js-send-proposal" type="button">Enviar proposta</button>
