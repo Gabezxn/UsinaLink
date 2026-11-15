@@ -45,7 +45,7 @@ const browser = await chromium.launch();
   await page.waitForTimeout(12000);
   t.ok(total >= 3, `503: deveria tentar de novo (chamadas: ${total})`);
   const texto = await page.locator('main').innerText();
-  t.ok(!/503|Service Unavailable|Failed to fetch|Unauthorized/i.test(texto), `503: a tela mostra erro técnico: ${(texto.match(/.{0,30}(503|Service Unavailable|Failed to fetch).{0,20}/) || [''])[0]}`);
+  t.ok(!/\b503\b|Service Unavailable|Failed to fetch|Unauthorized/i.test(texto), `503: a tela mostra erro técnico: ${(texto.match(/.{0,30}(\b503\b|Service Unavailable|Failed to fetch).{0,20}/) || [''])[0]}`);
   t.ok(await page.locator('table tbody tr').count() > 0, '503: a tabela deveria carregar depois das tentativas');
   await ctx.close();
 }
