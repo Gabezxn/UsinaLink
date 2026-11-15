@@ -40,7 +40,7 @@
         <div class="table-wrap">
           <table>
             <thead><tr><th>Pe&ccedil;a</th><th>Material</th><th>Estoque</th><th>Valor unit&aacute;rio</th><th>Prazo</th><th>A&ccedil;&otilde;es</th></tr></thead>
-            <tbody data-pecas-comerciais-body>
+            <tbody data-pecas-comerciais-body aria-live="polite">
               <tr><td colspan="6" style="text-align:center; padding: 24px;">Carregando...</td></tr>
             </tbody>
           </table>
@@ -53,14 +53,14 @@
     <section class="card modal-card" role="dialog" aria-modal="true" aria-labelledby="peca-modal-title">
       <div class="modal-header"><div><span class="eyebrow orange-text">Cat&aacute;logo</span><h2 id="peca-modal-title">Adicionar pe&ccedil;a</h2></div><button class="modal-close js-close-peca-modal" type="button">x</button></div>
       <form class="form-grid" id="peca-form">
-        <label class="field"><span>Nome da pe&ccedil;a</span><div class="input-wrap"><span class="input-symbol">N</span><input name="nome" type="text" required></div></label>
-        <label class="field"><span>Material</span><div class="input-wrap"><span class="input-symbol">M</span><input name="material" type="text"></div></label>
-        <label class="field"><span>Categoria</span><div class="input-wrap"><span class="input-symbol">C</span><select name="categoria"><option value="">Selecione</option><option>Flanges</option><option>Eixos</option><option>Engrenagens</option><option>Parafusos e fixadores</option><option>Buchas e mancais</option><option>Chapas e placas</option><option>Tubos e conexões</option><option>Válvulas</option><option>Polias e correias</option><option>Rolamentos</option><option>Molas</option><option>Suportes e estruturas</option><option>Peças usinadas sob medida</option><option>Fundidos</option><option>Soldados</option><option>Outros</option></select></div></label>
+        <label class="field"><span>Nome da pe&ccedil;a</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">N</span><input name="nome" type="text" required></div></label>
+        <label class="field"><span>Material</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">M</span><input name="material" type="text"></div></label>
+        <label class="field"><span>Categoria</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">C</span><select name="categoria"><option value="">Selecione</option><option>Flanges</option><option>Eixos</option><option>Engrenagens</option><option>Parafusos e fixadores</option><option>Buchas e mancais</option><option>Chapas e placas</option><option>Tubos e conexões</option><option>Válvulas</option><option>Polias e correias</option><option>Rolamentos</option><option>Molas</option><option>Suportes e estruturas</option><option>Peças usinadas sob medida</option><option>Fundidos</option><option>Soldados</option><option>Outros</option></select></div></label>
         <label class="field span-2"><span>Foto da pe&ccedil;a</span><input name="foto" type="file" accept="image/png,image/jpeg"><small class="field-hint" data-foto-hint>JPG ou PNG. A imagem &eacute; reduzida automaticamente.</small></label>
-        <label class="field"><span>Estoque</span><div class="input-wrap"><span class="input-symbol">#</span><input name="estoque" type="number" min="0"></div></label>
-        <label class="field"><span>Unidade</span><div class="input-wrap"><span class="input-symbol">U</span><input name="unidadeEstoque" type="text" placeholder="unidades, barras..."></div></label>
-        <label class="field"><span>Valor unit&aacute;rio</span><div class="input-wrap"><span class="input-symbol">R$</span><input name="valorUnitario" type="text" placeholder="380,00" required></div></label>
-        <label class="field"><span>Prazo de entrega (dias)</span><div class="input-wrap"><span class="input-symbol">D</span><input name="prazoEntregaDias" type="number" min="0"></div></label>
+        <label class="field"><span>Estoque</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">#</span><input name="estoque" type="number" min="0"></div></label>
+        <label class="field"><span>Unidade</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">U</span><input name="unidadeEstoque" type="text" placeholder="unidades, barras..."></div></label>
+        <label class="field"><span>Valor unit&aacute;rio</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">R$</span><input name="valorUnitario" type="text" placeholder="380,00" required></div></label>
+        <label class="field"><span>Prazo de entrega (dias)</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">D</span><input name="prazoEntregaDias" type="number" min="0"></div></label>
         <label class="field span-2"><span>Descri&ccedil;&atilde;o</span><textarea name="descricao" rows="3"></textarea></label>
         <div class="form-actions span-2"><button class="btn btn-ghost js-close-peca-modal" type="button">Cancelar</button><button class="btn btn-orange" type="submit">Salvar pe&ccedil;a</button></div>
       </form>

@@ -180,7 +180,7 @@
   }
 
   function notaSelect(name, rotulo) {
-    return `<label class="field"><span>${rotulo}</span><div class="input-wrap select-field"><span class="input-symbol">★</span><select name="${name}" required><option value="">Nota</option><option value="5">5 - Excelente</option><option value="4">4 - Bom</option><option value="3">3 - Regular</option><option value="2">2 - Ruim</option><option value="1">1 - Crítico</option></select></div></label>`;
+    return `<label class="field"><span>${rotulo}</span><div class="input-wrap select-field"><span class="input-symbol" aria-hidden="true">★</span><select name="${name}" required><option value="">Nota</option><option value="5">5 - Excelente</option><option value="4">4 - Bom</option><option value="3">3 - Regular</option><option value="2">2 - Ruim</option><option value="1">1 - Crítico</option></select></div></label>`;
   }
 
   /** Abre o formulario de avaliacao. alvo = { solicitacaoComercialId } ou { pedidoId }. */

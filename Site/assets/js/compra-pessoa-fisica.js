@@ -128,7 +128,7 @@
           <div><span>Peça</span><strong>${esc(c.quantidade)}x ${esc(c.peca)}</strong></div>
           <div><span>Total</span><strong>${esc(money(c.total))}</strong></div>
         </div>
-        <label class="field"><span>Forma de pagamento</span><div class="input-wrap select-field"><span class="input-symbol">$</span><select name="metodo"><option value="PIX">PIX</option><option value="Cartao">Cartão de crédito</option><option value="Boleto">Boleto</option></select></div></label>
+        <label class="field"><span>Forma de pagamento</span><div class="input-wrap select-field"><span class="input-symbol" aria-hidden="true">$</span><select name="metodo"><option value="PIX">PIX</option><option value="Cartao">Cartão de crédito</option><option value="Boleto">Boleto</option></select></div></label>
         <p class="modal-copy">Pagamento simulado: nenhum valor real é cobrado.</p>
         <div class="form-actions"><button class="btn btn-ghost" type="button" data-m-close>Cancelar</button><button class="btn btn-primary" type="submit">Confirmar pagamento</button></div>
       </form>`,

@@ -40,7 +40,7 @@
         <div class="table-wrap">
           <table>
             <thead><tr><th>Nome</th><th>E-mail</th><th>Cargo</th><th>Setor</th><th>Status</th><th>A&ccedil;&otilde;es</th></tr></thead>
-            <tbody data-employee-table="usina">
+            <tbody data-employee-table="usina" aria-live="polite">
               <tr><td colspan="6" style="text-align:center; padding: 24px;">Carregando...</td></tr>
             </tbody>
           </table>
@@ -52,10 +52,10 @@
     <section class="card modal-card" role="dialog" aria-modal="true" aria-labelledby="employee-modal-title">
       <div class="modal-header"><div><span class="eyebrow orange-text">Equipe industrial</span><h2 id="employee-modal-title">Adicionar funcion&aacute;rio</h2></div><button class="modal-close js-close-modal" type="button">x</button></div>
       <form class="form-grid" id="employee-form" data-context="usina">
-        <label class="field"><span>Nome completo</span><div class="input-wrap"><span class="input-symbol">N</span><input name="name" type="text" required></div></label>
-        <label class="field"><span>E-mail</span><div class="input-wrap"><span class="input-symbol">@</span><input name="email" type="email" required></div></label>
-        <label class="field"><span>Cargo</span><div class="input-wrap"><span class="input-symbol">C</span><input name="role" type="text" required></div></label>
-        <label class="field"><span>Setor</span><div class="input-wrap select-field"><span class="input-symbol">S</span><select name="type"><option>Dire&ccedil;&atilde;o t&eacute;cnica</option><option>Setor de compras</option><option>Faturamento</option><option>Projetista</option><option>Serralheria</option><option>Torneiros</option><option>Caldeiraria</option><option>Operador de m&aacute;quinas</option><option>Outro</option></select></div></label>
+        <label class="field"><span>Nome completo</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">N</span><input name="name" type="text" required></div></label>
+        <label class="field"><span>E-mail</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">@</span><input name="email" type="email" required></div></label>
+        <label class="field"><span>Cargo</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">C</span><input name="role" type="text" required></div></label>
+        <label class="field"><span>Setor</span><div class="input-wrap select-field"><span class="input-symbol" aria-hidden="true">S</span><select name="type"><option>Dire&ccedil;&atilde;o t&eacute;cnica</option><option>Setor de compras</option><option>Faturamento</option><option>Projetista</option><option>Serralheria</option><option>Torneiros</option><option>Caldeiraria</option><option>Operador de m&aacute;quinas</option><option>Outro</option></select></div></label>
         <div class="form-actions span-2"><button class="btn btn-ghost js-close-modal" type="button">Cancelar</button><button class="btn btn-orange" type="submit">Salvar funcion&aacute;rio</button></div>
       </form>
     </section>

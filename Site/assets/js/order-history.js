@@ -85,7 +85,7 @@
   async function renderPaymentsPage() {
     const container = document.querySelector("[data-payments-list]");
     if (!container) return;
-    container.innerHTML = '<div class="loading-state">Carregando pagamentos...</div>';
+    container.innerHTML = '<div class="loading-state" aria-busy="true">Carregando pagamentos...</div>';
     const orders = await service.getOrders();
     const stat = document.querySelector("[data-stat-aguardando-pagamento]");
     if (stat) stat.textContent = orders.filter(order => order.statusPagamento !== "Pago").length;

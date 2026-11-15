@@ -29,7 +29,7 @@
         <article class="card detail-card">
           <h2>Solicitar compra</h2>
           <form class="form" data-form-compra novalidate>
-            <label class="field"><span>Quantidade</span><div class="input-wrap"><span class="input-symbol">#</span><input name="quantidade" type="number" min="1" ${peca.estoque != null ? `max="${esc(peca.estoque)}"` : ""} value="1" required></div></label>
+            <label class="field"><span>Quantidade</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">#</span><input name="quantidade" type="number" min="1" ${peca.estoque != null ? `max="${esc(peca.estoque)}"` : ""} value="1" required></div></label>
             <div class="action-modal-grid">
               <div><span>Total estimado</span><strong data-total>${esc(temValor ? money(peca.valorUnitario) : "Sob consulta")}</strong></div>
               <div><span>Pagamento</span><strong>Depois que a usina aceitar</strong></div>

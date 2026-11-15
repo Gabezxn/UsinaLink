@@ -513,11 +513,11 @@ function fieldMarkup(field) {
   const [label, type, value, options, key] = field;
   const nameAttr = key ? ` name="${key}"` : "";
   if (type === "textarea") return `<label class="field span-2"><span>${label}</span><textarea rows="6"${nameAttr}>${escapeHtml(value)}</textarea></label>`;
-  if (type === "select") return `<label class="field"><span>${label}</span><div class="input-wrap select-field"><span class="input-symbol">v</span><select${nameAttr}>${options.map((option) => `<option${option === value ? " selected" : ""}>${escapeHtml(option)}</option>`).join("")}</select></div></label>`;
+  if (type === "select") return `<label class="field"><span>${label}</span><div class="input-wrap select-field"><span class="input-symbol" aria-hidden="true">v</span><select${nameAttr}>${options.map((option) => `<option${option === value ? " selected" : ""}>${escapeHtml(option)}</option>`).join("")}</select></div></label>`;
   if (type === "checkbox") return `<label class="toggle-field span-2"><input type="checkbox"${value ? " checked" : ""}${nameAttr}><span></span><strong>${label}</strong></label>`;
   if (type === "file") return `<label class="field span-2"><span>${label}</span><div class="input-wrap file-field"><input type="file" data-file-key="${key}" accept=".pdf,.jpg,.jpeg,.png"></div><small>${value ? `Arquivo atual: ${escapeHtml(value)}` : "Nenhum arquivo enviado ainda."}</small></label>`;
   const maskKey = inferMaskKey(label, type);
-  return `<label class="field"><span>${label}</span><div class="input-wrap"><span class="input-symbol">${type === "password" ? "*" : "T"}</span><input type="${type}" value="${escapeHtml(value)}"${nameAttr}${maskKey ? ` data-mask="${maskKey}"` : ""}></div></label>`;
+  return `<label class="field"><span>${label}</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">${type === "password" ? "*" : "T"}</span><input type="${type}" value="${escapeHtml(value)}"${nameAttr}${maskKey ? ` data-mask="${maskKey}"` : ""}></div></label>`;
 }
 
 function viewFieldMarkup(field) {
@@ -693,7 +693,7 @@ function renderEmployeeRowActions(row) {
   const actions = actionsByStatus[status] || ["Editar"];
   actionsCell.innerHTML = `
     <div class="actions-menu">
-      <button class="icon-action" type="button" aria-label="Abrir acoes">...</button>
+      <button class="icon-action" type="button" aria-label="${escapeHtml(`Abrir ações de ${row.children[0]?.textContent.trim() || "funcionário"}`)}">...</button>
       <div class="actions-menu-list" role="menu">
         ${actions.map(action => `<button class="table-action js-alert" type="button" role="menuitem">${action}</button>`).join("")}
       </div>
@@ -773,14 +773,14 @@ function applySessionContext() {
   if (profileSubtitle) profileSubtitle.textContent = role === "usina" ? "Perfil industrial da usina logada." : role === "pessoa_fisica" ? "Atualize seus dados pessoais e de acesso." : "Perfil comercial da empresa logada.";
 }
 
-function proposalActionsMarkup(status) {
+function proposalActionsMarkup(status, nome = "") {
   const locked = ["Aceita", "Cancelada", "Recusada"].includes(status);
   const extras = locked ? [] : ["Cancelar proposta"];
   return `
     <div class="row-actions">
       <button class="table-action js-alert" type="button">Ver detalhes</button>
       ${extras.length ? `<div class="actions-menu">
-        <button class="icon-action" type="button" aria-label="Mais acoes da proposta">...</button>
+        <button class="icon-action" type="button" aria-label="Mais ações da proposta${nome ? " de " + escapeHtml(nome) : ""}">...</button>
         <div class="actions-menu-list" role="menu">
           ${extras.map(action => `<button class="table-action js-alert" type="button" role="menuitem">${action}</button>`).join("")}
         </div>
@@ -791,7 +791,7 @@ function proposalActionsMarkup(status) {
 function renderProposalRowActions(row) {
   if (!row || row.children.length < 7) return;
   const status = row.querySelector(".badge")?.textContent.trim() || "Enviada";
-  row.children[row.children.length - 1].innerHTML = proposalActionsMarkup(status);
+  row.children[row.children.length - 1].innerHTML = proposalActionsMarkup(status, row.children[0]?.textContent.trim());
 }
 
 function proposalRowMarkup(item) {
@@ -799,7 +799,7 @@ function proposalRowMarkup(item) {
   const peca = item.pedido?.itens?.[0]?.nome || "Peca industrial";
   const cliente = item.pedido?.empresaCompradora?.nomeFantasia || item.pedido?.empresaCompradora?.razaoSocial || "-";
   const dataEnvio = item.dataEnvio ? new Date(item.dataEnvio).toLocaleDateString("pt-BR") : "";
-  return `<tr data-search-row data-proposal-id="${escapeHtml(item.idProposta)}"><td>${escapeHtml(peca)}</td><td>${escapeHtml(cliente)}</td><td>${escapeHtml(formatMoneyBR(item.valor))}</td><td>${escapeHtml(item.prazo || "A combinar")}</td><td><span class="badge ${badgeClass(status)}">${escapeHtml(status)}</span></td><td>${escapeHtml(dataEnvio)}</td><td>${proposalActionsMarkup(status)}</td></tr>`;
+  return `<tr data-search-row data-proposal-id="${escapeHtml(item.idProposta)}"><td>${escapeHtml(peca)}</td><td>${escapeHtml(cliente)}</td><td>${escapeHtml(formatMoneyBR(item.valor))}</td><td>${escapeHtml(item.prazo || "A combinar")}</td><td><span class="badge ${badgeClass(status)}">${escapeHtml(status)}</span></td><td>${escapeHtml(dataEnvio)}</td><td>${proposalActionsMarkup(status, peca)}</td></tr>`;
 }
 
 let ultimasPropostasRecebidas = [];
@@ -927,9 +927,9 @@ function openEmployeeEdit(row) {
     kicker: "Equipe",
     body: `
       <form class="form-grid js-inline-employee-edit">
-        <label class="field"><span>Nome</span><div class="input-wrap"><span class="input-symbol">N</span><input name="name" value="${escapeHtml(cells[0])}"></div></label>
-        <label class="field"><span>E-mail</span><div class="input-wrap"><span class="input-symbol">@</span><input name="email" type="email" value="${escapeHtml(cells[1])}"></div></label>
-        <label class="field"><span>Cargo</span><div class="input-wrap"><span class="input-symbol">C</span><input name="role" value="${escapeHtml(cells[2])}"></div></label>
+        <label class="field"><span>Nome</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">N</span><input name="name" value="${escapeHtml(cells[0])}"></div></label>
+        <label class="field"><span>E-mail</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">@</span><input name="email" type="email" value="${escapeHtml(cells[1])}"></div></label>
+        <label class="field"><span>Cargo</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">C</span><input name="role" value="${escapeHtml(cells[2])}"></div></label>
         <div class="form-actions span-2"><button class="btn btn-ghost js-action-modal-close" type="button">Cancelar</button><button class="btn btn-primary" type="submit">Salvar</button></div>
       </form>`
   });
@@ -963,10 +963,10 @@ function openProposalEdit(row) {
     kicker: "Comercial",
     body: `
       <form class="form-grid js-inline-proposal-edit">
-        <label class="field"><span>Valor</span><div class="input-wrap"><span class="input-symbol">R$</span><input name="valor" value="${escapeHtml(cells[2])}"></div></label>
-        <label class="field"><span>Prazo</span><div class="input-wrap"><span class="input-symbol">P</span><input name="prazo" value="${escapeHtml(cells[3])}"></div></label>
-        <label class="field"><span>Frete</span><div class="input-wrap"><span class="input-symbol">F</span><input name="frete" value="R$ 950,00"></div></label>
-        <label class="field"><span>Observacao</span><div class="input-wrap"><span class="input-symbol">O</span><input name="observacao" value="Proposta com inspecao dimensional."></div></label>
+        <label class="field"><span>Valor</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">R$</span><input name="valor" value="${escapeHtml(cells[2])}"></div></label>
+        <label class="field"><span>Prazo</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">P</span><input name="prazo" value="${escapeHtml(cells[3])}"></div></label>
+        <label class="field"><span>Frete</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">F</span><input name="frete" value="R$ 950,00"></div></label>
+        <label class="field"><span>Observacao</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">O</span><input name="observacao" value="Proposta com inspecao dimensional."></div></label>
         <div class="form-actions span-2"><button class="btn btn-ghost js-action-modal-close" type="button">Cancelar</button><button class="btn btn-orange" type="submit">Salvar proposta</button></div>
       </form>`
   });

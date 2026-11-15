@@ -4,13 +4,13 @@
   const respostas = {
     "Como funciona?": "Empresas e pessoas físicas pedem peças, as usinas enviam propostas e você escolhe a melhor. O pagamento e o acompanhamento ficam na plataforma.",
     "Como cadastrar minha usina?": "Clique em Cadastrar, escolha Usina e preencha os dados. Depois do cadastro você já entra direto na sua conta.",
-    "Quanto custa?": "O cadastro é gratuito. A plataforma cobra uma taxa de 3,5% sobre o valor do pedido no pagamento.",
+    "Quanto custa?": "O cadastro é gratuito. O valor pago é o da proposta aceita, sem taxa extra.",
     "Falar com atendimento": null,
   };
   const raiz = document.createElement("div");
   raiz.className = "chat-contato";
   raiz.innerHTML = `
-    <section class="chat-painel" hidden aria-label="Chat de contato">
+    <section class="chat-painel" hidden role="dialog" aria-label="Chat de contato">
       <header><strong>Fale com a Usinalink</strong><button type="button" data-chat-fechar aria-label="Fechar chat">x</button></header>
       <div class="chat-mensagens" data-chat-msgs aria-live="polite"><p class="chat-bot">Olá! Como podemos ajudar?</p></div>
       <div class="chat-atalhos" data-chat-atalhos></div>
@@ -50,6 +50,7 @@
   });
   const alternar = (aberto) => { painel.hidden = !aberto; abrir.setAttribute("aria-expanded", String(aberto)); };
   abrir.addEventListener("click", () => alternar(painel.hidden));
+  raiz.addEventListener("keydown", (event) => { if (event.key === "Escape" && !painel.hidden) { alternar(false); abrir.focus(); } });
   raiz.querySelector("[data-chat-fechar]").addEventListener("click", () => alternar(false));
   form.addEventListener("submit", (event) => {
     event.preventDefault();
