@@ -199,3 +199,11 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 | Celular (375 px): marca, tipo de conta e botão Menu na mesma linha; filtros em linhas que quebram; cartões com menos margem; cartões do catálogo sem rolagem lateral | `Site/style.css` |
 | Conferido em 375 e 768 px nas telas das 3 contas: sem rolagem lateral na página (as tabelas rolam dentro do próprio quadro) | — |
 | Não feito: revisão pixel a pixel de cada tela de detalhe (compra, peça, usina) e do modal de funcionário; fica para uma próxima rodada | — |
+
+## Pedido 18 (15/11): conferência no ar, de madrugada
+
+| Mudança | Onde |
+|---|---|
+| Tudo dos pedidos 10 a 17 está no `main` e no ar. Conferido no site fixo: página inicial nova, botão de Libras aparece, sem erros no console. API `/api/health` ok e login da empresa pelo endereço de teste dá 201 | `https://usinalink.tibiel2010.workers.dev` |
+| Bateria de testes: 18 de 18 verdes antes de cada envio | `node qa/run-all.mjs` |
+| Ainda abertos (P2): FLX-11, 12, 18, 19, 22 em diante, SEC-22/23 (dependem do Render), BUG-2 | `docs/BACKLOG.md` |
