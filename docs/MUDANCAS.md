@@ -106,3 +106,18 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 |---|---|
 | Acrescentei no arquivo de passagem onde ficam o plano, a especificação e os papéis do time de agentes, e o que não vai junto | `docs/PASSAGEM-PARA-O-PC.md` |
 | Nenhum código mudou | — |
+
+## Pedido 9 (15/11): por que o login como empresa falhava no endereço de teste
+
+| Mudança | Onde |
+|---|---|
+| Causa confirmada: o servidor (Render) só aceita chamadas dos endereços da lista `ALLOWED_ORIGINS`. O endereço fixo do site está na lista; o endereço de teste da branch **não** está (CORS bloqueia). | — |
+| O login em si funciona: `empresa@demo.com`, `usina@demo.com` e `pessoa@demo.com` entram com `Demo@123` na API de produção. O site fixo abre (200) e `/api/health` está ok. | — |
+| Nenhum código mudou. Falta decidir como liberar os endereços de teste (ver pergunta feita a você). | — |
+
+## Pedido 10 (15/11): liberar os endereços de teste no servidor
+
+| Mudança | Onde |
+|---|---|
+| O servidor passa a aceitar também os endereços `https://<algo>-usinalink.tibiel2010.workers.dev` (versões de teste do Cloudflare), além da lista `ALLOWED_ORIGINS`. Outros sites continuam bloqueados. | `backend/src/main.ts` |
+| Ainda **não publicado**: precisa de merge no `main` e deploy no Render (aguardando seu OK). Não consegui rodar testes neste PC (sem Node). | — |

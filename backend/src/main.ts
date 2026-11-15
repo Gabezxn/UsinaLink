@@ -19,7 +19,11 @@ async function bootstrap() {
     .map(origin => origin.trim())
     .filter(Boolean);
   app.enableCors({
-    origin: allowedOrigins,
+    // Lista fixa + versões de teste do Cloudflare (https://<versao>-usinalink.tibiel2010.workers.dev).
+    origin: (origin, callback) => {
+      const ok = !origin || allowedOrigins.includes(origin) || /^https:\/\/[a-z0-9-]+-usinalink\.tibiel2010\.workers\.dev$/.test(origin);
+      callback(null, ok ? origin : false);
+    },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
