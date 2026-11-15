@@ -34,7 +34,7 @@
 
     pendentesEl.innerHTML = pendentes.length
       ? pendentes.map((p, i) => `<div class="pf-action-item"><span><strong>${esc(p.titulo)}</strong>${p.usina ? ` · ${esc(p.usina)}` : ""}</span><button class="btn btn-small btn-primary" type="button" data-avaliar="${i}">Avaliar</button></div>`).join("")
-      : emptyState("Nada para avaliar", "Quando uma compra ou pedido for entregue, ele aparece aqui.");
+      : emptyState("Nada para avaliar", "Quando uma compra ou pedido for entregue, ele aparece aqui.", { href: "compras-pessoa-fisica.html", rotulo: "Ver minhas compras" });
     pendentesEl.querySelectorAll("[data-avaliar]").forEach((botao) => botao.addEventListener("click", () => {
       const p = pendentes[Number(botao.dataset.avaliar)];
       avaliar({ alvo: p.alvo, titulo: `Avaliar ${p.usina || "a usina"}`, aoConcluir: () => carregar().catch(() => {}) });

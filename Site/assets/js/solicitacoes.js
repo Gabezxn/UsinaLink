@@ -165,7 +165,7 @@
       const rows = await window.UsinaLinkApi.get('/solicitacoes/meus');
       ultimasSolicitacoes = rows;
       if (!rows.length) {
-        body.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 30px;">Nenhuma solicitação encontrada. <a href="nova-solicitacao.html">Criar a primeira</a>.</td></tr>';
+        body.innerHTML = '<tr><td colspan="6" class="td-empty">Nenhuma solicitação encontrada. <a href="nova-solicitacao.html">Criar a primeira</a>.</td></tr>';
         return;
       }
       body.innerHTML = rows.map(row => `
@@ -178,7 +178,7 @@
           <td><button class="table-action js-view-solicitacao" type="button">Ver</button> <a class="table-action" href="propostas.html">Ver propostas</a></td>
         </tr>`).join('');
     } catch (error) {
-      body.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 30px;">Falha ao carregar solicitações: ${esc(error.message)}</td></tr>`;
+      body.innerHTML = `<tr><td colspan="6" class="td-empty">Falha ao carregar solicitações: ${esc(error.message)}</td></tr>`;
     }
   }
 

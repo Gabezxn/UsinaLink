@@ -34,7 +34,7 @@
       const pecas = await window.UsinaLinkApi.get('/pecas-comerciais');
       grid.innerHTML = pecas.length
         ? pecas.map(pecaCardMarkup).join('')
-        : '<article class="card order-opportunity"><h2>Nenhuma peça no catálogo</h2><p>As usinas ainda não cadastraram peças comerciais.</p></article>';
+        : '<div class="empty-state"><strong>Nenhuma peça no catálogo</strong><span>As usinas ainda não cadastraram peças comerciais.</span></div>';
       return pecas;
     } catch (error) {
       grid.innerHTML = `<article class="card order-opportunity"><h2>Falha ao carregar catálogo</h2><p>${esc(error.message)}</p></article>`;
@@ -63,10 +63,10 @@
             <td>${row.criadoEm ? new Date(row.criadoEm).toLocaleDateString('pt-BR') : '-'}</td>
             <td><a class="table-action" href="compra-pessoa-fisica.html?id=${esc(row.idSolicitacaoComercial)}">${esc(acaoRotulo(row.status))}</a></td>
           </tr>`).join('')
-        : '<tr><td colspan="7" style="text-align:center; padding: 24px;">Nenhuma solicitação comercial ainda.</td></tr>';
+        : '<tr><td colspan="7" class="td-empty">Nenhuma solicitação comercial ainda.</td></tr>';
       return rows;
     } catch (error) {
-      body.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px;">Falha ao carregar: ${esc(error.message)}</td></tr>`;
+      body.innerHTML = `<tr><td colspan="7" class="td-empty">Falha ao carregar: ${esc(error.message)}</td></tr>`;
       return [];
     }
   }

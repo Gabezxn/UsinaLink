@@ -65,7 +65,7 @@
     });
     body.innerHTML = rows.length
       ? rows.map(rowMarkup).join("")
-      : '<tr><td colspan="10" style="text-align:center; padding: 24px;">Nenhuma solicita&ccedil;&atilde;o de pe&ccedil;a neste filtro.</td></tr>';
+      : '<tr><td colspan="10" class="td-empty">Nenhuma solicita&ccedil;&atilde;o de pe&ccedil;a neste filtro.</td></tr>';
   }
 
   function stats() {
@@ -150,6 +150,6 @@
   }));
 
   carregar().catch((error) => {
-    body.innerHTML = `<tr><td colspan="10" style="text-align:center; padding: 24px;">Falha ao carregar: ${esc(error.message)}</td></tr>`;
+    body.innerHTML = `<tr><td colspan="10" class="td-empty">Falha ao carregar: ${esc(error.message)}</td></tr>`;
   });
 }());

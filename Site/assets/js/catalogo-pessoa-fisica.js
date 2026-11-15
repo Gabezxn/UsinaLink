@@ -15,7 +15,7 @@
     try {
       const pecas = await api().get("/pecas-comerciais");
       if (!pecas.length) {
-        grade.innerHTML = emptyState("Nenhuma peça no catálogo", "As usinas ainda não cadastraram peças comerciais.");
+        grade.innerHTML = emptyState("Nenhuma peça no catálogo", "As usinas ainda não cadastraram peças comerciais.", { href: "usinas-pessoa-fisica.html", rotulo: "Ver usinas" });
         return;
       }
       grade.innerHTML = pecas.map(pecaCard).join("");

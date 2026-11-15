@@ -43,10 +43,10 @@
         const recentes = [...propostas].sort((a, b) => new Date(b.dataEnvio) - new Date(a.dataEnvio)).slice(0, 4);
         propostasBody.innerHTML = recentes.length
           ? recentes.map(propostaRowMarkup).join("")
-          : '<tr><td colspan="6" style="text-align:center; padding: 24px;">Nenhuma proposta enviada ainda.</td></tr>';
+          : '<tr><td colspan="6" class="td-empty">Nenhuma proposta enviada ainda. <a href="pedidos-disponiveis.html">Ver pedidos disponíveis</a>.</td></tr>';
       }
     } catch (error) {
-      if (propostasBody) propostasBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 24px;">Falha ao carregar: ${esc(error.message)}</td></tr>`;
+      if (propostasBody) propostasBody.innerHTML = `<tr><td colspan="6" class="td-empty">Falha ao carregar: ${esc(error.message)}</td></tr>`;
     }
   }
 

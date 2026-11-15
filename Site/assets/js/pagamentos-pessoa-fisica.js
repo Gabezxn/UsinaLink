@@ -1,7 +1,7 @@
 (function () {
   const { api, esc, money, date, emptyState } = window.PF;
   const set = (seletor, texto) => { const el = document.querySelector(seletor); if (el) el.textContent = texto; };
-  const vazio = (colunas, texto) => `<tr><td colspan="${colunas}" style="text-align:center; padding: 24px;">${texto}</td></tr>`;
+  const vazio = (colunas, texto) => `<tr><td colspan="${colunas}" class="td-empty">${texto}</td></tr>`;
   const valor = (r) => (r.status === "fulfilled" ? r.value : []);
 
   async function carregar() {

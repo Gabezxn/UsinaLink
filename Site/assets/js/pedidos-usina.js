@@ -97,12 +97,12 @@
       if (grid) {
         grid.innerHTML = pedidos.length
           ? pedidos.map(orderCardMarkup).join("")
-          : '<article class="card order-opportunity"><h2>Nenhum pedido disponível</h2><p>Novas solicitações de empresas aparecerão aqui.</p></article>';
+          : '<div class="empty-state"><strong>Nenhum pedido disponível</strong><span>Novas solicitações de empresas aparecem aqui assim que forem publicadas.</span><a class="btn btn-small" href="dashboard-usina.html">Voltar ao início</a></div>';
       }
       if (tbody) {
         tbody.innerHTML = pedidos.length
           ? pedidos.slice(0, 4).map(orderRowMarkup).join("")
-          : '<tr><td colspan="7" style="text-align:center; padding: 24px;">Nenhum pedido disponível no momento.</td></tr>';
+          : '<tr><td colspan="7" class="td-empty">Nenhum pedido disponível no momento.</td></tr>';
       }
       document.dispatchEvent(new CustomEvent("usinalink:pedidos-carregados"));
     } catch (error) {

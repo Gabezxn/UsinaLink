@@ -48,8 +48,9 @@
     return `<span class="rating-stars" aria-label="${n} de 5 estrelas">${[1, 2, 3, 4, 5].map((i) => `<span class="${i <= n ? "filled" : ""}">★</span>`).join("")}</span>`;
   }
 
-  function emptyState(titulo, texto) {
-    return `<div class="empty-state"><strong>${esc(titulo)}</strong><span>${esc(texto)}</span></div>`;
+  function emptyState(titulo, texto, acao) {
+    const botao = acao && acao.href ? `<a class="btn btn-small" href="${esc(acao.href)}">${esc(acao.rotulo)}</a>` : "";
+    return `<div class="empty-state"><strong>${esc(titulo)}</strong><span>${esc(texto)}</span>${botao}</div>`;
   }
 
   // ---- favoritos ----

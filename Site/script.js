@@ -702,7 +702,7 @@ function renderEmployeeRowActions(row) {
 
 function employeeRowMarkup(item) {
   const status = item.status || "Pendente";
-  return `<tr data-search-row data-employee-id="${escapeHtml(item.id || "")}"><td>${escapeHtml(item.nome || "")}</td><td>${escapeHtml(item.email || "")}</td><td>${escapeHtml(item.cargo || "")}</td><td>${escapeHtml(item.tipo || "")}</td><td><span class="badge ${statusClass(status)}">${escapeHtml(status)}</span></td><td></td></tr>`;
+  return `<tr data-search-row data-employee-id="${escapeHtml(item.id || "")}"><td>${escapeHtml(item.nome || "")}</td><td>${escapeHtml(item.email || "")}</td><td>${escapeHtml(item.cargo || "-")}</td><td>${escapeHtml(item.tipo || "-")}</td><td><span class="badge ${statusClass(status)}">${escapeHtml(status)}</span></td><td></td></tr>`;
 }
 
 async function loadEmployeesFromApi() {
@@ -711,10 +711,10 @@ async function loadEmployeesFromApi() {
     try {
       const context = table.dataset.employeeTable;
       const employees = await window.UsinaLinkApi.get(`/funcionarios?contexto=${encodeURIComponent(context)}`);
-      table.innerHTML = employees.map(employeeRowMarkup).join("") || '<tr><td colspan="6" style="text-align:center; padding: 24px;">Nenhum funcionario cadastrado.</td></tr>';
+      table.innerHTML = employees.map(employeeRowMarkup).join("") || '<tr><td colspan="6" class="td-empty">Nenhum funcionário cadastrado ainda. Use "Adicionar funcionário" no topo da página.</td></tr>';
       table.querySelectorAll("tr[data-employee-id]").forEach(renderEmployeeRowActions);
     } catch (error) {
-      table.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 24px;">Falha ao carregar funcionarios: ${escapeHtml(error.message)}</td></tr>`;
+      table.innerHTML = `<tr><td colspan="6" class="td-empty">Falha ao carregar funcionarios: ${escapeHtml(error.message)}</td></tr>`;
     }
   });
 }
@@ -913,7 +913,7 @@ async function loadProposalsFromApi() {
       const melhorValor = Math.min(...proposals.filter(p => !propostaEstaTravada(p.status)).map(p => Number(p.valor) || Infinity));
       empresaGrid.innerHTML = proposals.length
         ? proposals.map((item) => proposalCardMarkup(item, Number(item.valor) === melhorValor)).join("")
-        : '<article class="card proposal-card"><h2>Nenhuma proposta recebida</h2><p>As propostas enviadas pelas usinas aparecerao aqui.</p></article>';
+        : '<div class="empty-state"><strong>Nenhuma proposta recebida</strong><span>As propostas enviadas pelas usinas aparecem aqui. Publique uma solicitação para começar a receber.</span><a class="btn btn-small" href="nova-solicitacao.html">Nova solicitação</a></div>';
     } catch (error) {
       empresaGrid.innerHTML = `<article class="card proposal-card"><h2>Falha ao carregar propostas</h2><p>${escapeHtml(error.message)}</p></article>`;
     }

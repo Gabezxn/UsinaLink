@@ -55,13 +55,13 @@
     const lista = document.querySelector("[data-acoes]");
     lista.innerHTML = acoes.length
       ? acoes.map(([texto, href, botao]) => `<div class="pf-action-item"><span>${texto}</span><a class="btn btn-small btn-primary" href="${esc(href)}">${esc(botao)}</a></div>`).join("")
-      : emptyState("Tudo em dia", "Nenhuma pendência no momento. Que tal explorar as peças comerciais?");
+      : emptyState("Tudo em dia", "Nenhuma pendência no momento. Que tal explorar as peças comerciais?", { href: "catalogo-pessoa-fisica.html", rotulo: "Ver o catálogo" });
 
     // ---- ultimas compras ----
     const tabela = document.querySelector("[data-ultimas-compras]");
     tabela.innerHTML = compras.length
       ? compras.slice(0, 5).map((c) => `<tr><td><a class="text-link" href="compra-pessoa-fisica.html?id=${esc(c.idSolicitacaoComercial)}">${esc(c.peca)}</a></td><td>${esc(c.usina?.nome || c.fornecedor || "-")}</td><td>${esc(c.quantidade ?? 1)}</td><td>${esc(c.total != null ? money(c.total) : "Sob consulta")}</td><td>${statusBadge(c.status)}</td><td>${esc(date(c.criadoEm))}</td><td>${["registrada", "aceita"].includes(c.status) ? `<a class="btn btn-ghost btn-small" href="compra-pessoa-fisica.html?id=${esc(c.idSolicitacaoComercial)}">Editar</a>` : "-"}</td></tr>`).join("")
-      : '<tr><td colspan="7" style="text-align:center; padding: 24px;">Você ainda não fez nenhuma compra. Veja as peças comerciais!</td></tr>';
+      : '<tr><td colspan="7" class="td-empty">Você ainda não fez nenhuma compra. Veja as peças comerciais!</td></tr>';
   }
 
   carregar().catch((error) => {

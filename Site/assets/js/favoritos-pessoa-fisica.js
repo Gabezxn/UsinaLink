@@ -8,7 +8,7 @@
     const visiveis = itens.filter((i) => filtro === "todos" || i.tipo === filtro);
     grade.innerHTML = visiveis.length
       ? visiveis.map((i) => i.html).join("")
-      : emptyState("Nada por aqui ainda", "Toque no coração (♡) de uma peça ou usina para guardá-la aqui.");
+      : emptyState("Nada por aqui ainda", "Toque no coração (♡) de uma peça ou usina para guardá-la aqui.", { href: "catalogo-pessoa-fisica.html", rotulo: "Explorar o catálogo" });
     favoritos.pintar(grade);
   }
 

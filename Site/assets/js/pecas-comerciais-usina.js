@@ -69,9 +69,9 @@ function reduzirImagem(arquivo) {
       pecasPorId = Object.fromEntries(pecas.map((p) => [String(p.idPecaComercial), p]));
       body.innerHTML = pecas.length
         ? pecas.map(pecaRowMarkup).join("")
-        : '<tr><td colspan="6" style="text-align:center; padding: 24px;">Nenhuma peça cadastrada ainda.</td></tr>';
+        : '<tr><td colspan="6" class="td-empty">Nenhuma peça cadastrada ainda.</td></tr>';
     } catch (error) {
-      body.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 24px;">Falha ao carregar: ${esc(error.message)}</td></tr>`;
+      body.innerHTML = `<tr><td colspan="6" class="td-empty">Falha ao carregar: ${esc(error.message)}</td></tr>`;
     }
   }
 

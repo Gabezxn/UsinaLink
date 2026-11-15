@@ -29,7 +29,7 @@
           <td>${esc(date(c.criadoEm))}</td>
           <td>${acaoRapida(c)}</td>
         </tr>`).join("")
-      : `<tr><td colspan="7" style="text-align:center; padding: 24px;">${compras.length ? "Nenhuma compra neste filtro." : 'Você ainda não solicitou nenhuma peça. <a class="text-link" href="catalogo-pessoa-fisica.html">Ver o catálogo</a>.'}</td></tr>`;
+      : `<tr><td colspan="7" class="td-empty">${compras.length ? "Nenhuma compra neste filtro." : 'Você ainda não solicitou nenhuma peça. <a class="text-link" href="catalogo-pessoa-fisica.html">Ver o catálogo</a>.'}</td></tr>`;
   }
 
   document.querySelectorAll("[data-compra-filtro]").forEach((botao) => botao.addEventListener("click", () => {
@@ -41,5 +41,5 @@
 
   api().get("/solicitacoes-comerciais/minhas")
     .then((lista) => { compras = lista; render(); })
-    .catch((error) => { corpo.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px;">Falha ao carregar: ${esc(error.message)}</td></tr>`; });
+    .catch((error) => { corpo.innerHTML = `<tr><td colspan="7" class="td-empty">Falha ao carregar: ${esc(error.message)}</td></tr>`; });
 }());
