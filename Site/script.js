@@ -225,6 +225,7 @@ function updateSignupForm(type) {
   }
   document.body.classList.toggle("pf-mode", type === "pessoa");
   document.body.classList.toggle("signup-usina", type === "usina");
+  document.querySelector(".brand .brand-icon")?.classList.toggle("orange-icon", type === "usina");
 
   button.textContent = config.button;
   button.classList.toggle("btn-orange", config.orange);

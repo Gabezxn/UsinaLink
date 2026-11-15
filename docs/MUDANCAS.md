@@ -284,3 +284,9 @@ Publicado só no endereço de teste (branch `teste-animacoes`). O site principal
 | Para voltar atrás é simples: tirar as linhas de `motion.css` e `motion.js` das páginas. Nada do funcionamento depende delas | `Site/index.html`, `Site/cadastro*.html` |
 | Corrigido junto: clicar no cartão do tipo de conta disparava a troca duas vezes (o clique no rótulo gera outro no campo); agora só uma | `Site/script.js` |
 | Teste novo: chat digitando (tempo longo x curto, atalhos travados, movimento reduzido), pintura (começa, termina, sem sobras com cliques rápidos), rolagem sem blocos invisíveis | `qa/flows/motion.mjs`, `qa/run-all.mjs` |
+
+## Pedido 27 (15/11): logo no cadastro de usina
+
+| Mudança | Onde |
+|---|---|
+| No "Criar conta" de usina, a logo do Usinalink continuava azul enquanto o resto ficava laranja. Agora ela fica laranja ao escolher Usina e volta ao azul ao escolher outro tipo. Aplicado no site principal e na versão de teste | `Site/script.js`, `qa/flows/ui-p24.mjs` |

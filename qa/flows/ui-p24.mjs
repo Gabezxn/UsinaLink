@@ -29,6 +29,9 @@ const fundoBotao = (page, sel) => page.locator(sel).first().evaluate((el) => get
   t.ok(await page.evaluate(() => document.body.classList.contains('pf-mode')), 'cadastro: pessoa física sem tema próprio');
   await page.click('[data-choice-card="usina"]');
   t.ok(await page.evaluate(() => document.body.classList.contains('signup-usina') && !document.body.classList.contains('pf-mode')), 'cadastro: usina sem tema próprio');
+  t.ok(await page.locator('.brand .brand-icon').evaluate((el) => el.classList.contains('orange-icon')), 'cadastro usina: logo deveria ficar laranja');
+  await page.click('[data-choice-card="empresa"]');
+  t.ok(await page.locator('.brand .brand-icon').evaluate((el) => !el.classList.contains('orange-icon')), 'cadastro empresa: logo deveria voltar ao azul');
 }
 
 // 2) Mostrar senha em todos os tipos de conta, mesmo trocando o tipo no cadastro
