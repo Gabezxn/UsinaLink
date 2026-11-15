@@ -44,3 +44,8 @@ Leia este arquivo inteiro, depois `docs/MUDANCAS.md`, `docs/BACKLOG.md` e `docs/
 ## Cuidados
 - Nunca coloque segredos (senhas, `JWT_SECRET`, chaves) em arquivos do projeto ou em mensagens do GitHub.
 - O `docs/PRONTO-PARA-APRESENTAR.md` tem o roteiro da apresentação e o checklist completo.
+
+## Plano, especificação e time de agentes (estão no repositório)
+- Especificação aprovada: `docs/superpowers/specs/2026-11-14-reta-final-design.md`. Plano com todas as tasks marcadas como feitas: `docs/superpowers/plans/2026-11-14-reta-final.md`.
+- Papéis do time de agentes: `docs/agentes/` (`dev-senior`, `cacador-falhas`, `revisor-fluxos`, `auditor-a11y`) e `docs/agentes/README.md` (como retomar). Os 3 papéis de auditoria são só-leitura, rodam em modelo Sonnet e devolvem tabela curta para o `docs/BACKLOG.md`.
+- O que **não** veio junto: a memória da conversa na nuvem, os skills "superpowers" (se não estiverem instalados no PC, siga o plano à mão) e a infraestrutura de testes do Linux (`qa/`), que precisa de Postgres 16 e não roda direto no Windows.

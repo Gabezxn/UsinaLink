@@ -99,3 +99,10 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 |---|---|
 | Arquivo com tudo o que eu sei (estado, endereços, o que falta, como falar com você) para a conversa que roda no seu PC continuar | `docs/PASSAGEM-PARA-O-PC.md` |
 | Nenhum código mudou | — |
+
+## Pedido 8 (15/11): o que a conversa do PC enxerga
+
+| Mudança | Onde |
+|---|---|
+| Acrescentei no arquivo de passagem onde ficam o plano, a especificação e os papéis do time de agentes, e o que não vai junto | `docs/PASSAGEM-PARA-O-PC.md` |
+| Nenhum código mudou | — |
