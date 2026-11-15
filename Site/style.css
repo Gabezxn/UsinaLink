@@ -3795,3 +3795,12 @@ input::placeholder, textarea::placeholder { color: #64748b; font-weight: 400; op
 .search-box input { min-width: 0; }
 .input-icon { padding-left: 16px; gap: 0; }
 .auth-card h1 { margin-bottom: 8px; }
+
+.summary-link { color: inherit; text-decoration: none; transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; }
+.summary-link:hover { transform: translateY(-2px); border-color: #bfdbfe; box-shadow: 0 10px 24px rgba(30, 58, 138, 0.10); }
+.summary-link:focus-visible { outline: 3px solid #1d4ed8; outline-offset: 2px; }
+.summary-link small.pending { color: #92400e; font-weight: 700; }
+@media (prefers-reduced-motion: reduce) { .summary-link:hover { transform: none; } }
+.review-head > div:first-child { display: grid; gap: 2px; }
+.detail-card .rating-score { margin: 0; line-height: 1; }
+.input-wrap input:focus, .input-wrap select:focus, .input-wrap textarea:focus { box-shadow: none !important; border-color: transparent !important; }

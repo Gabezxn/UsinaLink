@@ -30,6 +30,12 @@
     return PEDIDO_STATUS_LABEL[status] || status || "Pendente";
   }
 
+  // Na conta da usina, proposta recusada ou cancelada não é pedido em andamento.
+  function statusParaUsina(order) {
+    if (service.currentSession().tipo === "usina" && ["recusada", "cancelada"].includes(order.propostaStatus)) return order.propostaStatus === "recusada" ? "Proposta recusada" : "Proposta cancelada";
+    return statusPedidoLabel(order.statusPedido);
+  }
+
   function proximoPasso(order, isUsina) {
     const pago = order.statusPagamento === "Pago";
     const status = order.statusPedido;
@@ -88,7 +94,7 @@
     container.innerHTML = '<div class="loading-state" aria-busy="true">Carregando pagamentos...</div>';
     const orders = await service.getOrders();
     const stat = document.querySelector("[data-stat-aguardando-pagamento]");
-    if (stat) stat.textContent = orders.filter(order => order.statusPagamento !== "Pago").length;
+    if (stat) stat.textContent = orders.filter(order => order.statusPedido === "proposta_aceita" && order.statusPagamento !== "Pago").length;
     if (!orders.length) {
       container.innerHTML = '<div class="empty-state"><strong>Nenhum pedido encontrado</strong><span>Assim que houver propostas aceitas, os pedidos aparecem aqui.</span><a class="btn btn-small" href="' + (service.currentSession().tipo === "pessoa_fisica" ? "catalogo-pessoa-fisica.html" : "solicitacoes.html") + '">' + (service.currentSession().tipo === "pessoa_fisica" ? "Ver o catálogo" : "Ver solicitações") + '</a></div>';
       return;
@@ -108,7 +114,7 @@
         </div>
         <div class="card-actions">
           <a class="btn btn-ghost" href="${detailsLink(order)}">Ver detalhes</a>
-          ${order.statusPagamento === "Pago" ? `<a class="btn" href="${paymentLink(order)}">Ver pagamento</a>` : order.statusPedido === "proposta_aceita" ? `<a class="btn" href="${paymentLink(order)}">Pagar pedido</a>` : ""}
+          ${order.statusPagamento === "Pago" ? `<a class="btn" href="${receiptLink(order)}">Ver comprovante</a>` : order.statusPedido === "proposta_aceita" ? `<a class="btn" href="${paymentLink(order)}">Pagar pedido</a>` : ""}
         </div>
       </article>
     `).join("");
@@ -140,6 +146,12 @@
     const order = await service.getOrder(params.get("pedidoId"));
     if (!order) {
       root.innerHTML = '<div class="empty-state"><strong>Pedido nao encontrado</strong><span>Volte para pagamentos e tente novamente.</span></div>';
+      return;
+    }
+    if (order.statusPagamento === "Pago" || order.statusPedido !== "proposta_aceita") {
+      const jaPago = order.statusPagamento === "Pago";
+      const msg = jaPago ? ["Este pedido já foi pago", "Veja o comprovante do pagamento."] : ["Este pedido não está aguardando pagamento", "O pagamento só é liberado depois que uma proposta é aceita."];
+      root.innerHTML = `<div class="empty-state" role="status"><strong>${msg[0]}</strong><span>${msg[1]}</span><a class="btn btn-small" href="${jaPago ? receiptLink(order) : detailsLink(order)}">${jaPago ? "Ver comprovante" : "Ver o pedido"}</a></div>`;
       return;
     }
     const totals = order.totals;
@@ -183,9 +195,17 @@
   async function renderReceiptPage() {
     const root = document.querySelector("[data-receipt-page]");
     if (!root) return;
-    const order = await service.getOrder(params.get("pedidoId"));
-    if (!order) return;
+    const alvo = root.querySelector(".app-main") || root;
+    const order = await service.getOrder(params.get("pedidoId")).catch(() => null);
+    if (!order) {
+      alvo.innerHTML = '<div class="empty-state" role="status"><strong>Não foi possível abrir o comprovante</strong><span>Confira sua conexão e tente de novo, ou volte ao histórico de pedidos.</span><a class="btn btn-small" href="historico-pedidos.html">Ver histórico</a></div>';
+      return;
+    }
     const raw = order.pagamento;
+    if (!raw && order.statusPedido !== "proposta_aceita") {
+      alvo.innerHTML = `<div class="empty-state" role="status"><strong>Este pedido não tem comprovante</strong><span>${order.statusPedido === "cancelado" ? "O pedido foi cancelado." : "O comprovante aparece depois do pagamento, que é liberado quando uma proposta é aceita."}</span><a class="btn btn-small" href="${detailsLink(order)}">Ver o pedido</a></div>`;
+      return;
+    }
     if (!raw) {
       // Nunca paga sozinho ao abrir a tela: sem pagamento, orienta o usuário.
       const aviso = document.createElement("div");
@@ -197,7 +217,7 @@
       link.href = "pagamento-pedido.html?pedidoId=" + encodeURIComponent(params.get("pedidoId") || "");
       link.textContent = "Ir para o pagamento";
       aviso.appendChild(link);
-      root.replaceChildren(aviso);
+      alvo.replaceChildren(aviso);
       return;
     }
     const payment = {
@@ -220,10 +240,11 @@
     set("[data-receipt-protocol], [data-receipt-protocol-2], [data-receipt-protocol-3]", payment.protocol);
     set("[data-danfe-emitente], [data-danfe-emitente-2]", nomeUsina);
     set("[data-danfe-emitente-info]", [usina.email, usina.telefone].filter(Boolean).join(" · "));
+    const protegido = service.currentSession().tipo === "usina" ? "Dado protegido" : "-";
     set("[data-danfe-emitente-cnpj]", usina.cnpj || "-");
     set("[data-danfe-dest]", order.empresa);
-    set("[data-danfe-dest-doc]", comprador.cnpj || comprador.cpf || "-");
-    set("[data-danfe-dest-fone]", comprador.telefone || "-");
+    set("[data-danfe-dest-doc]", comprador.cnpj || comprador.cpf || protegido);
+    set("[data-danfe-dest-fone]", comprador.telefone || protegido);
     set("[data-danfe-produtos]", ui.formatCurrency(order.totals.subtotal));
     set("[data-danfe-frete]", ui.formatCurrency(frete));
     set("[data-danfe-taxa]", ui.formatCurrency(order.totals.taxes));
@@ -261,7 +282,7 @@
         const statusOk = status === "Todos" || order.statusPedido === status || (status === "Pago" && order.statusPagamento === "Pago") || (status === "Aguardando pagamento" && order.statusPedido === "proposta_aceita" && order.statusPagamento !== "Pago");
         return haystack.includes(query) && dateOk && statusOk;
       });
-      table.innerHTML = filtered.map(order => `<tr><td>${ui.orderNumber(order.id)}</td><td>${ui.formatDate(order.dataCriacao)}</td><td>${ui.escapeHtml(order.empresa)}</td><td>${ui.escapeHtml(order.usina)}</td><td>${ui.escapeHtml(order.peca)}</td><td>${ui.formatCurrency(order.totals.total)}</td><td>${ui.escapeHtml(order.formaPagamento)}</td><td>${ui.statusBadge(statusPedidoLabel(order.statusPedido))}</td><td>${ui.statusBadge(order.statusPagamento)}</td><td>${ui.escapeHtml(order.prazo)}</td><td><a class="table-action" href="${detailsLink(order)}">Ver detalhes</a>${acaoPendente(order)}${order.statusPagamento === "Pago" ? `<a class="table-action" href="${receiptLink(order)}">Ver comprovante</a>` : ""}</td></tr>`).join("");
+      table.innerHTML = filtered.map(order => `<tr><td>${ui.orderNumber(order.id)}</td><td>${ui.formatDate(order.dataCriacao)}</td><td>${ui.escapeHtml(order.empresa)}</td><td>${ui.escapeHtml(order.usina)}</td><td>${ui.escapeHtml(order.peca)}</td><td>${ui.formatCurrency(order.totals.total)}</td><td>${ui.escapeHtml(order.formaPagamento)}</td><td>${ui.statusBadge(statusParaUsina(order))}</td><td>${ui.statusBadge(order.statusPagamento)}</td><td>${ui.escapeHtml(order.prazo)}</td><td><a class="table-action" href="${detailsLink(order)}">Ver detalhes</a>${acaoPendente(order)}${order.statusPagamento === "Pago" ? `<a class="table-action" href="${receiptLink(order)}">Ver comprovante</a>` : ""}</td></tr>`).join("");
       cards.innerHTML = filtered.map(order => `<article class="card history-mobile-card"><strong>${ui.orderNumber(order.id)} - ${ui.escapeHtml(order.peca)}</strong><span>${ui.escapeHtml(order.empresa)} / ${ui.escapeHtml(order.usina)}</span><span>${ui.formatCurrency(order.totals.total)}</span><div>${ui.statusBadge(order.statusPagamento)}</div><a class="btn btn-small" href="${detailsLink(order)}">Ver detalhes</a></article>`).join("");
       document.querySelector("[data-history-empty]").hidden = Boolean(filtered.length);
     };
@@ -278,14 +299,19 @@
   async function renderDetailsPage() {
     const root = document.querySelector("[data-details-page]");
     if (!root) return;
-    const order = await service.getOrder(params.get("pedidoId"));
-    if (!order) return;
+    const idPedido = params.get("pedidoId");
+    const order = idPedido ? await service.getOrder(idPedido).catch(() => null) : null;
+    if (!order) {
+      const pf = service.currentSession().tipo === "pessoa_fisica";
+      root.innerHTML = `<header class="page-header premium-header"><div><span class="eyebrow">Detalhes do pedido</span><h1>${idPedido ? "Pedido não encontrado" : "Nenhum pedido selecionado"}</h1><p>${idPedido ? "Não achamos este pedido na sua conta. Ele pode ter sido removido." : "Escolha um pedido na lista para ver os detalhes."}</p></div></header><div class="empty-state" role="status"><strong>Veja seus pedidos</strong><span>O histórico mostra todos os pedidos e o andamento de cada um.</span><a class="btn btn-small" href="historico-pedidos.html">${pf ? "Ver meus pedidos" : "Ver histórico de pedidos"}</a></div>`;
+      return;
+    }
     document.querySelector("[data-detail-title]").textContent = `${ui.orderNumber(order.id)} - ${order.peca}`;
     document.querySelector("[data-detail-description]").textContent = order.descricao || "Pedido em acompanhamento.";
     document.querySelector("[data-detail-facts]").innerHTML = `
       <div><span>Comprador</span><strong>${ui.escapeHtml(order.empresa)}</strong></div>
       <div><span>Usina</span><strong>${ui.escapeHtml(order.usina)}</strong></div>
-      <div><span>Status</span>${ui.statusBadge(statusPedidoLabel(order.statusPedido))}</div>
+      <div><span>Status</span>${ui.statusBadge(statusParaUsina(order))}</div>
       <div><span>Pagamento</span>${ui.statusBadge(order.statusPagamento)}</div>
       <div><span>Total</span><strong>${ui.formatCurrency(order.totals.total)}</strong></div>
       <div><span>Prazo</span><strong>${ui.escapeHtml(order.prazo)}</strong></div>

@@ -55,6 +55,7 @@
       usina: nomeUsina(proposta.usina),
       usinaId: proposta.idUsina || "",
       propostaId: proposta.idProposta || "",
+      propostaStatus: proposta.status || "",
       valor: payment?.valor || proposta.valor || totals.total,
       frete: 0,
       prazo: proposta.prazo || "A definir",

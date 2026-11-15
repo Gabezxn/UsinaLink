@@ -571,6 +571,8 @@ document.querySelectorAll("[data-profile-section]").forEach((item) => {
     item.classList.add("active");
     renderProfileView(item.dataset.profileSection);
     renderProfileSection(item.dataset.profileSection);
+    // Segurança só tem campos de edição: abre direto o formulário.
+    if (item.dataset.profileSection === "seguranca" && !document.querySelector("#profile-view-mode")?.classList.contains("is-hidden")) toggleProfileEdit(false);
   });
 });
 
@@ -1035,7 +1037,7 @@ document.addEventListener("click", (event) => {
     openActionModal({
       title,
       kicker: "Peca comercial",
-      body: `<div class="detail-list"><div><span>Material</span><strong>${escapeHtml(description)}</strong></div></div><div class="action-modal-grid">${facts}</div><div class="form-actions"><button class="btn btn-ghost js-action-modal-close" type="button">Fechar</button><button class="btn btn-primary js-action-modal-close" type="button">Solicitar compra</button></div>`
+      body: `<div class="detail-list"><div><span>Material</span><strong>${escapeHtml(description)}</strong></div></div><div class="action-modal-grid">${facts}</div><div class="form-actions"><button class="btn btn-ghost js-action-modal-close" type="button">Fechar</button></div>`
     });
     return;
   }

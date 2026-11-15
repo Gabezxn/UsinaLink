@@ -18,7 +18,7 @@
 
   function pecaCardMarkup(peca) {
     const fornecedor = fornecedorNome(peca.usina);
-    const botaoCompra = `<button class="btn btn-primary js-comprar-peca" type="button" data-peca-id="${esc(peca.idPecaComercial)}" data-peca="${esc(peca.nome)}" data-fornecedor="${esc(fornecedor)}" data-valor="${esc(peca.valorUnitario ?? '')}">Solicitar compra</button>`;
+    const botaoCompra = `<button class="btn btn-primary js-comprar-peca" type="button" data-peca-id="${esc(peca.idPecaComercial)}" data-peca="${esc(peca.nome)}" data-fornecedor="${esc(fornecedor)}" data-valor="${esc(peca.valorUnitario ?? '')}"${peca.valorUnitario == null || Number(peca.valorUnitario) <= 0 ? ' disabled' : ''}>${peca.valorUnitario == null || Number(peca.valorUnitario) <= 0 ? 'Valor sob consulta' : 'Solicitar compra'}</button>`;
     return `<article class="card order-opportunity" data-search-row>
       ${peca.imagem ? `<img class="peca-foto" src="${esc(peca.imagem)}" alt="Foto de ${esc(peca.nome)}">` : ""}
       <h2>${esc(peca.nome)}</h2><p>${esc(peca.material || peca.categoria || '')}</p>

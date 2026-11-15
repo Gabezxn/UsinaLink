@@ -35,7 +35,7 @@
               <div><span>Pagamento</span><strong>Depois que a usina aceitar</strong></div>
             </div>
             <p class="modal-copy">A usina analisa o seu pedido e, ao aceitar, você faz o pagamento e acompanha tudo em <strong>Minhas compras</strong>.</p>
-            ${semEstoque ? '<p class="modal-copy"><strong>Sem estoque no momento.</strong></p>' : ""}<button class="btn btn-primary full" type="submit"${semEstoque ? " disabled" : ""}>${semEstoque ? "Sem estoque" : "Solicitar compra"}</button>
+            ${semEstoque ? '<p class="modal-copy"><strong>Sem estoque no momento.</strong></p>' : ""}<button class="btn btn-primary full" type="submit"${semEstoque || !temValor ? " disabled" : ""}>${semEstoque ? "Sem estoque" : !temValor ? "Valor sob consulta" : "Solicitar compra"}</button>
           </form>
         </article>
       </section>`;

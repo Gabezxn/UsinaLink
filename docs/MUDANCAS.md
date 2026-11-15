@@ -207,3 +207,20 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 | Tudo dos pedidos 10 a 17 está no `main` e no ar. Conferido no site fixo: página inicial nova, botão de Libras aparece, sem erros no console. API `/api/health` ok e login da empresa pelo endereço de teste dá 201 | `https://usinalink.tibiel2010.workers.dev` |
 | Bateria de testes: 18 de 18 verdes antes de cada envio | `node qa/run-all.mjs` |
 | Ainda abertos (P2): FLX-11, 12, 18, 19, 22 em diante, SEC-22/23 (dependem do Render), BUG-2 | `docs/BACKLOG.md` |
+
+## Pedido 19 (15/11): pendências de fluxo (P2) e telas de detalhe
+
+| Mudança | Onde |
+|---|---|
+| Cartões do painel da empresa e da usina viram links para a lista certa e avisam pendências ("6 aguardando sua decisão", "1 aguardando pagamento") (FLX-11) | `Site/dashboard-empresa.html`, `dashboard-usina.html`, `assets/js/dashboard-*.js`, `style.css` |
+| Minhas compras (PF): uma ação principal por linha; "Avaliar" abre a avaliação daquela compra direto (FLX-12) | `compras-pessoa-fisica.js`, `dashboard-pessoa-fisica.js`, `avaliacoes-pessoa-fisica.js` |
+| Enviar proposta: frete pode ser ajustado pela usina; erros aparecem ao lado do formulário e o campo com problema recebe foco; pedido fechado mostra aviso fixo e desliga o botão (FLX-18, 31) | `enviar-proposta.html`, `enviar-proposta.js` |
+| Convite de funcionário sem estar logado mostra "entre na sua conta" em vez de erro; sem código interno na tela (FLX-19) | `aceitar-convite-funcionario.js` |
+| Perfil: o rótulo do tipo de conta deixou de parecer botão; "Segurança" abre direto o formulário (FLX-22) | `perfil-*.html`, `script.js` |
+| Cartão "Aguardando pagamento" só conta pedidos com proposta aceita; "Ver pagamento" de pedido pago leva ao comprovante; página de pagamento de pedido já pago ou sem proposta aceita mostra aviso; comprovante com mensagem certa por situação e para falha de rede (FLX-25, 26, 27) | `order-history.js` |
+| Nota fiscal da usina mostra "Dado protegido" onde faltam dados do comprador; histórico da usina rotula "Proposta recusada/cancelada" (FLX-28, 29) | `order-history.js`, `payment-service.js` |
+| Erros 403/404/500 em inglês viram português simples (FLX-30) | `api.js` |
+| Peça sem valor: botão desligado ("Valor sob consulta"); botão enganoso do modal de peça removido (FLX-33, 34). FLX-24 já estava resolvido | `peca-pessoa-fisica.js`, `pecas-comerciais.js`, `script.js` |
+| Detalhes do pedido sem número: tela amigável com atalho para a lista; comprovante sem número ou com falha mantém o menu lateral | `order-history.js` |
+| Visual: campos com foco sem listras internas (modal de funcionário); avaliações da usina com data em linha separada e nota sem espaço sobrando | `style.css` |
+| Não feito: FLX-32 (valida valor no backend/DTO, mexe no servidor). Compra, peça, usina e confirmação já estavam no padrão da home e só receberam os ajustes acima | — |
