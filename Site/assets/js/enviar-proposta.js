@@ -62,7 +62,7 @@
         <div><span>Prazo desejado</span><strong>${esc(pedido.prazoEntregaDias ? formatPrazo(pedido.prazoEntregaDias) : "A combinar")}</strong></div>
         <div><span>Empresa</span><strong>${esc(pedido.empresaCompradora?.nomeFantasia || pedido.empresaCompradora?.razaoSocial || "-")}</strong></div>
         <div><span>Categoria</span><strong>${esc(item.categoria || "Não informado")}</strong></div>
-        <div><span>Urgência</span><strong>${esc(pedido.urgencia || "Normal")}</strong></div>`;
+        <div><span>Urgência</span><strong>${esc(formatUrgencia(pedido.urgencia))}</strong></div>`;
       return pedido;
     } catch (error) {
       card.innerHTML = `<p>Não foi possível carregar este pedido: ${esc(error.message)}</p>`;
