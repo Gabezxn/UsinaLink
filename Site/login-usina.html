@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login de Usina | Usinalink</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/a11y.css">
+  <script src="assets/js/safe-html.js"></script>
 </head>
 <body class="auth-page usina-auth">
   <main class="auth-shell">
@@ -19,11 +21,11 @@
       <form class="form js-login-form" data-login-type="usina" data-redirect="dashboard-usina.html" novalidate>
         <label class="field">
           <span>E-mail industrial</span>
-          <div class="input-icon orange-focus"><span>@</span><input id="login-usina-email" name="email" type="email" placeholder="contato@atlasmetais.com" required></div>
+          <div class="input-icon orange-focus"><span>@</span><input id="login-usina-email" name="email" type="email" autocomplete="username" placeholder="contato@atlasmetais.com" required></div>
         </label>
         <label class="field">
           <span>Senha</span>
-          <div class="input-icon orange-focus"><span>*</span><input id="login-usina-senha" name="senha" type="password" placeholder="Digite sua senha" required></div>
+          <div class="input-icon orange-focus"><span>*</span><input id="login-usina-senha" name="senha" type="password" autocomplete="current-password" placeholder="Digite sua senha" required></div>
         </label>
         <button class="btn btn-orange full" type="submit">Entrar como usina</button>
       </form>
@@ -32,5 +34,6 @@
   </main>
   <script src="assets/js/api.js"></script>
   <script src="script.js"></script>
+  <script src="assets/js/a11y.js" defer></script>
 </body>
 </html>

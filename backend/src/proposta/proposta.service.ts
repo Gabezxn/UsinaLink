@@ -43,6 +43,17 @@ export class PropostaService {
     return { ...proposta, pedido, usina };
   }
 
+  private ehComprador(user: any) {
+    return user?.tipoUsuario === 'pessoa_fisica' || !!user?.tipoUsuario?.includes('empresa');
+  }
+
+  /** Para a usina, o comprador aparece só com nome público (sem contato, documento ou anexos). */
+  private paraUsina(p: any) {
+    const e = p?.pedido?.empresaCompradora;
+    if (e) p.pedido.empresaCompradora = { nomeFantasia: e.nomeFantasia, razaoSocial: e.razaoSocial, tipoComprador: e.tipoComprador };
+    return p;
+  }
+
   async criar(dto: any, user: any) {
     const idUsina = await this.ctx.obterUsinaId(user.sub);
     if (await this.bloqueios.findOne({ where: { idUsina, ativo: true } })) throw new ForbiddenException('Usina bloqueada.');
@@ -55,11 +66,13 @@ export class PropostaService {
       throw new ConflictException('Ja existe proposta desta usina para este pedido.');
     }
 
+    const valor = Number(dto.valor);
+    if (!Number.isFinite(valor) || valor <= 0 || valor > 1_000_000_000) throw new BadRequestException('Informe um valor de proposta maior que zero.');
     const proposta = await this.propostas.save(this.propostas.create({
       idPedido: pedido.idPedido,
       idUsina,
       idUsuarioResponsavel: user.sub,
-      valor: Number(dto.valor),
+      valor,
       prazo: dto.prazo,
       frete: dto.frete !== undefined && dto.frete !== '' ? Number(dto.frete) : undefined,
       observacao: dto.observacao,
@@ -86,7 +99,7 @@ export class PropostaService {
   async enviadas(user: any) {
     const idUsina = await this.ctx.obterUsinaId(user.sub);
     const rows = await this.propostas.find({ where: { idUsina } });
-    return Promise.all(rows.map(p => this.enrich(p)));
+    return Promise.all(rows.map(async p => this.paraUsina(await this.enrich(p))));
   }
 
   async detalhe(id: number | string, user: any) {
@@ -103,13 +116,18 @@ export class PropostaService {
     if (user.tipoUsuario?.includes('usina')) {
       const idUsina = await this.ctx.obterUsinaId(user.sub);
       if (proposta.idUsina !== idUsina) throw new ForbiddenException();
+      return this.paraUsina(enriched);
     }
+    if (!this.ehComprador(user)) throw new ForbiddenException();
     return enriched;
   }
 
   async aceitar(id: number | string, user: any) {
+    if (!this.ehComprador(user)) throw new ForbiddenException('Somente o comprador pode aceitar propostas.');
     const proposta = await this.detalhe(id, user);
-    await this.propostas.update({ idPedido: proposta.idPedido }, { status: 'recusada' });
+    if (proposta.status !== 'enviada') throw new BadRequestException('Esta proposta não está mais disponível para aceite.');
+    if (!STATUS_ABERTOS.includes(proposta.pedido?.status as string)) throw new BadRequestException('O pedido não está mais aberto para propostas.');
+    await this.propostas.update({ idPedido: proposta.idPedido, status: 'enviada' }, { status: 'recusada' });
     await this.propostas.update({ idProposta: proposta.idProposta }, { status: 'aceita' });
     await this.pedidos.update({ idPedido: proposta.idPedido }, { status: 'proposta_aceita', valorTotal: proposta.valor });
     await this.sincronizarSolicitacao(proposta.idPedido, 'concluida');
@@ -118,13 +136,17 @@ export class PropostaService {
   }
 
   async recusar(id: number | string, user: any) {
-    await this.detalhe(id, user);
+    if (!this.ehComprador(user)) throw new ForbiddenException('Somente o comprador pode recusar propostas.');
+    const proposta = await this.detalhe(id, user);
+    if (proposta.status !== 'enviada') throw new BadRequestException('Esta proposta não pode mais ser recusada.');
     await this.propostas.update({ idProposta: Number(id) }, { status: 'recusada' });
     return this.propostas.findOne({ where: { idProposta: Number(id) } });
   }
 
   async cancelar(id: number | string, user: any) {
-    await this.detalhe(id, user);
+    if (!user.tipoUsuario?.includes('usina')) throw new ForbiddenException('Somente a usina pode cancelar a própria proposta.');
+    const proposta = await this.detalhe(id, user);
+    if (proposta.status !== 'enviada') throw new BadRequestException('Esta proposta não pode mais ser cancelada.');
     await this.propostas.update({ idProposta: Number(id) }, { status: 'cancelada' });
     return this.propostas.findOne({ where: { idProposta: Number(id) } });
   }

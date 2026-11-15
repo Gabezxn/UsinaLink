@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login Pessoa Fisica | Usinalink</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/a11y.css">
+  <script src="assets/js/safe-html.js"></script>
 </head>
 <body class="auth-page">
   <main class="auth-shell">
@@ -18,11 +20,11 @@
       <form class="form js-login-form" data-login-type="pessoa_fisica" data-redirect="dashboard-pessoa-fisica.html" novalidate>
         <label class="field">
           <span>E-mail</span>
-          <div class="input-icon"><span>@</span><input id="login-pessoa-email" name="email" type="email" placeholder="usuario@email.com" required></div>
+          <div class="input-icon"><span>@</span><input id="login-pessoa-email" name="email" type="email" autocomplete="username" placeholder="usuario@email.com" required></div>
         </label>
         <label class="field">
           <span>Senha</span>
-          <div class="input-icon"><span>*</span><input id="login-pessoa-senha" name="senha" type="password" placeholder="Digite sua senha" required></div>
+          <div class="input-icon"><span>*</span><input id="login-pessoa-senha" name="senha" type="password" autocomplete="current-password" placeholder="Digite sua senha" required></div>
         </label>
         <button class="btn full" type="submit">Entrar</button>
       </form>
@@ -31,5 +33,6 @@
   </main>
   <script src="assets/js/api.js"></script>
   <script src="script.js"></script>
+  <script src="assets/js/a11y.js" defer></script>
 </body>
 </html>

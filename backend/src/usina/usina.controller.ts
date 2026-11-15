@@ -7,11 +7,13 @@ import { UpdatePerfilUsinaDto } from './dto/update-perfil-usina.dto';
 export class UsinaController {
   constructor(private readonly service: UsinaService) {}
 
+  @UseGuards(JwtAuthGuard)
   @Get('buscar')
   async buscar(@Query('nome') nome?: string, @Query('cnpj') cnpj?: string) {
     const usina = await this.service.buscar(nome, cnpj);
     if (!usina) throw new NotFoundException('Usina nao encontrada. Preencha os dados manualmente.');
-    return usina;
+    // Só dados públicos: nada de CNPJ, contato ou anexos.
+    return { nomeFantasia: usina.nomeFantasia, razaoSocial: usina.razaoSocial };
   }
 
   // Diretorio visto por compradores logados (empresa ou pessoa fisica).

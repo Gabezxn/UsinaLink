@@ -1,12 +1,13 @@
 import { Body, Controller, Get, Param, Patch, Post, Query, Req, UseGuards } from '@nestjs/common';
 import { Throttle } from '@nestjs/throttler';
+import { AdminGuard } from '../auth/admin.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { LoginDto } from './dto/login.dto';
 import { TrocarSenhaDto } from './dto/trocar-senha.dto';
 import { UsuarioService } from './usuario.service';
 
-const LOGIN_THROTTLE = { default: { limit: 5, ttl: 60000 } };
+const LOGIN_THROTTLE = { default: { limit: Number(process.env.LOGIN_THROTTLE_LIMIT) || 10, ttl: 60000 } };
 
 @Controller('api')
 export class UsuarioController {
@@ -25,10 +26,10 @@ export class UsuarioController {
   @Post('cadastro/usina') usina(@Body() dto: CreateUsuarioDto) { return this.service.cadastrar(dto, 'usina'); }
   @Post('cadastro/pessoa_fisica') pessoaFisica(@Body() dto: CreateUsuarioDto) { return this.service.cadastrar(dto, 'pessoa_fisica'); }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Get('usuarios/:id') porId(@Param('id') id: string) { return this.service.buscarPorId(+id); }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @Get('usuarios') listar(@Query('tipo') tipo?: string, @Query('status') status?: string) {
     return tipo ? this.service.buscarPorTipo(tipo) : status ? this.service.buscarPorStatus(status) : [];
   }

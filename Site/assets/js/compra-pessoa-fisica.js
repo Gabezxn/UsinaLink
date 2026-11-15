@@ -197,3 +197,12 @@
     try { await recarregar(); } catch (error) { conteudo.innerHTML = emptyState("Compra não encontrada", error.message); }
   }());
 }());
+
+// Empresa usa esta mesma tela para acompanhar/pagar compras do catálogo: o "Voltar" leva às peças comerciais.
+(function () {
+  try {
+    const tipo = JSON.parse(sessionStorage.getItem("usinalinkSession") || "{}").tipo;
+    const voltar = document.querySelector("[data-voltar-compra]");
+    if (tipo === "empresa" && voltar) voltar.setAttribute("href", "dashboard-pessoa-juridica.html");
+  } catch { /* sem sessão legível */ }
+})();

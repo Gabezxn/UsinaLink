@@ -42,6 +42,11 @@
     }
   }
 
+  const ROTULOS = { registrada: 'Registrada', aceita: 'Aceita - pague para continuar', paga: 'Paga', em_separacao: 'Em separação', enviada: 'Enviada', entregue: 'Entregue', recusada: 'Recusada', cancelada: 'Cancelada' };
+  const statusRotulo = (s) => ROTULOS[s] || 'Registrada';
+  const statusClasse = (s) => ({ aceita: 'warning', recusada: 'danger', cancelada: 'danger' }[s] || 'success');
+  const acaoRotulo = (s) => ({ aceita: 'Pagar', enviada: 'Confirmar entrega' }[s] || 'Acompanhar');
+
   async function loadMinhas() {
     const body = document.querySelector('[data-solicitacoes-comerciais-body]');
     if (!body) return window.UsinaLinkApi.get('/solicitacoes-comerciais/minhas').catch(() => []);
@@ -54,13 +59,14 @@
             <td>${esc(row.fornecedor || '-')}</td>
             <td>${row.valorUnitario ? formatMoney(row.valorUnitario) : '-'}</td>
             <td>${esc(row.quantidade ?? 1)}</td>
-            <td><span class="badge success">Registrada</span></td>
+            <td><span class="badge ${statusClasse(row.status)}">${esc(statusRotulo(row.status))}</span></td>
             <td>${row.criadoEm ? new Date(row.criadoEm).toLocaleDateString('pt-BR') : '-'}</td>
+            <td><a class="table-action" href="compra-pessoa-fisica.html?id=${esc(row.idSolicitacaoComercial)}">${esc(acaoRotulo(row.status))}</a></td>
           </tr>`).join('')
-        : '<tr><td colspan="6" style="text-align:center; padding: 24px;">Nenhuma solicitação comercial ainda.</td></tr>';
+        : '<tr><td colspan="7" style="text-align:center; padding: 24px;">Nenhuma solicitação comercial ainda.</td></tr>';
       return rows;
     } catch (error) {
-      body.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 24px;">Falha ao carregar: ${esc(error.message)}</td></tr>`;
+      body.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px;">Falha ao carregar: ${esc(error.message)}</td></tr>`;
       return [];
     }
   }

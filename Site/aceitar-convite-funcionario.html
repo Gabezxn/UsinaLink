@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Aceitar Convite | Usinalink</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/a11y.css">
+  <script src="assets/js/safe-html.js"></script>
 </head>
 <body class="auth-page">
   <main class="auth-shell wide">
@@ -24,51 +26,7 @@
     </section>
   </main>
   <script src="assets/js/api.js"></script>
-  <script>
-    const inviteId = new URLSearchParams(window.location.search).get("id");
-    const statusElement = document.querySelector("#invite-status");
-    const detailsElement = document.querySelector("#invite-details");
-    const button = document.querySelector("#accept-invite-button");
-    let funcionario = null;
-
-    function renderInvite(item) {
-      funcionario = item;
-      const owner = item.contexto === "usina" ? "Usina vinculada" : "Empresa vinculada";
-      statusElement.textContent = "Revise os dados abaixo antes de aceitar o convite.";
-      detailsElement.innerHTML = `
-        <div><span>${owner}</span><strong>${item.ownerId || "Conta UsinaLink"}</strong></div>
-        <div><span>Nome</span><strong>${item.nome || ""}</strong></div>
-        <div><span>E-mail</span><strong>${item.email || ""}</strong></div>
-        <div><span>Cargo</span><strong>${item.cargo || ""}</strong></div>
-        <div><span>Status atual</span><strong>${item.status || "Pendente"}</strong></div>`;
-    }
-
-    async function loadInvite() {
-      if (!inviteId) {
-        statusElement.textContent = "Convite nao informado.";
-        button.disabled = true;
-        return;
-      }
-      try {
-        renderInvite(await window.UsinaLinkApi.get(`/funcionarios/${encodeURIComponent(inviteId)}`));
-      } catch (error) {
-        statusElement.textContent = error.message;
-        button.disabled = true;
-      }
-    }
-
-    button.addEventListener("click", async () => {
-      if (!funcionario) return;
-      try {
-        await window.UsinaLinkApi.put(`/funcionarios/${encodeURIComponent(inviteId)}/aceitar-convite`, {});
-        statusElement.textContent = "Convite aceito com sucesso. Seu status agora e Ativo.";
-        button.disabled = true;
-      } catch (error) {
-        statusElement.textContent = error.message;
-      }
-    });
-
-    loadInvite();
-  </script>
+  <script src="assets/js/aceitar-convite-funcionario.js"></script>
+  <script src="assets/js/a11y.js" defer></script>
 </body>
 </html>

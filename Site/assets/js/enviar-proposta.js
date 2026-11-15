@@ -11,7 +11,10 @@
   }
 
   function parseMoney(value) {
-    const clean = String(value || "").replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", ".");
+    // Vírgula = decimal (pontos são milhar). Sem vírgula: "1.500" é milhar, "1500.50" e "380.5" são decimais.
+    let clean = String(value || "").replace(/[^\d,.-]/g, "");
+    if (clean.includes(",")) clean = clean.replace(/\./g, "").replace(",", ".");
+    else if (/^-?\d{1,3}(\.\d{3})+$/.test(clean)) clean = clean.replace(/\./g, "");
     const number = Number(clean);
     return Number.isFinite(number) ? number : null;
   }

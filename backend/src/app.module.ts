@@ -2,7 +2,9 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { HealthModule } from './health/health.module';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { AppThrottlerGuard } from './common/login-throttler.guard';
 import { AppController } from './app.controller';
 import { DatabaseModule } from './database/database.module';
 import { ENTITIES } from './common/entities/core.entities';
@@ -26,7 +28,7 @@ import { FavoritoModule } from './favorito/favorito.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    ThrottlerModule.forRoot([{ ttl: 60000, limit: 60 }]),
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: Number(process.env.THROTTLE_LIMIT) || 300 }]),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -63,9 +65,10 @@ import { FavoritoModule } from './favorito/favorito.module';
     PecaComercialModule,
     NotificacaoModule,
     PagamentoModule,
-    FavoritoModule
+    FavoritoModule,
+    HealthModule
   ],
   controllers: [AppController],
-  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }]
+  providers: [{ provide: APP_GUARD, useClass: AppThrottlerGuard }]
 })
 export class AppModule {}

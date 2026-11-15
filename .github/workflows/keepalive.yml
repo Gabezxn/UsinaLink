@@ -1,0 +1,25 @@
+name: Keep-alive (Render + Supabase)
+
+# O plano gratuito do Render dorme sem tráfego e o Supabase pausa projetos inativos.
+# Esta chamada a cada 10 minutos mantém os dois acordados (o /api/health faz um SELECT 1 no banco).
+# Atenção: o agendamento do GitHub Actions só roda no branch padrão do repositório.
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Chamar /api/health
+        run: |
+          for tentativa in 1 2 3; do
+            if curl -fsS --max-time 60 https://usinalink-orbz.onrender.com/api/health; then exit 0; fi
+            echo "Tentativa $tentativa falhou; aguardando o servidor acordar..."
+            sleep 20
+          done
+          exit 1

@@ -7,7 +7,10 @@
 
   function parseCurrency(value) {
     if (typeof value === "number") return value;
-    const clean = String(value || "").replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", ".");
+    const bruto = String(value || "").trim();
+    // A API devolve números como "1500.50" (ponto decimal); em texto brasileiro a vírgula é o decimal e o ponto é milhar.
+    if (/^-?\d+(\.\d+)?$/.test(bruto) && !/^-?\d{1,3}(\.\d{3})+$/.test(bruto)) return Number(bruto);
+    const clean = bruto.replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", ".");
     const number = Number(clean);
     return Number.isFinite(number) ? number : 0;
   }
@@ -71,12 +74,15 @@
     if (!toast) {
       toast = document.createElement("div");
       toast.className = "toast";
+      toast.setAttribute("role", "status");
+      toast.setAttribute("aria-live", "polite");
+      toast.setAttribute("aria-atomic", "true");
       document.body.appendChild(toast);
     }
     toast.textContent = message;
     toast.dataset.type = type;
     toast.classList.add("show");
-    window.setTimeout(() => toast.classList.remove("show"), 2800);
+    window.setTimeout(() => toast.classList.remove("show"), 7000);
   }
 
   window.UsinaLinkUi = {

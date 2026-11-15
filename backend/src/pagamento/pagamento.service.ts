@@ -37,7 +37,8 @@ export class PagamentoService {
       : !!comprador.idEmpresa && pedido.idEmpresaCompradora === comprador.idEmpresa;
     if (!dono) throw new ForbiddenException('Pedido nao pertence a sua conta.');
 
-    const proposta = await this.propostas.findOne({ where: { idPedido: pedido.idPedido, status: In(['aceita', 'enviada']) } });
+    if (pedido.status !== 'proposta_aceita') throw new BadRequestException('Este pedido não está aguardando pagamento.');
+    const proposta = await this.propostas.findOne({ where: { idPedido: pedido.idPedido, status: 'aceita' } });
     if (!proposta) throw new BadRequestException('Nenhuma proposta aceita para este pedido.');
 
     const existente = await this.pagamentos.findOne({ where: { idPedido: pedido.idPedido } });
