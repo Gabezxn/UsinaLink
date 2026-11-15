@@ -1,9 +1,9 @@
-import { IsEmail, IsOptional, IsString } from 'class-validator';
+import { IsEmail, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class UpdateFuncionarioDto {
-  @IsOptional() @IsString() nome?: string;
+  @IsOptional() @IsString() @MaxLength(200) nome?: string;
   @IsOptional() @IsEmail() email?: string;
-  @IsOptional() @IsString() cargo?: string;
+  @IsOptional() @IsString() @MaxLength(200) cargo?: string;
   @IsOptional() @IsString() tipo?: string;
   @IsOptional() @IsString() status?: string;
 }

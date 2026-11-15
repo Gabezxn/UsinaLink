@@ -27,6 +27,12 @@ export class ContextoUsuarioService {
     return registro;
   }
 
+  /** Titular da conta (dono da empresa/usina). Funcionário vinculado não é titular. */
+  async ehTitular(idUsuario: number): Promise<boolean> {
+    if (await this.empresas.findOne({ where: { idUsuario } }) || await this.usinas.findOne({ where: { idUsuario } })) return true;
+    return !(await this.funcionarios.findOne({ where: { idUsuario, status: 'ativo' } }));
+  }
+
   async obterEmpresaId(idUsuario: number): Promise<number> {
     const empresa = await this.empresas.findOne({ where: { idUsuario } });
     if (empresa) return empresa.idEmpresa;

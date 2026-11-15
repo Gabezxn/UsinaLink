@@ -11,7 +11,7 @@ export class TokenService {
   constructor(private readonly jwt: JwtService, private readonly config: ConfigService) {}
 
   sign(payload: Record<string, unknown>) {
-    return this.jwt.sign(payload, { secret: this.secret(), expiresIn: '24h', algorithm: 'HS256' });
+    return this.jwt.sign(payload, { secret: this.secret(), expiresIn: '8h', algorithm: 'HS256' });
   }
 
   verify(token: string) {

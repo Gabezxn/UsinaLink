@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ContextoUsuarioService } from '../contexto-usuario/contexto-usuario.service';
@@ -54,11 +54,12 @@ export class SolicitacaoBloqueioUsinaService {
   async updateStatus(id: number, dto: UpdateStatusSolicitacaoBloqueioDto, user: any) {
     const solicitacao = await this.solicitacoes.findOne({ where: { idSolicitacao: id } });
     if (!solicitacao) throw new NotFoundException('Solicitação não encontrada.');
+    if (['aprovada', 'rejeitada', 'cancelada'].includes(solicitacao.status)) throw new BadRequestException('Solicitação já foi decidida.');
     const status = dto.status || 'aprovada';
     await this.solicitacoes.update({ idSolicitacao: id }, {
       status,
       respostaModeracao: dto.respostaModeracao,
-      analisadoPor: dto.analisadoPor || String(user.sub),
+      analisadoPor: String(user.sub),
       analisadoEm: new Date(),
     });
     if (status === 'aprovada') {

@@ -49,7 +49,7 @@
           : '<tr><td colspan="5" style="text-align:center; padding: 24px;">Nenhuma solicitacao ainda. <a href="nova-solicitacao.html">Criar a primeira</a>.</td></tr>';
       }
     } catch (error) {
-      if (tableBody) tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 24px;">Falha ao carregar: ${error.message}</td></tr>`;
+      if (tableBody) tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 24px;">Falha ao carregar: ${esc(error.message)}</td></tr>`;
     }
   }
 

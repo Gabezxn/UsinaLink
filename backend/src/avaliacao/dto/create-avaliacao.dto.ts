@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsOptional, IsString, Max, Min } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsString, Max, Min, MaxLength } from 'class-validator';
 
 export class CreateAvaliacaoDto {
   @IsOptional() @IsString() pedidoId?: string;
@@ -7,7 +7,7 @@ export class CreateAvaliacaoDto {
   @IsInt() @Min(1) @Max(5) qualidade: number;
   @IsInt() @Min(1) @Max(5) prazo: number;
   @IsInt() @Min(1) @Max(5) comunicacao: number;
-  @IsOptional() @IsString() comentario?: string;
+  @IsOptional() @IsString() @MaxLength(2000) comentario?: string;
   @IsOptional() @IsString() empresaId?: string;
   @IsOptional() @IsString() usinaId?: string;
 }

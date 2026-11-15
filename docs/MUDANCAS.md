@@ -143,3 +143,17 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 | Instalei Node 24 (winget, só do seu usuário), Postgres 16 portátil e Playwright/Chromium em `C:\Projetos\_qa-tools` e `C:\Projetos\node_modules` (fora do repositório, nada vai ao GitHub) | seu PC |
 | Scripts de teste adaptados para Windows. Bateria completa: 17 de 17 verdes (variável `QA_PGBIN=C:/Projetos/_qa-tools/pgsql/bin`) | `qa/env/up.mjs`, `qa/env/down.mjs`, `qa/run-all.mjs`, `qa/security/sec-7-throttle.mjs` |
 | Libras: liberação do `cdn.jsdelivr.net` já está no `main` (commit `71b362f`) | `Site/_headers` |
+
+## Pedido 14 (15/11): segurança P2
+
+| Mudança | Onde |
+|---|---|
+| Login: e-mail que não existe e senha errada agora dão a mesma mensagem; a senha é conferida antes do status da conta; removida a aceitação de senha em texto puro (SEC-14) | `backend/src/usuario/usuario.service.ts`, `backend/src/auth/password.service.ts` |
+| Sessão passa de 24h para 8h (SEC-15). Não mexi no guard para checar o status a cada chamada: exigiria banco em todos os módulos | `backend/src/auth/token.service.ts` |
+| Só o titular da conta cria, edita ou exclui funcionários; funcionário não gerencia colegas (SEC-16) | `backend/src/funcionario/funcionario.service.ts`, `backend/src/contexto-usuario/contexto-usuario.service.ts` |
+| Bloqueio de usina: admin só pode marcar em análise, aprovada ou rejeitada; não decide duas vezes; "analisado por" vem do token, não do pedido (SEC-17) | `backend/src/solicitacao-bloqueio-usina/` |
+| Mensagem de erro do painel da empresa agora é escapada (SEC-21); os outros dois pontos já estavam seguros | `Site/assets/js/dashboard-empresa.js` |
+| Tipo de conta errado em pedidos/propostas: conferido, já responde 403 e não 500 (SEC-24); teste novo garante | `qa/security/sec-p2.mjs` |
+| Textos longos (comentário, descrição, motivo etc.) limitados a 2000 caracteres e nomes a 200 (BUG-4). Não ativei `forbidNonWhitelisted`: poderia quebrar telas que mandam campos extras; campos desconhecidos já são descartados | DTOs em `backend/src/**/dto/` |
+| Testes novos: `sec-p2` na bateria e testes unitários do bloqueio | `qa/run-all.mjs`, `backend/src/solicitacao-bloqueio-usina/` |
+| Não feitos: SEC-22 e SEC-23 (dependem do Render) | — |

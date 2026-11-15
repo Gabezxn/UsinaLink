@@ -11,6 +11,7 @@ const passos = [
   ['backlog-lint', 'node', ['qa/backlog-lint.mjs']],
   ['security/sec-authz', 'node', ['qa/security/sec-authz.mjs']],
   ['security/sec-p1', 'node', ['qa/security/sec-p1.mjs']],
+  ['security/sec-p2', 'node', ['qa/security/sec-p2.mjs']],
   ['security/sec-1-2-seed-jwt', 'node', ['qa/security/sec-1-2-seed-jwt.mjs']],
   ['security/sec-7-throttle', 'node', ['qa/security/sec-7-throttle.mjs']],
   ['security/xss-sweep', 'node', ['qa/security/xss-sweep.mjs']],

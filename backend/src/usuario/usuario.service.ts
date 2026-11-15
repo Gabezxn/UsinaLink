@@ -121,9 +121,9 @@ export class UsuarioService {
 
   async loginArea(dto: LoginDto, area: TipoLogin) {
     const usuario = await this.buscarEmailComSenha(dto.email);
-    if (!usuario) throw new UnauthorizedException('Usuário não encontrado.');
-    if (usuario.status && usuario.status !== 'ativo') throw new ForbiddenException('Usuario inativo.');
+    if (!usuario) throw new UnauthorizedException('E-mail ou senha inválidos.');
     if (!await this.passwords.compare(String(dto.senha || ''), usuario.senhaHash)) throw new UnauthorizedException('E-mail ou senha inválidos.');
+    if (usuario.status && usuario.status !== 'ativo') throw new ForbiddenException('Usuario inativo.');
 
     let vinculo: any = null;
     if (area === 'pessoa_fisica') {
@@ -192,10 +192,10 @@ export class UsuarioService {
 
   async loginAdmin(dto: LoginDto) {
     const usuario = await this.buscarEmailComSenha(dto.email);
-    if (!usuario) throw new UnauthorizedException('Usuário não encontrado.');
+    if (!usuario) throw new UnauthorizedException('E-mail ou senha inválidos.');
+    if (!await this.passwords.compare(String(dto.senha || ''), usuario.senhaHash)) throw new UnauthorizedException('E-mail ou senha inválidos.');
     if (usuario.tipoUsuario !== 'admin') throw new ForbiddenException('Esta conta nao e de administrador.');
     if (usuario.status && usuario.status !== 'ativo') throw new ForbiddenException('Usuario inativo.');
-    if (!await this.passwords.compare(String(dto.senha || ''), usuario.senhaHash)) throw new UnauthorizedException('E-mail ou senha inválidos.');
     const accessToken = this.tokens.sign({ sub: usuario.idUsuario, tipoUsuario: usuario.tipoUsuario });
     return { accessToken, access_token: accessToken, tipoUsuario: usuario.tipoUsuario, nome: usuario.nome, usuario: this.safe(usuario) };
   }

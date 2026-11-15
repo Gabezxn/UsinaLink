@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumberString, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsNumberString, IsOptional, IsString, MaxLength } from 'class-validator';
 
 export class CreatePropostaDto {
   @IsOptional() @IsString() pedidoId?: string;
@@ -7,10 +7,10 @@ export class CreatePropostaDto {
   @IsOptional() @IsString() empresaId?: string;
   @IsOptional() @IsString() usina?: string;
   @IsOptional() @IsString() cliente?: string;
-  @IsOptional() @IsString() peca?: string;
+  @IsOptional() @IsString() @MaxLength(200) peca?: string;
   @IsNotEmpty({ message: 'Informe o valor da proposta.' }) @IsNumberString({}, { message: 'Valor deve ser numerico.' }) valor: string;
   @IsNotEmpty({ message: 'Informe o prazo da proposta.' }) @IsString() prazo: string;
   @IsOptional() @IsString() frete?: string;
   @IsOptional() @IsString() avaliacao?: string;
-  @IsOptional() @IsString() observacao?: string;
+  @IsOptional() @IsString() @MaxLength(2000) observacao?: string;
 }
