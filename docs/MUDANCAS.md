@@ -92,3 +92,10 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 | Combinado: a cada envio eu leio o aviso do Cloudflare no PR e te mando o endereço da versão nova. Nenhum código mudou | — |
 | Endereço fixo do site (só muda quando entra no `main`): `https://usinalink.tibiel2010.workers.dev` | — |
 | Endereço fixo da versão em teste (branch, sempre a mais recente): `https://claude-elegant-shannon-4ar9hg-usinalink.tibiel2010.workers.dev` | — |
+
+## Pedido 7 (15/11): passar o trabalho para a conversa do PC
+
+| Mudança | Onde |
+|---|---|
+| Arquivo com tudo o que eu sei (estado, endereços, o que falta, como falar com você) para a conversa que roda no seu PC continuar | `docs/PASSAGEM-PARA-O-PC.md` |
+| Nenhum código mudou | — |
