@@ -270,3 +270,9 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 | Prazo de fabricação da proposta: o campo agora é só um número (dias) e a tela escolhe sozinha uma única unidade: 45 → "45 dias", 30 → "1 mês", 90 → "3 meses". Mostra a prévia enquanto digita e salva já formatado. A mesma regra vale nas listas e detalhes de propostas, pedidos, peças e pagamento. Propostas antigas em texto livre continuam como estavam | `Site/assets/js/safe-html.js` (`formatPrazo`), `Site/enviar-proposta.html`, `Site/assets/js/enviar-proposta.js`, `Site/script.js` e outros |
 | Acentos nos detalhes da proposta e telas ligadas: "fabricação", "Observações", "Peça", "Não informado", "Urgência", "você", "decisão", "não foi possível" | `Site/script.js`, `Site/assets/js/enviar-proposta.js` |
 | Teste novo que confere tudo isso (cores, botão Mostrar, aviso x acessibilidade, prazo e acentos). Bateria completa verde | `qa/flows/ui-p24.mjs`, `qa/run-all.mjs` |
+
+## Pedido 27 (15/11): logo no cadastro de usina
+
+| Mudança | Onde |
+|---|---|
+| No "Criar conta" de usina, a logo do Usinalink continuava azul enquanto o resto ficava laranja. Agora ela fica laranja ao escolher Usina e volta ao azul ao escolher outro tipo. Aplicado no site principal e na versão de teste | `Site/script.js` |
