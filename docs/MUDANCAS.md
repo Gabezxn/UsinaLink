@@ -77,3 +77,10 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 |---|---|
 | Build do Cloudflare passou com o `wrangler.jsonc`. Fiz o merge no `main` (PR nº 2, commit `5ccd393`) | GitHub: <https://github.com/Gabezxn/UsinaLink/pull/2> |
 | Nenhum código mudou nesta etapa | — |
+
+## Pedido 5 (15/11): botão de acessibilidade em cima do "Fale conosco"
+
+| Mudança | Onde |
+|---|---|
+| Nas páginas com o chat "Fale conosco" (página inicial), o botão e o painel de Acessibilidade vão para o canto **esquerdo**. Nas outras páginas continuam no canto direito | `Site/assets/css/a11y.css` |
+| Teste novo que falha se os dois botões se sobrepuserem | `qa/flows/a11y-pages.mjs` |

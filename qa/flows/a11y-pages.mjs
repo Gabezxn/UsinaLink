@@ -19,6 +19,19 @@ for (const p of listPages()) {
   }
 }
 
+// --- botão de acessibilidade não cobre o "Fale conosco" (nem o painel dele quando aberto)
+{
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } }); const page = await ctx.newPage();
+  await page.goto(`${SITE}/index.html`); await page.waitForTimeout(800);
+  const cruza = (a, b) => a && b && a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
+  const toggle = await page.locator('#a11y-toggle').boundingBox();
+  t.ok(!cruza(toggle, await page.locator('.chat-abrir').boundingBox()), 'botão de acessibilidade sobrepõe o "Fale conosco"');
+  await page.locator('.chat-abrir').focus(); await page.keyboard.press('Enter'); await page.waitForTimeout(300);
+  t.ok(!cruza(toggle, await page.locator('.chat-painel').boundingBox()), 'botão de acessibilidade sobrepõe o painel do chat');
+  await page.locator('#a11y-toggle').focus(); await page.keyboard.press('Enter'); await page.waitForTimeout(300);
+  t.ok(!cruza(await page.locator('#a11y-panel').boundingBox(), await page.locator('.chat-abrir').boundingBox()), 'painel de acessibilidade sobrepõe o "Fale conosco"');
+  await ctx.close();
+}
 // --- login: toast com role, erros de formulário ligados
 {
   const ctx = await browser.newContext(); const page = await ctx.newPage();
