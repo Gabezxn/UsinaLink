@@ -21,7 +21,7 @@
             <div><span>Material</span><strong>${esc(peca.material || "-")}</strong></div>
             <div><span>Categoria</span><strong>${esc(peca.categoria || "-")}</strong></div>
             <div><span>Estoque</span><strong>${esc(estoque)}</strong></div>
-            <div><span>Prazo de entrega</span><strong>${esc(peca.prazoEntregaDias ? peca.prazoEntregaDias + " dias" : "A combinar")}</strong></div>
+            <div><span>Prazo de entrega</span><strong>${esc(formatPrazo(peca.prazoEntregaDias))}</strong></div>
             <div><span>Valor unitário</span><strong>${esc(money(peca.valorUnitario))}</strong></div>
             <div><span>Fornecedor</span><strong><a class="text-link" href="usina-pessoa-fisica.html?id=${esc(peca.idUsina)}">${esc(fornecedor)}</a></strong></div>
           </div>

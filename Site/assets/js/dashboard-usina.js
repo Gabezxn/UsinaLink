@@ -16,7 +16,7 @@
     const badge = typeof badgeClass === "function" ? badgeClass(status) : "info";
     const peca = item.pedido?.itens?.[0]?.nome || "Peça industrial";
     const cliente = item.pedido?.empresaCompradora?.nomeFantasia || item.pedido?.empresaCompradora?.razaoSocial || "-";
-    return `<tr data-search-row data-proposal-id="${esc(item.idProposta)}"><td>${esc(peca)}</td><td>${esc(cliente)}</td><td>${esc(money(item.valor))}</td><td>${esc(item.prazo || "A combinar")}</td><td><span class="badge ${badge}">${esc(status)}</span></td><td><button class="table-action js-alert" type="button">Ver detalhes</button></td></tr>`;
+    return `<tr data-search-row data-proposal-id="${esc(item.idProposta)}"><td>${esc(peca)}</td><td>${esc(cliente)}</td><td>${esc(money(item.valor))}</td><td>${esc(formatPrazo(item.prazo))}</td><td><span class="badge ${badge}">${esc(status)}</span></td><td><button class="table-action js-alert" type="button">Ver detalhes</button></td></tr>`;
   }
 
   async function loadDashboard() {

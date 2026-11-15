@@ -23,6 +23,7 @@ const passos = [
   ['flows/session-expired', 'node', ['qa/flows/session-expired.mjs']],
   ['flows/cold-start', 'node', ['qa/flows/cold-start.mjs']],
   ['flows/headers', 'node', ['qa/flows/headers.mjs']],
+  ['flows/ui-p24', 'node', ['qa/flows/ui-p24.mjs']],
   ['checks/axe', 'node', ['qa/checks/axe.mjs']],
   ['checks/console', 'node', ['qa/checks/console.mjs']],
 ];

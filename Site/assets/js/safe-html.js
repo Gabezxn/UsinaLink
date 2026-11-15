@@ -12,5 +12,16 @@
     if (/^(https?:\/\/|\/|\.\/|[a-z0-9_\-]+\.html)/i.test(v) || /^data:(application\/pdf|image\/(png|jpe?g|gif|webp));base64,[a-z0-9+\/=]+$/i.test(v)) return escape(v);
     return "#";
   }
-  window.SafeHtml = { escape: escape, url: url };
+  /** Prazo com uma unidade so: "45" -> "45 dias"; 30, 60, 90... dias -> "1 mês", "2 meses", "3 meses". Texto livre fica como esta. */
+  function prazo(value, vazio) {
+    var t = String(value === null || value === undefined ? "" : value).trim();
+    if (!t) return vazio === undefined ? "A combinar" : vazio;
+    var m = t.match(/^(\d+)(?:\s*(?:dias?|d))?$/i);
+    if (!m) return t;
+    var n = Number(m[1]);
+    if (n >= 30 && n % 30 === 0) { var meses = n / 30; return meses + (meses === 1 ? " mês" : " meses"); }
+    return n + (n === 1 ? " dia" : " dias");
+  }
+  window.SafeHtml = { escape: escape, url: url, prazo: prazo };
+  window.formatPrazo = prazo;
 })();

@@ -115,7 +115,7 @@
       <p>${esc(peca.material || peca.categoria || "")}</p>
       <div class="quote-facts compact">
         <div><span>Estoque</span><strong>${esc(estoque)}</strong></div>
-        <div><span>Prazo</span><strong>${esc(peca.prazoEntregaDias ? peca.prazoEntregaDias + " dias" : "A combinar")}</strong></div>
+        <div><span>Prazo</span><strong>${esc(formatPrazo(peca.prazoEntregaDias))}</strong></div>
         <div><span>Valor unitário</span><strong>${esc(money(peca.valorUnitario))}</strong></div>
         <div><span>Fornecedor</span><strong><a class="text-link" href="usina-pessoa-fisica.html?id=${esc(peca.idUsina)}">${esc(fornecedor)}</a></strong></div>
       </div>

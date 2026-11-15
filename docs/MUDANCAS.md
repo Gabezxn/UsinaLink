@@ -259,3 +259,14 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 | Ao colar `usinalink.com.br` no WhatsApp, Instagram, LinkedIn etc., agora aparece um cartão com a logo, o nome, "Marketplace B2B de peças industriais" e a descrição (antes aparecia só o endereço puro) | `Site/index.html` (tags `og:` e `twitter:`) |
 | Imagem do cartão 1200×630 com a marca da Usinalink | `Site/assets/img/preview.png` (novo) |
 | Observação: WhatsApp e redes guardam o preview por um tempo. Se o link já foi enviado antes, o cartão novo pode demorar a aparecer | — |
+
+## Pedido 25 (15/11): ajustes pedidos pela colega da equipe
+
+| Mudança | Onde |
+|---|---|
+| Cores das contas: pessoa física agora tem tema verde-azulado (fundo, cartão, botões e links) no login e no cadastro; usina fica laranja; empresa continua azul. No cadastro, o tema muda sozinho ao escolher o tipo de conta | `Site/style.css`, `Site/login-pessoa-fisica.html`, `Site/script.js` |
+| "Mostrar senha" da pessoa física: no cadastro os mesmos campos servem para os 3 tipos, e o campo "Senha" da pessoa física virava senha depois que o botão já tinha sido criado, então ficava sem botão. Agora o botão acompanha o campo ao trocar o tipo (e some de campos que deixam de ser senha). Testado nos 3 tipos, ida e volta | `Site/script.js` |
+| O aviso "Login realizado com sucesso" (e os outros avisos) ficava por baixo do botão de Acessibilidade. Agora fica acima dele, em tela grande e no celular | `Site/style.css` |
+| Prazo de fabricação da proposta: o campo agora é só um número (dias) e a tela escolhe sozinha uma única unidade: 45 → "45 dias", 30 → "1 mês", 90 → "3 meses". Mostra a prévia enquanto digita e salva já formatado. A mesma regra vale nas listas e detalhes de propostas, pedidos, peças e pagamento. Propostas antigas em texto livre continuam como estavam | `Site/assets/js/safe-html.js` (`formatPrazo`), `Site/enviar-proposta.html`, `Site/assets/js/enviar-proposta.js`, `Site/script.js` e outros |
+| Acentos nos detalhes da proposta e telas ligadas: "fabricação", "Observações", "Peça", "Não informado", "Urgência", "você", "decisão", "não foi possível" | `Site/script.js`, `Site/assets/js/enviar-proposta.js` |
+| Teste novo que confere tudo isso (cores, botão Mostrar, aviso x acessibilidade, prazo e acentos). Bateria completa verde | `qa/flows/ui-p24.mjs`, `qa/run-all.mjs` |

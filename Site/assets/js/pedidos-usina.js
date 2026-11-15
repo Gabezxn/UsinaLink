@@ -79,7 +79,7 @@
       <td>${esc(item.nome || "Peça industrial")}</td>
       <td>${esc(item.material || "-")}</td>
       <td>${esc(item.quantidade ? item.quantidade + " unidades" : "-")}</td>
-      <td>${esc(pedido.prazoEntregaDias ? pedido.prazoEntregaDias + " dias" : "A combinar")}</td>
+      <td>${esc(formatPrazo(pedido.prazoEntregaDias))}</td>
       <td>${esc(ufDe(pedido.localEntrega) || "-")}</td>
       <td><span class="badge ${urgenciaBadge}">${esc(pedido.urgencia || "Normal")}</span></td>
       <td><button class="table-action js-open-order-detail" type="button">Ver detalhes</button><a class="btn btn-orange btn-small" href="enviar-proposta.html?pedidoId=${esc(pedido.idPedido)}">Enviar proposta</a></td>

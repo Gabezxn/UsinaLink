@@ -28,6 +28,12 @@
     return Number.isFinite(number) ? number : null;
   }
 
+  // Prazo em dias (so o numero); a unidade (dias ou meses) e escolhida sozinha por formatPrazo.
+  function prazoDigitado(value) {
+    const n = parseInt(String(value || "").replace(/\D/g, ""), 10);
+    return Number.isFinite(n) && n > 0 ? n : 0;
+  }
+
   function formatBRL(value) {
     return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(value) || 0);
   }
@@ -50,16 +56,16 @@
       const item = (pedido.itens && pedido.itens[0]) || {};
       card.querySelector("h2").textContent = item.nome || "Pedido industrial";
       card.querySelector(".quote-facts").innerHTML = `
-        <div><span>Peca</span><strong>${esc(item.nome || "Nao informado")}</strong></div>
-        <div><span>Material</span><strong>${esc(item.material || "Nao informado")}</strong></div>
-        <div><span>Quantidade</span><strong>${esc(item.quantidade || "Nao informado")}</strong></div>
-        <div><span>Prazo desejado</span><strong>${esc(pedido.prazoEntregaDias ? pedido.prazoEntregaDias + " dias" : "A combinar")}</strong></div>
+        <div><span>Peça</span><strong>${esc(item.nome || "Não informado")}</strong></div>
+        <div><span>Material</span><strong>${esc(item.material || "Não informado")}</strong></div>
+        <div><span>Quantidade</span><strong>${esc(item.quantidade || "Não informado")}</strong></div>
+        <div><span>Prazo desejado</span><strong>${esc(pedido.prazoEntregaDias ? formatPrazo(pedido.prazoEntregaDias) : "A combinar")}</strong></div>
         <div><span>Empresa</span><strong>${esc(pedido.empresaCompradora?.nomeFantasia || pedido.empresaCompradora?.razaoSocial || "-")}</strong></div>
-        <div><span>Categoria</span><strong>${esc(item.categoria || "Nao informado")}</strong></div>
-        <div><span>Urgencia</span><strong>${esc(pedido.urgencia || "Normal")}</strong></div>`;
+        <div><span>Categoria</span><strong>${esc(item.categoria || "Não informado")}</strong></div>
+        <div><span>Urgência</span><strong>${esc(pedido.urgencia || "Normal")}</strong></div>`;
       return pedido;
     } catch (error) {
-      card.innerHTML = `<p>Nao foi possivel carregar este pedido: ${esc(error.message)}</p>`;
+      card.innerHTML = `<p>Não foi possível carregar este pedido: ${esc(error.message)}</p>`;
       if (sendButton) sendButton.disabled = true;
       return null;
     }
@@ -76,7 +82,9 @@
     document.querySelector("#preview-total").textContent = formatBRL(valorNum + freteNum);
     document.querySelector("#preview-value").textContent = formatBRL(valorNum);
     document.querySelector("#preview-freight").textContent = formatBRL(freteNum);
-    document.querySelector("#preview-deadline").textContent = deadline.value || "A combinar";
+    document.querySelector("#preview-deadline").textContent = prazoDigitado(deadline.value) ? formatPrazo(prazoDigitado(deadline.value)) : "A combinar";
+    const dica = document.querySelector("#deadline-hint");
+    if (dica) dica.textContent = prazoDigitado(deadline.value) ? `Será mostrado como: ${formatPrazo(prazoDigitado(deadline.value))}` : "Digite só o número de dias. Prazos de 30, 60, 90 dias… aparecem em meses automaticamente.";
     document.querySelector("#preview-note").textContent = note.value || "Sem observações adicionais.";
   }
 
@@ -100,7 +108,7 @@
       showError("");
       if (!pedidoId) { showError("Nenhum pedido selecionado."); return; }
       if (!valorNum || valorNum <= 0) { showError("Informe um valor válido para a proposta.", value); return; }
-      if (!deadline.value.trim()) { showError("Informe o prazo de fabricação.", deadline); return; }
+      if (!prazoDigitado(deadline.value)) { showError("Informe o prazo de fabricação em dias (número maior que zero).", deadline); return; }
 
       const originalText = button.textContent;
       button.disabled = true;
@@ -109,7 +117,7 @@
         await window.UsinaLinkApi.post("/propostas", {
           pedidoId,
           valor: String(valorNum),
-          prazo: deadline.value.trim(),
+          prazo: formatPrazo(prazoDigitado(deadline.value)),
           frete: freight.value.trim() ? String(parseMoney(freight.value) ?? "") : undefined,
           observacao: note.value.trim() || undefined,
         });

@@ -56,7 +56,7 @@ function reduzirImagem(arquivo) {
       <td>${esc(peca.material || "-")}</td>
       <td>${esc(peca.estoque != null ? `${peca.estoque} ${peca.unidadeEstoque || "unidades"}` : "-")}</td>
       <td>${esc(peca.valorUnitario != null ? money(peca.valorUnitario) : "-")}</td>
-      <td>${esc(peca.prazoEntregaDias ? peca.prazoEntregaDias + " dias" : "A combinar")}</td>
+      <td>${esc(formatPrazo(peca.prazoEntregaDias))}</td>
       <td><button class="table-action js-edit-peca" type="button">Editar</button><button class="table-action js-remove-peca" type="button">Remover</button></td>
     </tr>`;
   }

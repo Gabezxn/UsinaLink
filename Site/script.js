@@ -216,6 +216,16 @@ function updateSignupForm(type) {
     if (symbol) symbol.textContent = config.icons[index];
   }
 
+  // O cadastro reaproveita os mesmos campos para cada tipo de conta: o botao "Mostrar" acompanha quem virou senha.
+  for (let index = 0; index < 7; index += 1) {
+    const input = document.querySelector(`#signup-field-${index + 1}`);
+    if (!input) continue;
+    if (index < config.labels.length && config.types[index] === "password") { input.dataset.toggleReady = "1"; addPasswordToggle(input); }
+    else { delete input.dataset.toggleReady; removePasswordToggle(input); }
+  }
+  document.body.classList.toggle("pf-mode", type === "pessoa");
+  document.body.classList.toggle("signup-usina", type === "usina");
+
   button.textContent = config.button;
   button.classList.toggle("btn-orange", config.orange);
   button.classList.toggle("btn-primary", !config.orange);
@@ -315,7 +325,7 @@ if (signupForm) {
       });
       showToast(`${type === "usina" ? "Usina" : "Empresa"} encontrada. Dados preenchidos automaticamente.`);
     } catch (error) {
-      showToast(type === "usina" ? "Usina nao encontrada. Preencha os dados manualmente." : "Empresa nao encontrada. Preencha os dados manualmente.");
+      showToast(type === "usina" ? "Usina não encontrada. Preencha os dados manualmente." : "Empresa não encontrada. Preencha os dados manualmente.");
     }
   };
 
@@ -351,7 +361,7 @@ if (signupForm) {
 
     const type = signupForm.dataset.accountType || document.querySelector('.choice-card input[type="radio"]:checked')?.value || "empresa";
     if (!window.UsinaLinkApi?.post) {
-      showToast("Nao foi possivel carregar o cliente da API.");
+      showToast("Não foi possível carregar o cliente da API.");
       return;
     }
 
@@ -378,7 +388,7 @@ if (signupForm) {
       window.setTimeout(() => { window.location.href = destino; }, 800);
     } catch (error) {
       if (error instanceof TypeError) {
-        showToast("Nao foi possivel conectar ao servidor.");
+        showToast("Não foi possível conectar ao servidor.");
       } else {
         showToast(error.message);
       }
@@ -419,7 +429,7 @@ document.querySelectorAll(".js-login-form").forEach((form) => {
     if (hasError) return;
 
     try {
-      if (!window.UsinaLinkApi) throw new Error("Nao foi possivel conectar ao servidor. Verifique se o backend esta rodando.");
+      if (!window.UsinaLinkApi) throw new Error("Não foi possível conectar ao servidor. Verifique se o backend esta rodando.");
       const result = await window.UsinaLinkApi.post(`/auth/login/${tipo}`, {
         email: emailInput.value.trim().toLowerCase(),
         senha: passwordInput.value
@@ -439,8 +449,8 @@ document.querySelectorAll(".js-login-form").forEach((form) => {
       window.setTimeout(() => { window.location.href = redirect; }, 500);
     } catch (error) {
       if (error instanceof TypeError) {
-        setFieldState(emailInput, "Nao foi possivel conectar ao servidor.");
-        showToast("Nao foi possivel conectar ao servidor.");
+        setFieldState(emailInput, "Não foi possível conectar ao servidor.");
+        showToast("Não foi possível conectar ao servidor.");
       } else {
         setFieldState(emailInput, error.message);
         showToast(error.message);
@@ -716,7 +726,7 @@ async function loadEmployeesFromApi() {
       table.innerHTML = employees.map(employeeRowMarkup).join("") || '<tr><td colspan="6" class="td-empty">Nenhum funcionário cadastrado ainda. Use "Adicionar funcionário" no topo da página.</td></tr>';
       table.querySelectorAll("tr[data-employee-id]").forEach(renderEmployeeRowActions);
     } catch (error) {
-      table.innerHTML = `<tr><td colspan="6" class="td-empty">Falha ao carregar funcionarios: ${escapeHtml(error.message)}</td></tr>`;
+      table.innerHTML = `<tr><td colspan="6" class="td-empty">Falha ao carregar funcionários: ${escapeHtml(error.message)}</td></tr>`;
     }
   });
 }
@@ -728,16 +738,16 @@ function renderProposalDetails(data, includeDecision = false) {
       <strong class="modal-price">${escapeHtml(data.valor || data[2] || "R$ 0,00")}</strong>
     </div>
     <div class="action-modal-grid">
-      <div><span>Prazo de fabricacao</span><strong>${escapeHtml(data.prazo || data[3] || "18 dias")}</strong></div>
+      <div><span>Prazo de fabricação</span><strong>${escapeHtml(formatPrazo(data.prazo || data[3], "18 dias"))}</strong></div>
       <div><span>Frete</span><strong>${escapeHtml(data.frete || "R$ 950,00")}</strong></div>
       <div><span>Avaliacao</span><strong>${escapeHtml(data.avaliacao || "4,8/5")}</strong></div>
       <div><span>Regiao</span><strong>${escapeHtml(data.regiao || "Sudeste")}</strong></div>
-      <div><span>Peca/Pedido</span><strong>${escapeHtml(data.peca || data[0] || "Peca industrial")}</strong></div>
+      <div><span>Peça/Pedido</span><strong>${escapeHtml(data.peca || data[0] || "Peça industrial")}</strong></div>
       <div><span>Material</span><strong>${escapeHtml(data.material || "Aco carbono")}</strong></div>
       <div><span>Quantidade</span><strong>${escapeHtml(data.quantidade || "60 unidades")}</strong></div>
       <div><span>Arquivo tecnico</span><strong>${escapeHtml(data.arquivo || "arquivo-tecnico.pdf")}</strong></div>
     </div>
-    <div class="detail-list"><div><span>Observacoes</span><strong>${escapeHtml(data.observacao || "Proposta com condicoes comerciais completas.")}</strong></div></div>
+    <div class="detail-list"><div><span>Observações</span><strong>${escapeHtml(data.observacao || "Proposta com condicoes comerciais completas.")}</strong></div></div>
     <div class="form-actions">
       <button class="btn btn-ghost js-action-modal-close" type="button">Fechar</button>
       ${includeDecision ? '<button class="btn js-modal-accept-proposal" type="button">Aceitar proposta</button><button class="btn btn-ghost js-modal-reject-proposal" type="button">Recusar proposta</button>' : ""}
@@ -798,10 +808,10 @@ function renderProposalRowActions(row) {
 
 function proposalRowMarkup(item) {
   const status = statusPropostaLabel(item.status);
-  const peca = item.pedido?.itens?.[0]?.nome || "Peca industrial";
+  const peca = item.pedido?.itens?.[0]?.nome || "Peça industrial";
   const cliente = item.pedido?.empresaCompradora?.nomeFantasia || item.pedido?.empresaCompradora?.razaoSocial || "-";
   const dataEnvio = item.dataEnvio ? new Date(item.dataEnvio).toLocaleDateString("pt-BR") : "";
-  return `<tr data-search-row data-proposal-id="${escapeHtml(item.idProposta)}"><td>${escapeHtml(peca)}</td><td>${escapeHtml(cliente)}</td><td>${escapeHtml(formatMoneyBR(item.valor))}</td><td>${escapeHtml(item.prazo || "A combinar")}</td><td><span class="badge ${badgeClass(status)}">${escapeHtml(status)}</span></td><td>${escapeHtml(dataEnvio)}</td><td>${proposalActionsMarkup(status, peca)}</td></tr>`;
+  return `<tr data-search-row data-proposal-id="${escapeHtml(item.idProposta)}"><td>${escapeHtml(peca)}</td><td>${escapeHtml(cliente)}</td><td>${escapeHtml(formatMoneyBR(item.valor))}</td><td>${escapeHtml(formatPrazo(item.prazo))}</td><td><span class="badge ${badgeClass(status)}">${escapeHtml(status)}</span></td><td>${escapeHtml(dataEnvio)}</td><td>${proposalActionsMarkup(status, peca)}</td></tr>`;
 }
 
 let ultimasPropostasRecebidas = [];
@@ -842,8 +852,8 @@ function proposalCardMarkup(item, best) {
     ${best && !travada ? '<span class="best-label">Melhor proposta</span>' : ""}
     <h2>${escapeHtml(nomeUsinaProposta(item.usina))}</h2>
     <strong class="price">${escapeHtml(formatMoneyBR(item.valor))}</strong>
-    <dl><div><dt>Prazo de fabricacao</dt><dd>${escapeHtml(item.prazo || "A combinar")}</dd></div><div><dt>Frete</dt><dd>${escapeHtml(item.frete ? formatMoneyBR(item.frete) : "A combinar")}</dd></div><div><dt>Status</dt><dd>${escapeHtml(statusPropostaLabel(status))}</dd></div></dl>
-    <p>${escapeHtml(item.observacao || "Sem observacoes adicionais.")}</p>
+    <dl><div><dt>Prazo de fabricação</dt><dd>${escapeHtml(formatPrazo(item.prazo))}</dd></div><div><dt>Frete</dt><dd>${escapeHtml(item.frete ? formatMoneyBR(item.frete) : "A combinar")}</dd></div><div><dt>Status</dt><dd>${escapeHtml(statusPropostaLabel(status))}</dd></div></dl>
+    <p>${escapeHtml(item.observacao || "Sem observações adicionais.")}</p>
     <div class="card-actions"><button class="btn btn-ghost js-alert" type="button">Ver detalhes</button>${decisaoBtn}</div>
   </article>`;
 }
@@ -861,16 +871,16 @@ function renderSentProposalDetails(item) {
       <strong class="modal-price">${escapeHtml(formatMoneyBR(item.valor))}</strong>
     </div>
     <div class="action-modal-grid">
-      <div><span>Prazo de fabricacao</span><strong>${escapeHtml(item.prazo || "A combinar")}</strong></div>
+      <div><span>Prazo de fabricação</span><strong>${escapeHtml(formatPrazo(item.prazo))}</strong></div>
       <div><span>Frete</span><strong>${escapeHtml(item.frete ? formatMoneyBR(item.frete) : "A combinar")}</strong></div>
       <div><span>Status</span><strong>${escapeHtml(statusPropostaLabel(status))}</strong></div>
       <div><span>Enviada em</span><strong>${escapeHtml(dataEnvio)}</strong></div>
-      <div><span>Peca/Pedido</span><strong>${escapeHtml(itemPedido.nome || "Peca industrial")}</strong></div>
+      <div><span>Peça/Pedido</span><strong>${escapeHtml(itemPedido.nome || "Peça industrial")}</strong></div>
       <div><span>Material</span><strong>${escapeHtml(itemPedido.material || "-")}</strong></div>
       <div><span>Quantidade</span><strong>${escapeHtml(quantidade)}</strong></div>
       <div><span>Pedido</span><strong>${escapeHtml(pedido.numeroPedido || "-")}</strong></div>
     </div>
-    <div class="detail-list"><div><span>Observacoes da proposta</span><strong>${escapeHtml(item.observacao || "Sem observacoes adicionais.")}</strong></div></div>
+    <div class="detail-list"><div><span>Observações da proposta</span><strong>${escapeHtml(item.observacao || "Sem observações adicionais.")}</strong></div></div>
     <div class="form-actions"><button class="btn btn-ghost js-action-modal-close" type="button">Fechar</button></div>`;
 }
 
@@ -883,12 +893,12 @@ function renderReceivedProposalDetails(item) {
       <strong class="modal-price">${escapeHtml(formatMoneyBR(item.valor))}</strong>
     </div>
     <div class="action-modal-grid">
-      <div><span>Prazo de fabricacao</span><strong>${escapeHtml(item.prazo || "A combinar")}</strong></div>
+      <div><span>Prazo de fabricação</span><strong>${escapeHtml(formatPrazo(item.prazo))}</strong></div>
       <div><span>Frete</span><strong>${escapeHtml(item.frete ? formatMoneyBR(item.frete) : "A combinar")}</strong></div>
       <div><span>Status</span><strong>${escapeHtml(statusPropostaLabel(status))}</strong></div>
       <div><span>Pedido</span><strong>${escapeHtml(item.pedido?.numeroPedido || "-")}</strong></div>
     </div>
-    <div class="detail-list"><div><span>Observacoes</span><strong>${escapeHtml(item.observacao || "Sem observacoes adicionais.")}</strong></div></div>
+    <div class="detail-list"><div><span>Observações</span><strong>${escapeHtml(item.observacao || "Sem observações adicionais.")}</strong></div></div>
     <div class="form-actions">
       <button class="btn btn-ghost js-action-modal-close" type="button">Fechar</button>
       ${travada ? "" : '<button class="btn js-modal-accept-proposal" type="button">Aceitar proposta</button><button class="btn btn-ghost js-modal-reject-proposal" type="button">Recusar proposta</button>'}
@@ -1031,12 +1041,12 @@ document.addEventListener("click", (event) => {
   const commercialCard = button.closest(".order-opportunity");
 
   if (commercialCard && action === "Ver detalhes") {
-    const title = commercialCard.querySelector("h2")?.textContent.trim() || "Peca comercial";
+    const title = commercialCard.querySelector("h2")?.textContent.trim() || "Peça comercial";
     const description = commercialCard.querySelector("p")?.textContent.trim() || "";
     const facts = [...commercialCard.querySelectorAll(".quote-facts div")].map((item) => `<div><span>${escapeHtml(item.querySelector("span")?.textContent || "")}</span><strong>${escapeHtml(item.querySelector("strong")?.textContent || "")}</strong></div>`).join("");
     openActionModal({
       title,
-      kicker: "Peca comercial",
+      kicker: "Peça comercial",
       body: `<div class="detail-list"><div><span>Material</span><strong>${escapeHtml(description)}</strong></div></div><div class="action-modal-grid">${facts}</div><div class="form-actions"><button class="btn btn-ghost js-action-modal-close" type="button">Fechar</button></div>`
     });
     return;
@@ -1063,7 +1073,7 @@ document.addEventListener("click", (event) => {
     const p = ultimasPropostasRecebidas.find((x) => String(x.idProposta) === String(card.dataset.proposalId)) || {};
     openSimpleConfirm({
       title: "Aceitar proposta",
-      message: `Aceitar a proposta de ${nomeUsinaProposta(p.usina)} por ${formatMoneyBR(p.valor)}, prazo de ${p.prazo || "a combinar"}? Depois de aceitar, voce segue para o pagamento.`,
+      message: `Aceitar a proposta de ${nomeUsinaProposta(p.usina)} por ${formatMoneyBR(p.valor)}, prazo de ${formatPrazo(p.prazo).toLowerCase()}? Depois de aceitar, você segue para o pagamento.`,
       confirmText: "Aceitar proposta",
       onConfirm: () => decidirProposta(card.dataset.proposalId, true)
     });
@@ -1073,7 +1083,7 @@ document.addEventListener("click", (event) => {
     const p = ultimasPropostasRecebidas.find((x) => String(x.idProposta) === String(card.dataset.proposalId)) || {};
     openSimpleConfirm({
       title: "Recusar proposta",
-      message: `Recusar a proposta de ${nomeUsinaProposta(p.usina)} por ${formatMoneyBR(p.valor)}? Essa decisao nao pode ser desfeita.`,
+      message: `Recusar a proposta de ${nomeUsinaProposta(p.usina)} por ${formatMoneyBR(p.valor)}? Essa decisão não pode ser desfeita.`,
       confirmText: "Recusar proposta",
       onConfirm: () => decidirProposta(card.dataset.proposalId, false)
     });
@@ -1203,11 +1213,11 @@ document.addEventListener("click", (event) => {
       if (key) facts[key] = value;
     });
     const title = row.querySelector("h2")?.textContent || cells[0]?.textContent || "Pedido";
-    const material = row.dataset.material || cells[1]?.textContent || facts.material || "Nao informado";
-    const quantity = row.dataset.quantidade || cells[2]?.textContent || facts.quantidade || "Nao informado";
+    const material = row.dataset.material || cells[1]?.textContent || facts.material || "Não informado";
+    const quantity = row.dataset.quantidade || cells[2]?.textContent || facts.quantidade || "Não informado";
     const dias = Number(row.dataset.days);
     const deadline = cells[3]?.textContent || (dias && dias < 999 ? `${dias} dias` : facts.prazo || "A combinar");
-    const region = cells[4]?.textContent || row.dataset.region || facts["regi\u00e3o"] || "Nao informado";
+    const region = cells[4]?.textContent || row.dataset.region || facts["regi\u00e3o"] || "Não informado";
     document.querySelector("#order-modal-title").textContent = title;
     document.querySelector("#order-modal-content").innerHTML = `
       <div><span>Detalhes da pe\u00e7a</span><strong>${escapeHtml(title)}</strong></div>
@@ -1300,24 +1310,40 @@ if (window.location.pathname.includes("propostas-usina") || window.location.path
 }
 
 // Botao "mostrar senha" em todos os campos de senha e rotulo do tipo de conta abaixo da marca.
+function addPasswordToggle(input) {
+  const host = input.closest(".input-wrap, .input-icon") || input.parentElement;
+  const existing = host.querySelector(".pass-toggle");
+  if (existing) { // campo reaproveitado (cadastro troca o tipo de conta): volta ao estado oculto
+    existing.textContent = "Mostrar";
+    existing.setAttribute("aria-label", "Mostrar senha");
+    return;
+  }
+  host.classList.add("has-pass-toggle");
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "pass-toggle";
+  button.textContent = "Mostrar";
+  button.setAttribute("aria-label", "Mostrar senha");
+  button.addEventListener("click", () => {
+    const show = input.type === "password";
+    input.type = show ? "text" : "password";
+    button.textContent = show ? "Ocultar" : "Mostrar";
+    button.setAttribute("aria-label", show ? "Ocultar senha" : "Mostrar senha");
+  });
+  input.after(button);
+}
+
+function removePasswordToggle(input) {
+  const host = input.closest(".input-wrap, .input-icon") || input.parentElement;
+  host.querySelector(".pass-toggle")?.remove();
+  host.classList.remove("has-pass-toggle");
+}
+
 function setupPasswordToggles() {
   document.querySelectorAll('input[type="password"]').forEach((input) => {
     if (input.dataset.toggleReady) return;
     input.dataset.toggleReady = "1";
-    const host = input.closest(".input-wrap, .input-icon") || input.parentElement;
-    host.classList.add("has-pass-toggle");
-    const button = document.createElement("button");
-    button.type = "button";
-    button.className = "pass-toggle";
-    button.textContent = "Mostrar";
-    button.setAttribute("aria-label", "Mostrar senha");
-    button.addEventListener("click", () => {
-      const show = input.type === "password";
-      input.type = show ? "text" : "password";
-      button.textContent = show ? "Ocultar" : "Mostrar";
-      button.setAttribute("aria-label", show ? "Ocultar senha" : "Mostrar senha");
-    });
-    input.after(button);
+    addPasswordToggle(input);
   });
 }
 

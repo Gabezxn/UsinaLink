@@ -54,7 +54,8 @@
             </label>
             <label class="field">
               <span>Prazo de fabrica&ccedil;&atilde;o</span>
-              <div class="input-wrap"><span class="input-symbol" aria-hidden="true">D</span><input id="proposal-deadline" type="text" placeholder="18 dias" required></div>
+              <div class="input-wrap"><span class="input-symbol" aria-hidden="true">D</span><input id="proposal-deadline" type="number" min="1" max="1095" step="1" inputmode="numeric" placeholder="Ex.: 18 (dias)" aria-describedby="deadline-hint" required></div>
+              <small class="field-hint" id="deadline-hint">Digite só o número de dias. Prazos de 30, 60, 90 dias… aparecem em meses automaticamente.</small>
             </label>
             <label class="field">
               <span>Valor do frete</span>
