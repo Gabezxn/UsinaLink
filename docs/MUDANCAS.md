@@ -84,3 +84,11 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 |---|---|
 | Nas páginas com o chat "Fale conosco" (página inicial), o botão e o painel de Acessibilidade vão para o canto **esquerdo**. Nas outras páginas continuam no canto direito | `Site/assets/css/a11y.css` |
 | Teste novo que falha se os dois botões se sobrepuserem | `qa/flows/a11y-pages.mjs` |
+
+## Pedido 6 (15/11): avisar o endereço de cada versão nova
+
+| Mudança | Onde |
+|---|---|
+| Combinado: a cada envio eu leio o aviso do Cloudflare no PR e te mando o endereço da versão nova. Nenhum código mudou | — |
+| Endereço fixo do site (só muda quando entra no `main`): `https://usinalink.tibiel2010.workers.dev` | — |
+| Endereço fixo da versão em teste (branch, sempre a mais recente): `https://claude-elegant-shannon-4ar9hg-usinalink.tibiel2010.workers.dev` | — |
