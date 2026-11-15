@@ -157,3 +157,16 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 | Textos longos (comentário, descrição, motivo etc.) limitados a 2000 caracteres e nomes a 200 (BUG-4). Não ativei `forbidNonWhitelisted`: poderia quebrar telas que mandam campos extras; campos desconhecidos já são descartados | DTOs em `backend/src/**/dto/` |
 | Testes novos: `sec-p2` na bateria e testes unitários do bloqueio | `qa/run-all.mjs`, `backend/src/solicitacao-bloqueio-usina/` |
 | Não feitos: SEC-22 e SEC-23 (dependem do Render) | — |
+
+## Pedido 15 (15/11): fluxos e acessibilidade P2
+
+| Mudança | Onde |
+|---|---|
+| Aceitar proposta leva direto ao pagamento; o card ganhou botão Recusar; as confirmações mostram usina, valor e prazo (FLX-6, 7) | `Site/script.js` |
+| Um só total, igual ao backend (valor da proposta, sem taxa de 3,5% inventada); texto do chat também corrigido (FLX-14) | `Site/assets/js/ui-utils.js`, `chat-contato.js` |
+| Textos falsos de "localStorage" trocados por "pagamento simulado, registrado na sua conta" (FLX-15) | `Site/pagamento-pedido.html`, `Site/pagamentos.html` |
+| Usina e comprador podem confirmar entrega e o texto agora diz isso; botão "Avaliar usina" depois de concluído; rótulo "Comprador"; filtros do histórico por status real (FLX-8, 9, 16, 17) | `Site/assets/js/order-history.js`, `Site/historico-pedidos.html` |
+| Pedido sob medida da PF: link "Ver propostas" e status em português (FLX-10); peça sem estoque mostra "Sem estoque" e botão desligado (FLX-13); "Criar nova conta" já abre o tipo certo (FLX-21) | `Site/assets/js/solicitacoes.js`, `peca-pessoa-fisica.js`, `Site/login-*.html` |
+| Acessibilidade: símbolos decorativos escondidos do leitor de tela, títulos de página distintos, avisos de atualização em tabelas, botão de ações com o nome da linha, chat com ESC e como diálogo, carregando com aria-busy (A11Y-6, 9, 11, 12, 13, 14) | `Site/*.html`, `Site/script.js`, `chat-contato.js` |
+| Não feitos: FLX-11, 12, 18 a 20, 22 a 34 (fora da lista pedida; alguns tocam backend/DTO) | — |
+| Testes do fluxo empresa-usina atualizados para as novas regras | `qa/flows/empresa-usina.mjs` |
