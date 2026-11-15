@@ -170,3 +170,17 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 | Acessibilidade: símbolos decorativos escondidos do leitor de tela, títulos de página distintos, avisos de atualização em tabelas, botão de ações com o nome da linha, chat com ESC e como diálogo, carregando com aria-busy (A11Y-6, 9, 11, 12, 13, 14) | `Site/*.html`, `Site/script.js`, `chat-contato.js` |
 | Não feitos: FLX-11, 12, 18 a 20, 22 a 34 (fora da lista pedida; alguns tocam backend/DTO) | — |
 | Testes do fluxo empresa-usina atualizados para as novas regras | `qa/flows/empresa-usina.mjs` |
+
+## Pedido 16 (15/11): polimento visual para a apresentação
+
+| Mudança | Onde |
+|---|---|
+| Página inicial refeita: topo fixo com menu (Como funciona, Benefícios, Para quem), título mais forte, botões "Criar conta grátis" e "Ver como funciona", painel de exemplo de comparação de propostas marcado como "Exemplo ilustrativo" | `Site/index.html`, `Site/style.css` |
+| Ícones de verdade (SVG) nos cartões de benefícios, no lugar das letras R/Q/C/G; nova seção "Para quem" com os 3 perfis | `Site/index.html` |
+| Faixa de números só com fatos (3 perfis, 4 etapas, 1 painel) e rótulo "Demonstração"; sem dados inventados | `Site/index.html` |
+| "Empresas que já confiam" virou "Perfis de exemplo usados na demonstração", com nomes marcados como fictícios | `Site/index.html` |
+| Rodapé completo em colunas com links reais (entrar, criar conta, seções); texto "Protótipo front-end" trocado por aviso de ambiente de demonstração; faixa final de chamada para ação | `Site/index.html`, `Site/style.css` |
+| Marca nova (símbolo de porca sextavada) no lugar das letras "US" em todas as telas; favicon próprio | `Site/*.html`, `Site/assets/img/favicon.svg` |
+| Descrição (meta description) e ícone de aba em todas as páginas | `Site/*.html` |
+| Responsivo conferido em 375 px e 768 px na página inicial, sem rolagem lateral; movimento reduzido respeitado | `Site/style.css` |
+| Não feito: revisão visual tela a tela dos painéis internos (já tinham estados vazios e tabelas) | — |
