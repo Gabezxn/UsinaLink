@@ -57,7 +57,10 @@
   }
   function build() {
     toggle = el("button", { type: "button", id: "a11y-toggle", "class": "a11y-toggle", "aria-expanded": "false", "aria-controls": "a11y-panel" });
-    toggle.appendChild(el("span", { "aria-hidden": "true" }, "♿"));
+    var icone = el("span", { "aria-hidden": "true", "class": "a11y-icon" });
+    // Icone de cadeira de rodas em SVG (traço), no lugar do emoji
+    icone.innerHTML = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="10" cy="4.2" r="1.7" fill="currentColor" stroke="none"/><path d="M10 7.5V13h5.2l2.8 5.5"/><path d="M10 10.2h4.2"/><path d="M7.6 12.6a4.9 4.9 0 1 0 6.9 6.2"/></svg>';
+    toggle.appendChild(icone);
     toggle.appendChild(el("span", { "class": "a11y-label" }, "Acessibilidade"));
     panel = el("div", { id: "a11y-panel", "class": "a11y-panel", role: "dialog", "aria-modal": "true", "aria-labelledby": "a11y-title", hidden: "" });
     var close = el("button", { type: "button", "class": "a11y-close", id: "a11y-close" }, "Fechar");

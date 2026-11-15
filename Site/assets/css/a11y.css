@@ -74,3 +74,4 @@ html.a11y-dark img, html.a11y-dark video, html.a11y-dark canvas, html.a11y-dark 
 img, video { max-width: 100%; height: auto; }
 .table-wrap { overflow-x: auto; }
 @media (max-width: 480px) { .a11y-toggle span.a11y-label { display: none; } }
+.a11y-toggle .a11y-icon { display: inline-flex; line-height: 0; }
