@@ -1,0 +1,10 @@
+{
+  // Publica a pasta Site/ como site estático no Cloudflare (Workers Builds / Pages).
+  // Os cabeçalhos de segurança vêm de Site/_headers e a página 404 de Site/404.html.
+  "name": "usinalink",
+  "compatibility_date": "2026-11-01",
+  "assets": {
+    "directory": "./Site",
+    "not_found_handling": "404-page"
+  }
+}
