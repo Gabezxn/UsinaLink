@@ -121,3 +121,10 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 |---|---|
 | O servidor passa a aceitar também os endereços `https://<algo>-usinalink.tibiel2010.workers.dev` (versões de teste do Cloudflare), além da lista `ALLOWED_ORIGINS`. Outros sites continuam bloqueados. | `backend/src/main.ts` |
 | Ainda **não publicado**: precisa de merge no `main` e deploy no Render (aguardando seu OK). Não consegui rodar testes neste PC (sem Node). | — |
+
+## Pedido 11 (15/11): publicado e conferido
+
+| Mudança | Onde |
+|---|---|
+| Mudança do pedido 10 enviada ao `main` (commit `7a57f61`, junto com o botão de acessibilidade do PR 3) e o Render já está com ela | GitHub `main` |
+| Conferido: endereço de teste agora é aceito e o login da empresa dá certo; `https://evil.com` continua bloqueado; `/api/health` ok | — |
