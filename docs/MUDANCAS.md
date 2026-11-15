@@ -128,3 +128,10 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 |---|---|
 | Mudança do pedido 10 enviada ao `main` (commit `7a57f61`, junto com o botão de acessibilidade do PR 3) e o Render já está com ela | GitHub `main` |
 | Conferido: endereço de teste agora é aceito e o login da empresa dá certo; `https://evil.com` continua bloqueado; `/api/health` ok | — |
+
+## Pedido 12 (15/11): botão de Libras bloqueado
+
+| Mudança | Onde |
+|---|---|
+| Testei o site no navegador: o botão de Acessibilidade aparece à esquerda (ok), mas o Libras não carrega. O plugin busca um arquivo em `cdn.jsdelivr.net`, que a política de segurança bloqueava. Liberei só esse endereço para scripts, estilos, fontes e conexões | `Site/_headers` |
+| Ainda **não publicado** (aguardando seu OK) e ainda não testado depois da mudança | — |
