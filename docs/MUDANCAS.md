@@ -251,3 +251,11 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 |---|---|
 | O servidor passa a aceitar `https://usinalink.com.br` e `https://www.usinalink.com.br` sem precisar mexer no Render. Subdomínios parecidos e `http://` continuam bloqueados (testado) | `backend/src/main.ts` |
 | Não coloquei o domínio no `wrangler.jsonc` de propósito: se o domínio ainda não estiver no seu Cloudflare, a publicação do site falharia. Ligar o domínio ao site é feito no painel do Cloudflare (passo 3 combinado) | — |
+
+## Pedido 24 (15/11): preview do link (não parecer golpe)
+
+| Mudança | Onde |
+|---|---|
+| Ao colar `usinalink.com.br` no WhatsApp, Instagram, LinkedIn etc., agora aparece um cartão com a logo, o nome, "Marketplace B2B de peças industriais" e a descrição (antes aparecia só o endereço puro) | `Site/index.html` (tags `og:` e `twitter:`) |
+| Imagem do cartão 1200×630 com a marca da Usinalink | `Site/assets/img/preview.png` (novo) |
+| Observação: WhatsApp e redes guardam o preview por um tempo. Se o link já foi enviado antes, o cartão novo pode demorar a aparecer | — |
