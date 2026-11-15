@@ -55,7 +55,7 @@
   // ---- Servidor dormindo (Render gratuito): aviso após 4 s e novas tentativas com espera crescente ----
   const WAKE_AFTER_MS = 4000;
   const RETRY_DELAYS = [1500, 3000, 6000];
-  const WAKE_MESSAGE = 'Acordando o servidor, isso pode levar até 1 minuto…';
+  const WAKE_MESSAGE = 'Carregando, aguarde um instante…';
   const NETWORK_MESSAGE = 'Não foi possível conectar ao servidor. Verifique sua internet e tente de novo.';
   let wakeUsers = 0;
 

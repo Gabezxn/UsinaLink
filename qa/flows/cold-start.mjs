@@ -1,4 +1,4 @@
-// Review Focus 1: Render dormindo (resposta lenta ou 503) mostra "Acordando o servidor…" e depois carrega, sem tela em branco nem erro.
+// Review Focus 1: Render dormindo (resposta lenta ou 503) mostra "Carregando, aguarde um instante…" e depois carrega, sem tela em branco nem erro.
 import { playwright, SITE, API } from '../lib/login.mjs';
 import { checker } from '../security/_lib.mjs';
 const t = checker();
@@ -24,8 +24,8 @@ const browser = await chromium.launch();
   await page.goto(`${SITE}/login-empresa.html`);
   await page.fill('input[name="email"]', 'empresa@demo.com'); await page.fill('input[name="senha"]', 'Demo@123');
   await page.click('form.js-login-form [type="submit"]');
-  const aviso = page.locator('[role="status"]', { hasText: /acordando o servidor/i });
-  await aviso.first().waitFor({ state: 'visible', timeout: 6000 }).catch(() => t.ok(false, 'resposta lenta: aviso "Acordando o servidor…" não apareceu'));
+  const aviso = page.locator('[role="status"]', { hasText: /carregando, aguarde um instante/i });
+  await aviso.first().waitFor({ state: 'visible', timeout: 6000 }).catch(() => t.ok(false, 'resposta lenta: aviso "Carregando, aguarde um instante…" não apareceu'));
   await page.waitForURL('**/dashboard-empresa.html', { timeout: 20000 }).catch(() => t.ok(false, `resposta lenta: login não concluiu (em ${page.url().replace(SITE, '')})`));
   await page.waitForTimeout(500);
   t.ok(await aviso.count() === 0 || !(await aviso.first().isVisible()), 'o aviso deveria sumir depois que o servidor respondeu');

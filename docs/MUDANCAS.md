@@ -230,3 +230,9 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 | Mudança | Onde |
 |---|---|
 | Na escolha do tipo de conta (login e cadastro), o texto "Acompanhamento individual" passava da borda do cartão. Diminuí um pouco o espaçamento e a letra e deixei o texto quebrar dentro do cartão. Conferido nos três cartões, lado a lado | `Site/style.css` |
+
+## Pedido 21 (15/11): aviso de servidor lento menos técnico
+
+| Mudança | Onde |
+|---|---|
+| O aviso "Acordando o servidor, isso pode levar até 1 minuto…" foi trocado por "Carregando, aguarde um instante…". O comportamento é o mesmo (aparece só se a resposta demorar e some sozinho), só o texto ficou profissional | `Site/assets/js/api.js`, `qa/flows/cold-start.mjs` |
