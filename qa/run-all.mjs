@@ -4,7 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
-const sh = (cmd, args, cwd = ROOT, timeout = 600000) => spawnSync(cmd, args, { cwd, encoding: 'utf8', timeout });
+const sh = (cmd, args, cwd = ROOT, timeout = 600000) => spawnSync(cmd === 'node' ? process.execPath : cmd === 'npm' && process.platform === 'win32' ? 'npm.cmd' : cmd, args, { cwd, encoding: 'utf8', timeout, shell: cmd === 'npm' && process.platform === 'win32' });
 if (process.argv.includes('--fresh')) { sh('node', ['qa/env/down.mjs', '--wipe']); const up = sh('node', ['qa/env/up.mjs']); if (up.status !== 0) { console.log('FALHA ao subir o ambiente:\n' + (up.stderr || up.stdout).slice(-400)); process.exit(1); } }
 const passos = [
   ['backend: npm test', 'npm', ['--prefix', 'backend', 'test', '--silent']],

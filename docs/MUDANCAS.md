@@ -135,3 +135,11 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 |---|---|
 | Testei o site no navegador: o botão de Acessibilidade aparece à esquerda (ok), mas o Libras não carrega. O plugin busca um arquivo em `cdn.jsdelivr.net`, que a política de segurança bloqueava. Liberei só esse endereço para scripts, estilos, fontes e conexões | `Site/_headers` |
 | Ainda **não publicado** (aguardando seu OK) e ainda não testado depois da mudança | — |
+
+## Pedido 13 (15/11): testes automáticos agora rodam no Windows
+
+| Mudança | Onde |
+|---|---|
+| Instalei Node 24 (winget, só do seu usuário), Postgres 16 portátil e Playwright/Chromium em `C:\Projetos\_qa-tools` e `C:\Projetos\node_modules` (fora do repositório, nada vai ao GitHub) | seu PC |
+| Scripts de teste adaptados para Windows. Bateria completa: 17 de 17 verdes (variável `QA_PGBIN=C:/Projetos/_qa-tools/pgsql/bin`) | `qa/env/up.mjs`, `qa/env/down.mjs`, `qa/run-all.mjs`, `qa/security/sec-7-throttle.mjs` |
+| Libras: liberação do `cdn.jsdelivr.net` já está no `main` (commit `71b362f`) | `Site/_headers` |

@@ -8,12 +8,14 @@ import { backendEnv, PGPORT } from './env.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const WORK = process.env.QA_DIR || join(tmpdir(), 'usinalink-qa');
-const PGBIN = ['/usr/lib/postgresql/16/bin', '/usr/lib/postgresql/15/bin', '/usr/lib/postgresql/14/bin'].find(existsSync);
+const WIN = process.platform === 'win32';
+const PGBIN = process.env.QA_PGBIN || ['/usr/lib/postgresql/16/bin', '/usr/lib/postgresql/15/bin', '/usr/lib/postgresql/14/bin'].find(existsSync);
 if (!PGBIN) throw new Error('PostgreSQL não encontrado (instale com apt-get install -y postgresql)');
 mkdirSync(WORK, { recursive: true });
-chmodSync(WORK, 0o755);
+if (!WIN) chmodSync(WORK, 0o755);
 const PGDATA = join(WORK, 'pgdata');
-const asPg = (cmd, args, opts = {}) => execFileSync('runuser', ['-u', 'postgres', '--', cmd, ...args], { stdio: 'pipe', ...opts });
+const EXE = (n) => (WIN ? n + '.exe' : n);
+const asPg = (cmd, args, opts = {}) => (WIN ? execFileSync(cmd, args, { stdio: 'ignore', ...opts }) : execFileSync('runuser', ['-u', 'postgres', '--', cmd, ...args], { stdio: 'pipe', ...opts }));
 const pids = {};
 
 async function waitFor(url, ms = 90000) {
@@ -27,26 +29,29 @@ async function waitFor(url, ms = 90000) {
 
 // 1) Banco
 if (!existsSync(PGDATA)) {
-  mkdirSync(PGDATA); chownSync(PGDATA, 102, 104); chmodSync(PGDATA, 0o700);
-  const uid = Number(execFileSync('id', ['-u', 'postgres']).toString());
-  const gid = Number(execFileSync('id', ['-g', 'postgres']).toString());
-  chownSync(WORK, uid, gid); chownSync(PGDATA, uid, gid);
-  asPg(join(PGBIN, 'initdb'), ['-D', PGDATA, '-A', 'trust', '-U', 'postgres']);
+  mkdirSync(PGDATA);
+  if (!WIN) {
+    chownSync(PGDATA, 102, 104); chmodSync(PGDATA, 0o700);
+    const uid = Number(execFileSync('id', ['-u', 'postgres']).toString());
+    const gid = Number(execFileSync('id', ['-g', 'postgres']).toString());
+    chownSync(WORK, uid, gid); chownSync(PGDATA, uid, gid);
+  }
+  asPg(join(PGBIN, EXE('initdb')), ['-D', PGDATA, '-A', 'trust', '-U', 'postgres']);
 }
-try { asPg(join(PGBIN, 'pg_ctl'), ['-D', PGDATA, 'status']); } catch {
-  asPg(join(PGBIN, 'pg_ctl'), ['-D', PGDATA, '-o', `-p ${PGPORT} -k ${WORK}`, '-l', join(WORK, 'pg.log'), '-w', 'start']);
+try { asPg(join(PGBIN, EXE('pg_ctl')), ['-D', PGDATA, 'status']); } catch {
+  asPg(join(PGBIN, EXE('pg_ctl')), ['-D', PGDATA, '-o', WIN ? `-p ${PGPORT}` : `-p ${PGPORT} -k ${WORK}`, '-l', join(WORK, 'pg.log'), '-w', 'start']);
 }
-try { asPg(join(PGBIN, 'createdb'), ['-h', 'localhost', '-p', String(PGPORT), 'usinalink_qa']); } catch {}
+try { asPg(join(PGBIN, EXE('createdb')), ['-U', 'postgres', '-h', 'localhost', '-p', String(PGPORT), 'usinalink_qa']); } catch {}
 
 // 2) Backend
 const env = backendEnv();
 const logB = openSync(join(WORK, 'backend.log'), 'a');
-const be = spawn('npx', ['ts-node', '--transpile-only', 'src/main.ts'], { cwd: join(ROOT, 'backend'), env, detached: true, stdio: ['ignore', logB, logB] });
+const be = spawn(WIN ? 'npx.cmd' : 'npx', ['ts-node', '--transpile-only', 'src/main.ts'], { cwd: join(ROOT, 'backend'), env, detached: !WIN, shell: WIN, stdio: ['ignore', logB, logB] });
 pids.backend = be.pid; be.unref();
 
 // 3) Site estático
 const logS = openSync(join(WORK, 'static.log'), 'a');
-const st = spawn('node', [join(ROOT, 'qa', 'env', 'static.mjs')], { env: { ...process.env, PORT: '5500' }, detached: true, stdio: ['ignore', logS, logS] });
+const st = spawn(process.execPath, [join(ROOT, 'qa', 'env', 'static.mjs')], { env: { ...process.env, PORT: '5500' }, detached: !WIN, shell: WIN, stdio: ['ignore', logS, logS] });
 pids.static = st.pid; st.unref();
 writeFileSync(join(WORK, 'pids.json'), JSON.stringify({ ...pids, PGDATA, PGBIN }));
 
