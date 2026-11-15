@@ -34,10 +34,10 @@
     const pago = order.statusPagamento === "Pago";
     const status = order.statusPedido;
     if (status === "cancelado") return "Este pedido foi cancelado.";
-    if (status === "concluido") return "Pedido concluido. A entrega foi confirmada pela empresa.";
+    if (status === "concluido") return "Pedido concluido. A entrega foi confirmada.";
     if (status === "em_producao") {
       return isUsina
-        ? "Pagamento recebido. Produza o pedido; a empresa confirma a entrega quando receber."
+        ? "Pagamento recebido. Produza o pedido e, depois de entregar, clique em \"Confirmar entrega\" (o comprador tambem pode confirmar ao receber)."
         : "Pagamento confirmado. Quando receber a mercadoria, clique em \"Confirmar entrega\" para concluir o pedido.";
     }
     if (status === "proposta_aceita" && !pago) {
@@ -101,7 +101,7 @@
           <p>${ui.escapeHtml(order.descricao || "Pedido em validacao.")}</p>
         </div>
         <div class="payment-card-meta">
-          <div><span>Empresa</span><strong>${ui.escapeHtml(order.empresa || "Cliente")}</strong></div>
+          <div><span>Comprador</span><strong>${ui.escapeHtml(order.empresa || "Cliente")}</strong></div>
           <div><span>Usina</span><strong>${ui.escapeHtml(order.usina)}</strong></div>
           <div><span>Total</span><strong>${ui.formatCurrency(order.totals.total)}</strong></div>
           <div><span>Pagamento</span>${ui.statusBadge(order.statusPagamento)}</div>
@@ -258,7 +258,7 @@
       const filtered = orders.filter(order => {
         const haystack = `${order.id} ${order.empresa} ${order.usina} ${order.peca} ${order.statusPedido} ${order.statusPagamento}`.toLowerCase();
         const dateOk = !date || String(order.dataCriacao || "").startsWith(date);
-        const statusOk = status === "Todos" || order.statusPedido === status || order.statusPagamento === status;
+        const statusOk = status === "Todos" || order.statusPedido === status || (status === "Pago" && order.statusPagamento === "Pago") || (status === "Aguardando pagamento" && order.statusPedido === "proposta_aceita" && order.statusPagamento !== "Pago");
         return haystack.includes(query) && dateOk && statusOk;
       });
       table.innerHTML = filtered.map(order => `<tr><td>${ui.orderNumber(order.id)}</td><td>${ui.formatDate(order.dataCriacao)}</td><td>${ui.escapeHtml(order.empresa)}</td><td>${ui.escapeHtml(order.usina)}</td><td>${ui.escapeHtml(order.peca)}</td><td>${ui.formatCurrency(order.totals.total)}</td><td>${ui.escapeHtml(order.formaPagamento)}</td><td>${ui.statusBadge(statusPedidoLabel(order.statusPedido))}</td><td>${ui.statusBadge(order.statusPagamento)}</td><td>${ui.escapeHtml(order.prazo)}</td><td><a class="table-action" href="${detailsLink(order)}">Ver detalhes</a>${acaoPendente(order)}${order.statusPagamento === "Pago" ? `<a class="table-action" href="${receiptLink(order)}">Ver comprovante</a>` : ""}</td></tr>`).join("");
@@ -283,7 +283,7 @@
     document.querySelector("[data-detail-title]").textContent = `${ui.orderNumber(order.id)} - ${order.peca}`;
     document.querySelector("[data-detail-description]").textContent = order.descricao || "Pedido em acompanhamento.";
     document.querySelector("[data-detail-facts]").innerHTML = `
-      <div><span>Empresa</span><strong>${ui.escapeHtml(order.empresa)}</strong></div>
+      <div><span>Comprador</span><strong>${ui.escapeHtml(order.empresa)}</strong></div>
       <div><span>Usina</span><strong>${ui.escapeHtml(order.usina)}</strong></div>
       <div><span>Status</span>${ui.statusBadge(statusPedidoLabel(order.statusPedido))}</div>
       <div><span>Pagamento</span>${ui.statusBadge(order.statusPagamento)}</div>
@@ -314,6 +314,19 @@
     if (payButton) {
       payButton.hidden = isUsina || order.statusPagamento === "Pago" || order.statusPedido !== "proposta_aceita";
       payButton.href = paymentLink(order);
+    }
+    const actions = root.querySelector(".card-actions");
+    let avaliar = actions?.querySelector("[data-detail-review]");
+    if (actions && !avaliar) {
+      avaliar = document.createElement("a");
+      avaliar.className = "btn";
+      avaliar.dataset.detailReview = "";
+      avaliar.textContent = "Avaliar usina";
+      actions.appendChild(avaliar);
+    }
+    if (avaliar) {
+      avaliar.hidden = isUsina || order.statusPedido !== "concluido";
+      avaliar.href = service.currentSession().tipo === "pessoa_fisica" ? "avaliacoes-pessoa-fisica.html" : "avaliacoes.html";
     }
     const confirmButton = document.querySelector("[data-detail-confirm-delivery]");
     if (confirmButton) {

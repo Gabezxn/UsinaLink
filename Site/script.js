@@ -832,10 +832,10 @@ function proposalCardMarkup(item, best) {
   const decisaoBtn = aceita && statusPedido === "concluido"
     ? `<a class="btn btn-ghost" href="detalhes-pedido.html?pedidoId=${encodeURIComponent(item.idPedido)}">Pedido concluído</a>`
     : aceita
-    ? `<a class="btn" href="detalhes-pedido.html?pedidoId=${encodeURIComponent(item.idPedido)}">${rotuloAceita}</a>`
+    ? `<a class="btn" href="${statusPedido === "em_producao" ? "detalhes-pedido.html" : "pagamento-pedido.html"}?pedidoId=${encodeURIComponent(item.idPedido)}">${rotuloAceita}</a>`
     : travada
       ? `<button class="btn btn-ghost" type="button" disabled>${escapeHtml(statusPropostaLabel(status))}</button>`
-      : '<button class="btn js-alert" type="button">Aceitar proposta</button>';
+      : '<button class="btn js-alert" type="button">Aceitar proposta</button><button class="btn btn-ghost js-alert" type="button">Recusar proposta</button>';
   return `<article class="card proposal-card ${best && !travada ? "best" : ""} ${aceita ? "accepted" : ""}" data-search-row data-proposal-id="${escapeHtml(item.idProposta)}">
     ${best && !travada ? '<span class="best-label">Melhor proposta</span>' : ""}
     <h2>${escapeHtml(nomeUsinaProposta(item.usina))}</h2>
@@ -997,8 +997,14 @@ let modalPropostaId = null;
 async function decidirProposta(idProposta, aceitar) {
   if (!window.UsinaLinkApi || !idProposta) return;
   try {
+    const proposta = ultimasPropostasRecebidas.find((p) => String(p.idProposta) === String(idProposta));
     await window.UsinaLinkApi.patch(`/propostas/${idProposta}/${aceitar ? "aceitar" : "recusar"}`, {});
     ensureActionModal().hidden = true;
+    if (aceitar && proposta?.idPedido) {
+      showToast("Proposta aceita. Vamos ao pagamento.");
+      window.setTimeout(() => { window.location.href = `pagamento-pedido.html?pedidoId=${encodeURIComponent(proposta.idPedido)}`; }, 700);
+      return;
+    }
     showToast(aceitar ? "Proposta aceita com sucesso" : "Proposta recusada");
     await loadProposalsFromApi();
   } catch (error) {
@@ -1052,11 +1058,22 @@ document.addEventListener("click", (event) => {
     return;
   }
   if (card && action === "Aceitar proposta" && card.dataset.proposalId) {
+    const p = ultimasPropostasRecebidas.find((x) => String(x.idProposta) === String(card.dataset.proposalId)) || {};
     openSimpleConfirm({
       title: "Aceitar proposta",
-      message: "Deseja aceitar esta proposta?",
+      message: `Aceitar a proposta de ${nomeUsinaProposta(p.usina)} por ${formatMoneyBR(p.valor)}, prazo de ${p.prazo || "a combinar"}? Depois de aceitar, voce segue para o pagamento.`,
       confirmText: "Aceitar proposta",
       onConfirm: () => decidirProposta(card.dataset.proposalId, true)
+    });
+    return;
+  }
+  if (card && action === "Recusar proposta" && card.dataset.proposalId) {
+    const p = ultimasPropostasRecebidas.find((x) => String(x.idProposta) === String(card.dataset.proposalId)) || {};
+    openSimpleConfirm({
+      title: "Recusar proposta",
+      message: `Recusar a proposta de ${nomeUsinaProposta(p.usina)} por ${formatMoneyBR(p.valor)}? Essa decisao nao pode ser desfeita.`,
+      confirmText: "Recusar proposta",
+      onConfirm: () => decidirProposta(card.dataset.proposalId, false)
     });
     return;
   }

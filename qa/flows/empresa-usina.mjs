@@ -55,16 +55,19 @@ try {
   await pE.goto(`${SITE}/propostas.html`); clicks++; await pE.waitForTimeout(1200);
   const cardE = pE.locator('article.proposal-card', { hasText: valorFmt });
   t.ok(await cardE.count() > 0, 'empresa deveria ver a proposta');
+  t.ok(await cardE.getByRole('button', { name: /^Recusar/ }).count() > 0, 'FLX-7 o card da proposta deveria ter o botão Recusar');
   await clique(cardE.getByRole('button', { name: /^Aceitar/ }), 'Empresa: Aceitar');
+  t.ok(await pE.locator('[role="dialog"]:visible, .modal:visible, dialog[open]').filter({ hasText: valorFmt }).count() > 0, 'FLX-7 a confirmação de aceite deveria mostrar o valor da proposta');
   await confirmar(pE, /^Aceitar/);
-  await pE.waitForTimeout(1500);
+  await pE.waitForURL(/pagamento-pedido/, { timeout: 6000 }).catch(() => t.ok(false, 'FLX-6 aceitar a proposta deveria levar ao pagamento'));
+  await pE.waitForTimeout(500);
   // 5) Pagamento só lista o que aguarda pagamento (FLX-3) e comprovante sem undefined (BUG-6)
   const ped = (await call('GET', '/api/pedidos/meus', await login('empresa'))).json.find((p) => p.itens?.some((i) => i.nome === peca));
   await pE.goto(`${SITE}/pagamento-pedido.html?pedidoId=${ped.idPedido}`); clicks++; await pE.waitForTimeout(1200);
   { // BUG-14: o total exibido bate com valor + frete (+ taxa de 3,5%), sem erro de casas decimais
     const frete = Number(prop?.frete || 0);
     const total = Number((await pE.locator('[data-payment-total]').first().innerText()).replace(/[^\d,]/g, '').replace(',', '.'));
-    t.ok(total >= valorProposta + frete - 0.01 && total <= (valorProposta + frete) * 1.04, `BUG-14 total exibido ${total} fora do esperado (valor ${valorProposta} + frete ${frete})`);
+    t.ok(Math.abs(total - valorProposta) < 0.01, `FLX-14 total exibido ${total} difere do valor da proposta ${valorProposta} (igual ao backend)`);
   }
   await clique(pE.getByRole('button', { name: /confirmar pagamento/i }), 'Confirmar pagamento');
   await pE.waitForURL(/confirmacao-pedido/, { timeout: 10000 }).catch(() => t.ok(false, 'após pagar deveria abrir a confirmação'));

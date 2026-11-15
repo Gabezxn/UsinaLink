@@ -7,6 +7,7 @@
     const fornecedor = peca.usina?.nomeFantasia || peca.usina?.razaoSocial || "Usina";
     const estoque = peca.estoque != null ? `${peca.estoque} ${peca.unidadeEstoque || "unidades"}` : "Sob consulta";
     const temValor = peca.valorUnitario != null;
+    const semEstoque = peca.estoque != null && Number(peca.estoque) <= 0;
     document.querySelector("[data-peca-titulo]").textContent = peca.nome;
     document.querySelector("[data-peca-subtitulo]").textContent = [peca.categoria, peca.material].filter(Boolean).join(" · ") || "Peça comercial";
     document.querySelector("[data-peca-fav]").innerHTML = coracao("peca", peca.idPecaComercial);
@@ -34,7 +35,7 @@
               <div><span>Pagamento</span><strong>Depois que a usina aceitar</strong></div>
             </div>
             <p class="modal-copy">A usina analisa o seu pedido e, ao aceitar, você faz o pagamento e acompanha tudo em <strong>Minhas compras</strong>.</p>
-            <button class="btn btn-primary full" type="submit">Solicitar compra</button>
+            ${semEstoque ? '<p class="modal-copy"><strong>Sem estoque no momento.</strong></p>' : ""}<button class="btn btn-primary full" type="submit"${semEstoque ? " disabled" : ""}>${semEstoque ? "Sem estoque" : "Solicitar compra"}</button>
           </form>
         </article>
       </section>`;
