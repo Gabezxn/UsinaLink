@@ -184,3 +184,18 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 | Descrição (meta description) e ícone de aba em todas as páginas | `Site/*.html` |
 | Responsivo conferido em 375 px e 768 px na página inicial, sem rolagem lateral; movimento reduzido respeitado | `Site/style.css` |
 | Não feito: revisão visual tela a tela dos painéis internos (já tinham estados vazios e tabelas) | — |
+
+## Pedido 17 (15/11): telas internas e de acesso no mesmo padrão da página inicial
+
+| Mudança | Onde |
+|---|---|
+| Menu lateral com ícones de verdade (SVG) no lugar das letras D, P, I, F...; cor segue o tipo de conta (azul, laranja, verde) | `Site/style.css` |
+| Campos de formulário e de login sem as letrinhas decorativas; texto digitado normal e dica (placeholder) mais leve e legível | `Site/style.css` |
+| Títulos, cartões e tabelas na mesma escala da home; cabeçalho de tabela e linhas com destaque ao passar o mouse | `Site/style.css` |
+| Estados vazios padronizados (caixa tracejada, centralizada) e com ação sugerida: Ver catálogo, Nova solicitação, Ver solicitações, Ver pedidos disponíveis | `Site/style.css`, `Site/assets/js/*.js`, `Site/script.js` |
+| Linhas vazias de tabelas com o mesmo visual e sem estilo solto no código; setor e cargo vazios mostram "-" | `Site/assets/js/*.js`, `Site/script.js` |
+| Escolha de tipo de conta (login e cadastro) com ícones no lugar de EMP/PF/USI e marca de seleção em vez de "OK" | `Site/login.html`, `Site/cadastro*.html`, `Site/style.css` |
+| Página 404 com a marca, número em destaque e botões Voltar para o início e Entrar | `Site/404.html`, `Site/style.css` |
+| Celular (375 px): marca, tipo de conta e botão Menu na mesma linha; filtros em linhas que quebram; cartões com menos margem; cartões do catálogo sem rolagem lateral | `Site/style.css` |
+| Conferido em 375 e 768 px nas telas das 3 contas: sem rolagem lateral na página (as tabelas rolam dentro do próprio quadro) | — |
+| Não feito: revisão pixel a pixel de cada tela de detalhe (compra, peça, usina) e do modal de funcionário; fica para uma próxima rodada | — |
