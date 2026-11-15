@@ -282,3 +282,9 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 | Mudança | Onde |
 |---|---|
 | O botão de Acessibilidade usava o emoji de cadeira de rodas (que muda de aparência em cada aparelho e dava cara de "feito por IA"). Agora é um ícone desenhado em traço, da mesma cor do texto, igual em qualquer aparelho. Aplicado no site principal e na versão de teste | `Site/assets/js/a11y.js`, `Site/assets/css/a11y.css` |
+
+## Pedido 29 (15/11): visual dos botões flutuantes
+
+| Mudança | Onde |
+|---|---|
+| "Fale conosco" estava num azul claro diferente do resto. Agora usa o mesmo degradê azul-escuro dos botões do site (também no cabeçalho do chat). O botão de Acessibilidade perdeu o contorno branco e ganhou o mesmo degradê. Os dois sobem de leve e clareiam ao passar o mouse. Aplicado no site principal e na versão de teste | `Site/style.css`, `Site/assets/css/a11y.css` |
