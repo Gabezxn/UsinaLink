@@ -63,3 +63,10 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 ## Pedido 2 (15/11): pedido de formato
 
 - Passei a responder de forma curta e simples, e a manter este arquivo. Criado: `docs/MUDANCAS.md`. Nenhum código mudou.
+
+## Pedido 3 (15/11): merge e Cloudflare
+
+| Mudança | Onde |
+|---|---|
+| Fiz o merge de tudo no `main` (PR nº 1, commit `62e5041`) | GitHub: <https://github.com/Gabezxn/UsinaLink/pull/1> |
+| Seu projeto no Cloudflare é do tipo "Workers" e a build falhava por falta de configuração. Criei o arquivo que diz para publicar a pasta `Site` | `wrangler.jsonc` (raiz do projeto) |
