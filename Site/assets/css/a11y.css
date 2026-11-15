@@ -24,8 +24,8 @@ html { scroll-padding-bottom: 96px; }
 body { padding-bottom: 88px; }
 
 /* Botão e painel */
-.a11y-toggle { position: fixed; right: 16px; bottom: 16px; z-index: 99990; display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border: 2px solid #fff; border-radius: 999px; background: #123273; color: #fff; font: 700 1rem/1.2 inherit; font-family: inherit; cursor: pointer; box-shadow: 0 4px 14px rgba(0,0,0,.35); }
-.a11y-toggle:hover { background: #0b2150; }
+.a11y-toggle { position: fixed; right: 16px; bottom: 16px; z-index: 99990; display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border: 0; border-radius: 999px; background: linear-gradient(135deg, #1e3a8a, #1e40af); color: #fff; font: 700 1rem/1.2 inherit; font-family: inherit; cursor: pointer; box-shadow: 0 6px 18px rgba(30,58,138,.35); transition: transform .15s ease, box-shadow .15s ease, filter .15s ease; }
+.a11y-toggle:hover { filter: brightness(1.12); transform: translateY(-1px); box-shadow: 0 8px 22px rgba(30,58,138,.42); }
 .a11y-panel { position: fixed; right: 16px; bottom: 76px; z-index: 99991; width: min(360px, calc(100vw - 32px)); max-height: calc(100vh - 100px); overflow: auto; padding: 16px; background: var(--a11y-panel-bg); color: var(--a11y-panel-fg); border: 2px solid var(--a11y-panel-border); border-radius: 16px; box-shadow: 0 12px 36px rgba(0,0,0,.35); font-size: 1rem; line-height: 1.4; }
 .a11y-panel[hidden] { display: none; }
 .a11y-panel h2 { margin: 0 0 12px; font-size: 1.15rem; }
