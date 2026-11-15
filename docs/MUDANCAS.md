@@ -270,3 +270,17 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 | Prazo de fabricação da proposta: o campo agora é só um número (dias) e a tela escolhe sozinha uma única unidade: 45 → "45 dias", 30 → "1 mês", 90 → "3 meses". Mostra a prévia enquanto digita e salva já formatado. A mesma regra vale nas listas e detalhes de propostas, pedidos, peças e pagamento. Propostas antigas em texto livre continuam como estavam | `Site/assets/js/safe-html.js` (`formatPrazo`), `Site/enviar-proposta.html`, `Site/assets/js/enviar-proposta.js`, `Site/script.js` e outros |
 | Acentos nos detalhes da proposta e telas ligadas: "fabricação", "Observações", "Peça", "Não informado", "Urgência", "você", "decisão", "não foi possível" | `Site/script.js`, `Site/assets/js/enviar-proposta.js` |
 | Teste novo que confere tudo isso (cores, botão Mostrar, aviso x acessibilidade, prazo e acentos). Bateria completa verde | `qa/flows/ui-p24.mjs`, `qa/run-all.mjs` |
+
+## Pedido 26 (15/11): animações (VERSÃO DE TESTE, fora do site principal)
+
+Publicado só no endereço de teste (branch `teste-animacoes`). O site principal (`usinalink.com.br`) não muda até você aprovar.
+
+| Mudança | Onde |
+|---|---|
+| Chat "Fale conosco": ao perguntar, aparece a bolinha de "digitando…" (3 pontinhos pulando) e só depois a resposta. O tempo depende do tamanho do texto: de cerca de 1 s (resposta curta) até 3,2 s (resposta longa). Enquanto "digita", os atalhos ficam desativados para não embolar as mensagens. O painel abre com leve subida e as mensagens entram suaves | `Site/assets/js/chat-contato.js`, `Site/assets/css/motion.css` |
+| Troca do tipo de conta (cadastro): o fundo antigo é "apagado" em círculo a partir do botão clicado (cerca de 0,9 s), enquanto as cores do tema (logo, bordas, botões) mudam suavemente por baixo. O cartão escolhido dá um pulinho, o "visto" gira ao entrar e os campos do formulário entram um após o outro | `Site/assets/js/motion.js` (novo), `Site/assets/css/motion.css` (novo), `Site/script.js` |
+| Página inicial: blocos e cartões deslizam suavemente para o lugar ao rolar a página (sem sumir e aparecer, para o conteúdo ficar sempre legível), com pequeno atraso entre os cartões. Botões ganham leve efeito ao clicar | `Site/assets/js/motion.js`, `Site/assets/css/motion.css` |
+| Quem usa "reduzir movimento" (no computador ou no botão de Acessibilidade do site) não vê nada disso: o chat responde quase na hora e a troca de cor é instantânea | `Site/assets/js/motion.js`, `Site/assets/css/a11y.css` |
+| Para voltar atrás é simples: tirar as linhas de `motion.css` e `motion.js` das páginas. Nada do funcionamento depende delas | `Site/index.html`, `Site/cadastro*.html` |
+| Corrigido junto: clicar no cartão do tipo de conta disparava a troca duas vezes (o clique no rótulo gera outro no campo); agora só uma | `Site/script.js` |
+| Teste novo: chat digitando (tempo longo x curto, atalhos travados, movimento reduzido), pintura (começa, termina, sem sobras com cliques rápidos), rolagem sem blocos invisíveis | `qa/flows/motion.mjs`, `qa/run-all.mjs` |

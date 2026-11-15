@@ -245,17 +245,33 @@ function getSignupTypeFromUrl() {
   return "";
 }
 
+// Campos do cadastro entram escalonados quando o tipo de conta muda.
+function refreshSignupFields() {
+  const form = document.querySelector(".signup-dynamic-form");
+  if (!form || (window.UsinaMotion && window.UsinaMotion.reduzido())) return;
+  form.querySelectorAll(".field:not([hidden])").forEach((field, i) => field.style.setProperty("--i", String(i)));
+  form.classList.remove("refresh");
+  void form.offsetWidth;
+  form.classList.add("refresh");
+}
+
 document.querySelectorAll(".choice-card").forEach((card) => {
   card.addEventListener("click", () => {
     const radio = card.querySelector('input[type="radio"]');
     if (!radio) return;
+    // O clique no rotulo dispara um segundo clique no campo: ignora se este tipo ja esta selecionado.
+    if (document.querySelector(".signup-dynamic-form")?.dataset.accountType === radio.value) return;
     document.querySelectorAll(".choice-card").forEach((item) => item.classList.remove("active"));
     document.querySelectorAll('.choice-card input[type="radio"]').forEach((item) => {
       item.checked = false;
     });
     radio.checked = true;
     card.classList.add("active");
-    updateSignupForm(radio.value);
+    const trocar = () => updateSignupForm(radio.value);
+    if (window.UsinaMotion) {
+      window.UsinaMotion.pintar(card, trocar);
+      refreshSignupFields();
+    } else trocar();
   });
 });
 
