@@ -54,40 +54,6 @@
     return "Aguardando a empresa aceitar uma proposta.";
   }
 
-  function applySharedRoleNav() {
-    const nav = document.querySelector("[data-role-nav]");
-    const session = service.currentSession();
-    const sharedPage = /historico-pedidos|detalhes-pedido|confirmacao-pedido/.test(window.location.pathname);
-    if (!nav || !sharedPage) return;
-    if (session.tipo === "pessoa_fisica") return; // o menu da PF vem de pf-nav.js
-    const isUsina = session.tipo === "usina";
-    document.body.classList.toggle("orange-mode", isUsina);
-    document.querySelector(".sidebar .brand-icon")?.classList.toggle("orange-icon", isUsina);
-    nav.dataset.roleNav = isUsina ? "usina" : "empresa";
-    nav.className = isUsina ? "side-nav orange-nav" : "side-nav";
-    nav.innerHTML = isUsina ? `
-        <a href="dashboard-usina.html" data-icon="D">Dashboard usina</a>
-        <a href="perfil-usina.html" data-icon="I">Perfil</a>
-        <a href="funcionarios-usina.html" data-icon="F">Funcion&aacute;rios</a>
-        <a href="pedidos-disponiveis.html" data-icon="P">Pedidos dispon&iacute;veis</a>
-        <a href="propostas-usina.html" data-icon="E">Propostas enviadas</a>
-        <a href="solicitacoes-pecas-usina.html" data-icon="S">Solicita&ccedil;&otilde;es de pe&ccedil;as</a>
-        <a href="pecas-comerciais-usina.html" data-icon="C">Cat&aacute;logo de pe&ccedil;as</a>
-        <a class="active" href="historico-pedidos.html" data-icon="H">Hist&oacute;rico relacionado</a>
-        <a href="avaliacoes-usina.html" data-icon="A">Avalia&ccedil;&otilde;es recebidas</a>
-        <a href="index.html" data-icon="X">Sair</a>` : `
-        <a href="dashboard-empresa.html" data-icon="D">Dashboard empresa</a>
-        <a href="dashboard-pessoa-juridica.html" data-icon="P">Pe&ccedil;as comerciais</a>
-        <a href="perfil-empresa.html" data-icon="I">Perfil</a>
-        <a href="funcionarios.html" data-icon="F">Funcion&aacute;rios</a>
-        <a href="solicitacoes.html" data-icon="S">Solicita&ccedil;&otilde;es</a>
-        <a href="propostas.html" data-icon="R">Propostas recebidas</a>
-        <a class="active" href="historico-pedidos.html" data-icon="H">Hist&oacute;rico de pedidos</a>
-        <a href="avaliacoes.html" data-icon="A">Avalia&ccedil;&otilde;es</a>
-        <a href="solicitacoes-bloqueio-usina.html" data-icon="B">Usinas bloqueadas</a>
-        <a href="index.html" data-icon="X">Sair</a>`;
-  }
-
   async function renderPaymentsPage() {
     const container = document.querySelector("[data-payments-list]");
     if (!container) return;
@@ -373,7 +339,6 @@
     }
   }
 
-  applySharedRoleNav();
   renderPaymentsPage();
   renderPaymentPage();
   renderReceiptPage();

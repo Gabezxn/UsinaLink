@@ -236,3 +236,11 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 | Mudança | Onde |
 |---|---|
 | O aviso "Acordando o servidor, isso pode levar até 1 minuto…" foi trocado por "Carregando, aguarde um instante…". O comportamento é o mesmo (aparece só se a resposta demorar e some sozinho), só o texto ficou profissional | `Site/assets/js/api.js`, `qa/flows/cold-start.mjs` |
+
+## Pedido 22 (15/11): menu lateral padronizado para todas as contas
+
+| Mudança | Onde |
+|---|---|
+| Antes havia 3 menus escritos à mão (empresa, usina, pessoa física) em 35 páginas, mais cópias dentro de scripts. Agora existe uma tabela única: a ordem das linhas é a ordem do menu para todos, e cada linha diz quais contas veem o link e com qual texto. Para dar ou tirar um link de uma conta, edita-se só uma linha da tabela `MENU` | `Site/assets/js/role-nav.js` (novo) |
+| `pf-nav.js` foi substituído por `role-nav.js` em todas as páginas com menu, e a cópia do menu dentro de `order-history.js` foi apagada | `Site/*.html`, `Site/assets/js/order-history.js` |
+| Conferido nas 3 contas: cada uma vê só os seus links, o item da página atual fica destacado e os contadores continuam. Bateria 18 de 18 verde | — |
