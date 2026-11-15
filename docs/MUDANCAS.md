@@ -290,3 +290,9 @@ Publicado só no endereço de teste (branch `teste-animacoes`). O site principal
 | Mudança | Onde |
 |---|---|
 | No "Criar conta" de usina, a logo do Usinalink continuava azul enquanto o resto ficava laranja. Agora ela fica laranja ao escolher Usina e volta ao azul ao escolher outro tipo. Aplicado no site principal e na versão de teste | `Site/script.js`, `qa/flows/ui-p24.mjs` |
+
+## Pedido 28 (15/11): ícone do botão de acessibilidade
+
+| Mudança | Onde |
+|---|---|
+| O botão de Acessibilidade usava o emoji de cadeira de rodas (que muda de aparência em cada aparelho e dava cara de "feito por IA"). Agora é um ícone desenhado em traço, da mesma cor do texto, igual em qualquer aparelho. Aplicado no site principal e na versão de teste | `Site/assets/js/a11y.js`, `Site/assets/css/a11y.css` |
