@@ -23,6 +23,7 @@ const fundoBotao = (page, sel) => page.locator(sel).first().evaluate((el) => get
   await page.goto(`${SITE}/cadastro.html`);
   const fundoEmp = await page.evaluate(() => getComputedStyle(document.querySelector('.signup-panel')).borderColor);
   await page.click('[data-choice-card="pessoa"]');
+  await page.waitForTimeout(1300); // a troca de cor é animada
   const fundoPf = await page.evaluate(() => getComputedStyle(document.querySelector('.signup-panel')).borderColor);
   t.ok(fundoEmp !== fundoPf, 'cadastro: painel da pessoa física igual ao da empresa');
   t.ok(await page.evaluate(() => document.body.classList.contains('pf-mode')), 'cadastro: pessoa física sem tema próprio');
