@@ -21,7 +21,7 @@ async function bootstrap() {
   app.enableCors({
     // Lista fixa + versões de teste do Cloudflare (https://<versao>-usinalink.tibiel2010.workers.dev).
     origin: (origin, callback) => {
-      const ok = !origin || allowedOrigins.includes(origin) || /^https:\/\/[a-z0-9-]+-usinalink\.tibiel2010\.workers\.dev$/.test(origin);
+      const ok = !origin || allowedOrigins.includes(origin) || /^https:\/\/(www\.)?usinalink\.com\.br$/.test(origin) || /^https:\/\/[a-z0-9-]+-usinalink\.tibiel2010\.workers\.dev$/.test(origin);
       callback(null, ok ? origin : false);
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

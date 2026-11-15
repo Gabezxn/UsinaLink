@@ -244,3 +244,10 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 | Antes havia 3 menus escritos à mão (empresa, usina, pessoa física) em 35 páginas, mais cópias dentro de scripts. Agora existe uma tabela única: a ordem das linhas é a ordem do menu para todos, e cada linha diz quais contas veem o link e com qual texto. Para dar ou tirar um link de uma conta, edita-se só uma linha da tabela `MENU` | `Site/assets/js/role-nav.js` (novo) |
 | `pf-nav.js` foi substituído por `role-nav.js` em todas as páginas com menu, e a cópia do menu dentro de `order-history.js` foi apagada | `Site/*.html`, `Site/assets/js/order-history.js` |
 | Conferido nas 3 contas: cada uma vê só os seus links, o item da página atual fica destacado e os contadores continuam. Bateria 18 de 18 verde | — |
+
+## Pedido 23 (15/11): preparar o domínio usinalink.com.br
+
+| Mudança | Onde |
+|---|---|
+| O servidor passa a aceitar `https://usinalink.com.br` e `https://www.usinalink.com.br` sem precisar mexer no Render. Subdomínios parecidos e `http://` continuam bloqueados (testado) | `backend/src/main.ts` |
+| Não coloquei o domínio no `wrangler.jsonc` de propósito: se o domínio ainda não estiver no seu Cloudflare, a publicação do site falharia. Ligar o domínio ao site é feito no painel do Cloudflare (passo 3 combinado) | — |
