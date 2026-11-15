@@ -224,3 +224,9 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 | Detalhes do pedido sem número: tela amigável com atalho para a lista; comprovante sem número ou com falha mantém o menu lateral | `order-history.js` |
 | Visual: campos com foco sem listras internas (modal de funcionário); avaliações da usina com data em linha separada e nota sem espaço sobrando | `style.css` |
 | Não feito: FLX-32 (valida valor no backend/DTO, mexe no servidor). Compra, peça, usina e confirmação já estavam no padrão da home e só receberam os ajustes acima | — |
+
+## Pedido 20 (15/11): texto de "Pessoa Física" saindo da caixinha
+
+| Mudança | Onde |
+|---|---|
+| Na escolha do tipo de conta (login e cadastro), o texto "Acompanhamento individual" passava da borda do cartão. Diminuí um pouco o espaçamento e a letra e deixei o texto quebrar dentro do cartão. Conferido nos três cartões, lado a lado | `Site/style.css` |

@@ -1472,7 +1472,8 @@ tbody tr:hover {
   min-height: 148px;
   align-content: start;
   gap: 8px;
-  padding: 18px;
+  padding: 16px 14px;
+  min-width: 0;
   border: 1px solid var(--border);
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.92);
@@ -1509,6 +1510,14 @@ tbody tr:hover {
 .choice-card small {
   color: var(--muted);
   line-height: 1.45;
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+  hyphens: auto;
+}
+
+.choice-card strong,
+.choice-card small {
+  min-width: 0;
 }
 
 .choice-check {
