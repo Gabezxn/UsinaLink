@@ -3,6 +3,7 @@ import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { PasswordService } from '../auth/password.service';
 import { TokenService } from '../auth/token.service';
+import { TwoFactorService } from '../auth/two-factor.service';
 import { Usuario, Empresa, Usina, PessoaFisica, Funcionario, BloqueioUsina } from '../common/entities/core.entities';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { LoginDto } from './dto/login.dto';
@@ -24,6 +25,7 @@ export class UsuarioService {
     @InjectDataSource() private readonly dataSource: DataSource,
     private readonly passwords: PasswordService,
     private readonly tokens: TokenService,
+    private readonly doisFatores: TwoFactorService,
   ) {}
 
   private safe(u: any) {
@@ -119,12 +121,9 @@ export class UsuarioService {
     return { message: 'Cadastro realizado com sucesso.', usuario: this.safe(usuario) };
   }
 
-  async loginArea(dto: LoginDto, area: TipoLogin) {
-    const usuario = await this.buscarEmailComSenha(dto.email);
-    if (!usuario) throw new UnauthorizedException('E-mail ou senha inválidos.');
-    if (!await this.passwords.compare(String(dto.senha || ''), usuario.senhaHash)) throw new UnauthorizedException('E-mail ou senha inválidos.');
+  /** Confere a que a conta pode entrar naquela área (tipo, vínculo, usuário inativo, usina bloqueada). */
+  private async vinculoDaArea(usuario: Usuario, area: TipoLogin) {
     if (usuario.status && usuario.status !== 'ativo') throw new ForbiddenException('Usuario inativo.');
-
     let vinculo: any = null;
     if (area === 'pessoa_fisica') {
       if (usuario.tipoUsuario !== 'pessoa_fisica') throw new ForbiddenException(this.mensagemTipo(usuario.tipoUsuario));
@@ -145,11 +144,49 @@ export class UsuarioService {
         if (await this.bloqueios.findOne({ where: { idUsina, ativo: true } })) throw new ForbiddenException('Usina bloqueada.');
       }
     }
+    return vinculo;
+  }
 
+  private respostaLogin(usuario: Usuario, area: TipoLogin, vinculo: any) {
     const accessToken = this.tokens.sign({ sub: usuario.idUsuario, tipoUsuario: usuario.tipoUsuario });
     const response: any = { accessToken, access_token: accessToken, tipoUsuario: usuario.tipoUsuario, nome: usuario.nome, usuario: this.safe(usuario) };
     if (area !== 'pessoa_fisica') response[area] = vinculo;
     return response;
+  }
+
+  async loginArea(dto: LoginDto, area: TipoLogin) {
+    const usuario = await this.buscarEmailComSenha(dto.email);
+    if (!usuario) throw new UnauthorizedException('E-mail ou senha inválidos.');
+    if (!await this.passwords.compare(String(dto.senha || ''), usuario.senhaHash)) throw new UnauthorizedException('E-mail ou senha inválidos.');
+    const vinculo = await this.vinculoDaArea(usuario, area);
+    // Senha e área corretas: se a verificação em duas etapas estiver ligada, o token só sai depois do código por e-mail.
+    if (this.doisFatores.exigido(usuario.email)) return this.doisFatores.iniciar(usuario, area);
+    return this.respostaLogin(usuario, area, vinculo);
+  }
+
+  private respostaAdmin(usuario: Usuario) {
+    const accessToken = this.tokens.sign({ sub: usuario.idUsuario, tipoUsuario: usuario.tipoUsuario });
+    return { accessToken, access_token: accessToken, tipoUsuario: usuario.tipoUsuario, nome: usuario.nome, usuario: this.safe(usuario) };
+  }
+
+  /** Segunda etapa do login: confere o código recebido por e-mail e só então emite o token. */
+  async verificarDoisFatores(desafio: string, codigo: string) {
+    const { idUsuario, area } = await this.doisFatores.verificar(desafio, codigo);
+    const usuario = await this.usuarios.findOne({ where: { idUsuario } });
+    if (!usuario) throw new UnauthorizedException('Codigo invalido ou expirado.');
+    if (area === 'admin') {
+      if (usuario.tipoUsuario !== 'admin' || (usuario.status && usuario.status !== 'ativo')) throw new ForbiddenException('Esta conta nao e de administrador.');
+      return this.respostaAdmin(usuario);
+    }
+    const vinculo = await this.vinculoDaArea(usuario, area as TipoLogin); // reconfere: a conta pode ter sido bloqueada nesse meio tempo
+    return this.respostaLogin(usuario, area as TipoLogin, vinculo);
+  }
+
+  async reenviarDoisFatores(desafio: string) {
+    const idUsuario = await this.doisFatores.dono(desafio);
+    const usuario = await this.usuarios.findOne({ where: { idUsuario } });
+    if (!usuario) throw new UnauthorizedException('Codigo invalido ou expirado.');
+    return this.doisFatores.reenviar(desafio, usuario);
   }
 
   private async pessoaFisicaDoUsuario(user: any) {
@@ -196,7 +233,7 @@ export class UsuarioService {
     if (!await this.passwords.compare(String(dto.senha || ''), usuario.senhaHash)) throw new UnauthorizedException('E-mail ou senha inválidos.');
     if (usuario.tipoUsuario !== 'admin') throw new ForbiddenException('Esta conta nao e de administrador.');
     if (usuario.status && usuario.status !== 'ativo') throw new ForbiddenException('Usuario inativo.');
-    const accessToken = this.tokens.sign({ sub: usuario.idUsuario, tipoUsuario: usuario.tipoUsuario });
-    return { accessToken, access_token: accessToken, tipoUsuario: usuario.tipoUsuario, nome: usuario.nome, usuario: this.safe(usuario) };
+    if (this.doisFatores.exigido(usuario.email)) return this.doisFatores.iniciar(usuario, 'admin');
+    return this.respostaAdmin(usuario);
   }
 }

@@ -358,8 +358,24 @@ export class Notificacao {
   @CreateDateColumn({ name: 'data_criacao' }) dataCriacao: Date;
 }
 
+/** Códigos de verificação em duas etapas (login): guardados só como HMAC, com validade, limite de tentativas e uso único. */
+@Entity({ name: 'codigo_dois_fatores' })
+export class CodigoDoisFatores {
+  @PrimaryGeneratedColumn({ name: 'id_codigo' }) idCodigo: number;
+  @Column({ name: 'desafio', unique: true }) desafio: string;
+  @Column({ name: 'id_usuario' }) idUsuario: number;
+  @Column({ name: 'area' }) area: string;
+  @Column({ name: 'codigo_hash' }) codigoHash: string;
+  @Column({ name: 'expira_em', type: 'timestamp' }) expiraEm: Date;
+  @Column({ name: 'enviado_em', type: 'timestamp' }) enviadoEm: Date;
+  @Column({ name: 'tentativas', default: 0 }) tentativas: number;
+  @Column({ name: 'reenvios', default: 0 }) reenvios: number;
+  @Column({ name: 'usado_em', type: 'timestamp', nullable: true }) usadoEm?: Date | null;
+  @CreateDateColumn({ name: 'data_criacao' }) dataCriacao: Date;
+}
+
 export const ENTITIES = [
   Usuario, PessoaFisica, Empresa, Usina, Funcionario, EnderecoEmpresa, EnderecoUsina, Peca,
   Pedido, ItemPedido, ArquivoPedido, Proposta, Pagamento, AvaliacaoEntrega, Solicitacao, SolicitacaoComercial,
-  SolicitacaoBloqueioUsina, BloqueioUsina, HistoricoStatusPedido, ModeloContrato, Notificacao, PecaComercial, Favorito,
+  SolicitacaoBloqueioUsina, BloqueioUsina, HistoricoStatusPedido, ModeloContrato, Notificacao, PecaComercial, Favorito, CodigoDoisFatores,
 ];

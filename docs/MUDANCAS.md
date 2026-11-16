@@ -288,3 +288,22 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 | Mudança | Onde |
 |---|---|
 | "Fale conosco" estava num azul claro diferente do resto. Agora usa o mesmo degradê azul-escuro dos botões do site (também no cabeçalho do chat). O botão de Acessibilidade perdeu o contorno branco e ganhou o mesmo degradê. Os dois sobem de leve e clareiam ao passar o mouse. Aplicado no site principal e na versão de teste | `Site/style.css`, `Site/assets/css/a11y.css` |
+
+## Pedido 31 (16/11): verificação em duas etapas por e-mail (2FA)
+
+Depois da senha correta, o servidor manda um **código de 6 dígitos para o e-mail da conta**. Só com o código o login é concluído. Vale para empresa, usina, pessoa física e administrador. **Vem desligado**: nada muda para ninguém até você ligar (passos abaixo).
+
+| Mudança | Onde |
+|---|---|
+| Código de 6 dígitos gerado de forma segura, válido por 10 minutos, **uso único**, no máximo **5 tentativas** (as tentativas em paralelo também contam), guardado no banco só como resumo (HMAC), nunca o código em si | `backend/src/auth/two-factor.service.ts`, `backend/src/common/entities/core.entities.ts` (tabela `codigo_dois_fatores`, criada sozinha) |
+| Novas rotas: `POST /api/auth/2fa/verificar` (confere o código e só então devolve o token) e `POST /api/auth/2fa/reenviar` (intervalo de 60 s e no máximo 3 reenvios por desafio). Um novo login invalida o desafio anterior. Senha errada ou conta da área errada **não** envia e-mail | `backend/src/usuario/*`, `backend/src/auth/*` |
+| Falha segura: com o 2FA ligado e e-mail sem funcionar, ninguém entra (erro 503). Nunca deixa passar sem o código | `two-factor.service.ts` |
+| Envio de e-mail sem biblioteca nova, pelo **Resend** (plano gratuito: 100 e-mails por dia). Para testes locais existe o modo "arquivo", bloqueado em produção | `backend/src/auth/mailer.service.ts` |
+| Site: depois da senha aparece a tela do código (campo só de números, em foco, aceita colar), contagem de 60 s para "Reenviar código" e botão "Voltar". Corrigido junto: um erro 401 nessa tela era tratado como "sessão expirada" | `Site/script.js`, `Site/style.css`, `Site/assets/js/api.js` |
+| Testes: 15 situações de segurança no servidor (código errado, reuso, 5 erros, 40 palpites em paralelo, reenvio, desafio inventado, sem e-mail, conta dispensada…) e a tela no navegador; mais testes de unidade | `qa/security/sec-2fa.mjs`, `qa/flows/two-factor-ui.mjs`, `backend/src/auth/two-factor.service.spec.ts` |
+
+### Como ligar (só você pode: precisa de conta e de variáveis no Render)
+1. Criar conta grátis em resend.com e **verificar o domínio `usinalink.com.br`** (o Resend mostra registros DNS para colar no Cloudflare: aba DNS). Sem domínio verificado, o e-mail só chega para o dono da conta Resend.
+2. No Render, em Environment, criar: `RESEND_API_KEY` (a chave do Resend), `MAIL_FROM` = `Usinalink <nao-responda@usinalink.com.br>`.
+3. **Por último**: `TWO_FACTOR_ENABLED` = `true`. Para manter as contas de demonstração entrando direto (apresentação), criar também `TWO_FACTOR_SKIP_EMAILS` = `empresa@demo.com,usina@demo.com,pessoa@demo.com`.
+4. Para desligar a qualquer momento: `TWO_FACTOR_ENABLED` = `false`.

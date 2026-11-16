@@ -1,15 +1,16 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from '../auth/auth.module';
-import { Usuario, Empresa, Usina, PessoaFisica, Funcionario, BloqueioUsina } from '../common/entities/core.entities';
+import { TwoFactorService } from '../auth/two-factor.service';
+import { Usuario, Empresa, Usina, PessoaFisica, Funcionario, BloqueioUsina, CodigoDoisFatores } from '../common/entities/core.entities';
 import { UsuarioController } from './usuario.controller';
 import { PessoaFisicaController } from './pessoa-fisica.controller';
 import { UsuarioService } from './usuario.service';
 
 @Module({
-  imports: [AuthModule, TypeOrmModule.forFeature([Usuario, Empresa, Usina, PessoaFisica, Funcionario, BloqueioUsina])],
+  imports: [AuthModule, TypeOrmModule.forFeature([Usuario, Empresa, Usina, PessoaFisica, Funcionario, BloqueioUsina, CodigoDoisFatores])],
   controllers: [UsuarioController, PessoaFisicaController],
-  providers: [UsuarioService],
+  providers: [UsuarioService, TwoFactorService],
   exports: [UsuarioService],
 })
 export class UsuarioModule {}

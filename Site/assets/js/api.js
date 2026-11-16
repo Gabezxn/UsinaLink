@@ -117,7 +117,7 @@
     const contentType = response.headers.get('content-type');
     const data = contentType?.includes('application/json') ? await response.json() : null;
 
-    if (response.status === 401 && !/\/?(auth\/login|cadastro)/.test(String(endpoint))) {
+    if (response.status === 401 && !/\/?(auth\/login|auth\/2fa|cadastro)/.test(String(endpoint))) {
       sessionExpired();
       throw new Error(SESSION_MESSAGE);
     }

@@ -3838,3 +3838,15 @@ body.signup-usina {
     linear-gradient(145deg, #fff7ed 0%, #fff 55%, #f8fafc 100%);
 }
 body.signup-usina .signup-panel { border-color: rgba(249, 115, 22, 0.2); }
+
+/* Segunda etapa do login (código por e-mail) */
+.two-factor { display: grid; gap: 16px; }
+.two-factor-intro { padding: 14px 16px; border: 1px solid var(--border); border-radius: 14px; background: #f8fafc; }
+.two-factor-intro strong { display: block; margin-bottom: 4px; color: var(--text); }
+.two-factor-intro p { margin: 0; color: var(--muted); font-size: .92rem; line-height: 1.5; }
+.two-factor input[name="codigo"] { font-size: 1.35rem; letter-spacing: .5em; font-weight: 700; text-align: center; padding-left: 0; }
+.two-factor-actions { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.two-factor-actions .text-link { background: none; border: 0; padding: 4px 0; cursor: pointer; font: inherit; font-weight: 700; color: var(--primary, #1e3a8a); }
+.two-factor-actions .text-link:disabled { color: var(--muted); cursor: default; }
+form[hidden] { display: none !important; }
+.two-factor .input-icon input { border: 0; box-shadow: none; }
