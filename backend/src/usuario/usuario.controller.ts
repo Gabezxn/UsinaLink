@@ -4,6 +4,7 @@ import { AdminGuard } from '../auth/admin.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { LoginDto } from './dto/login.dto';
+import { ReenviarDoisFatoresDto, VerificarDoisFatoresDto } from './dto/dois-fatores.dto';
 import { TrocarSenhaDto } from './dto/trocar-senha.dto';
 import { UsuarioService } from './usuario.service';
 
@@ -21,6 +22,11 @@ export class UsuarioController {
   @Post('auth/login/pessoa_fisica') loginPessoaFisica(@Body() dto: LoginDto) { return this.service.loginArea(dto, 'pessoa_fisica'); }
   @Throttle(LOGIN_THROTTLE)
   @Post('auth/login/admin') loginAdmin(@Body() dto: LoginDto) { return this.service.loginAdmin(dto); }
+
+  @Throttle(LOGIN_THROTTLE)
+  @Post('auth/2fa/verificar') verificarDoisFatores(@Body() dto: VerificarDoisFatoresDto) { return this.service.verificarDoisFatores(dto.desafio, dto.codigo); }
+  @Throttle(LOGIN_THROTTLE)
+  @Post('auth/2fa/reenviar') reenviarDoisFatores(@Body() dto: ReenviarDoisFatoresDto) { return this.service.reenviarDoisFatores(dto.desafio); }
 
   @Post('cadastro/empresa') empresa(@Body() dto: CreateUsuarioDto) { return this.service.cadastrar(dto, 'empresa'); }
   @Post('cadastro/usina') usina(@Body() dto: CreateUsuarioDto) { return this.service.cadastrar(dto, 'usina'); }

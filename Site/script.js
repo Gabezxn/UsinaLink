@@ -418,7 +418,112 @@ if (signupForm) {
   });
 }
 
+// Segunda etapa do login (verificação em duas etapas por e-mail): o servidor mandou um código de 6 dígitos.
+function showTwoFactorStep(loginForm, desafioInfo, onSuccess) {
+  let desafio = desafioInfo.desafio;
+  const panel = document.createElement("form");
+  panel.className = "form two-factor";
+  panel.setAttribute("novalidate", "");
+  panel.innerHTML = `
+    <div class="two-factor-intro" role="status">
+      <strong>Confirme seu acesso</strong>
+      <p>Enviamos um código de 6 dígitos para <b data-tf-email></b>. Ele vale por alguns minutos. Confira também a caixa de spam.</p>
+    </div>
+    <label class="field">
+      <span>Código de verificação</span>
+      <div class="input-icon"><span aria-hidden="true">#</span><input name="codigo" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" placeholder="000000" aria-label="Código de 6 dígitos" required></div>
+    </label>
+    <button class="btn full" type="submit">Confirmar e entrar</button>
+    <div class="two-factor-actions">
+      <button class="text-link" type="button" data-tf-reenviar>Reenviar código</button>
+      <button class="text-link" type="button" data-tf-voltar>Voltar</button>
+    </div>`;
+  panel.querySelector("[data-tf-email]").textContent = desafioInfo.email || "seu e-mail";
+  loginForm.hidden = true;
+  loginForm.after(panel);
+  const input = panel.querySelector('input[name="codigo"]');
+  const reenviar = panel.querySelector("[data-tf-reenviar]");
+  const enviar = panel.querySelector('button[type="submit"]');
+  input.focus();
+  input.addEventListener("input", () => { input.value = input.value.replace(/\D/g, "").slice(0, 6); });
+
+  let relogio = null;
+  const contagem = (segundos) => {
+    window.clearInterval(relogio);
+    let restante = Math.max(0, Math.round(segundos));
+    const atualizar = () => {
+      reenviar.disabled = restante > 0;
+      reenviar.textContent = restante > 0 ? `Reenviar código em ${restante}s` : "Reenviar código";
+      if (restante <= 0) window.clearInterval(relogio);
+      restante -= 1;
+    };
+    atualizar();
+    if (restante >= 0) relogio = window.setInterval(atualizar, 1000);
+  };
+  contagem(desafioInfo.reenvioEmSegundos || 60);
+
+  const erroNoCampo = (mensagem) => { setFieldState(input, mensagem); if (mensagem) showToast(mensagem); };
+
+  panel.querySelector("[data-tf-voltar]").addEventListener("click", () => {
+    window.clearInterval(relogio);
+    panel.remove();
+    loginForm.hidden = false;
+    loginForm.querySelector('input[name="senha"], input[id$="-senha"]')?.focus();
+  });
+
+  reenviar.addEventListener("click", async () => {
+    erroNoCampo("");
+    reenviar.disabled = true;
+    try {
+      const novo = await window.UsinaLinkApi.post("/auth/2fa/reenviar", { desafio });
+      desafio = novo.desafio || desafio;
+      showToast("Enviamos um novo código para o seu e-mail.");
+      input.value = "";
+      input.focus();
+      contagem(novo.reenvioEmSegundos || 60);
+    } catch (error) {
+      erroNoCampo(error.message);
+      contagem(15);
+    }
+  });
+
+  panel.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    erroNoCampo("");
+    if (!/^\d{6}$/.test(input.value)) { erroNoCampo("Digite os 6 números do código."); input.focus(); return; }
+    enviar.disabled = true;
+    try {
+      const resultado = await window.UsinaLinkApi.post("/auth/2fa/verificar", { desafio, codigo: input.value });
+      window.clearInterval(relogio);
+      // O servidor devolve a mesma resposta do login normal; reaproveita o fluxo de sessão.
+      desafioInfo.accessToken = resultado.accessToken;
+      Object.assign(desafioInfo, resultado);
+      onSuccess();
+    } catch (error) {
+      enviar.disabled = false;
+      erroNoCampo(error instanceof TypeError ? "Não foi possível conectar ao servidor." : error.message);
+      input.select();
+    }
+  });
+}
+
 document.querySelectorAll(".js-login-form").forEach((form) => {
+  const concluirLogin = (result) => {
+    const redirect = form.dataset.redirect || "index.html";
+    // Sessao por aba (sessionStorage): logar como usina em uma aba nao derruba a empresa logada em outra.
+    ["usinalinkSession", "accessToken", "tipoUsuario", "nome"].forEach((key) => localStorage.removeItem(key));
+    sessionStorage.setItem("accessToken", result.accessToken || result.access_token);
+    sessionStorage.setItem("tipoUsuario", result.tipoUsuario);
+    sessionStorage.setItem("nome", result.nome || "");
+    sessionStorage.setItem("usinalinkSession", JSON.stringify({
+      tipo: result.tipoUsuario,
+      nome: result.nome || "",
+      empresaId: result.empresa?.idEmpresa,
+      usinaId: result.usina?.idUsina
+    }));
+    showToast("Login realizado com sucesso");
+    window.setTimeout(() => { window.location.href = redirect; }, 500);
+  };
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const emailInput = form.querySelector('input[name="email"], input[id$="-email"]');
@@ -451,19 +556,8 @@ document.querySelectorAll(".js-login-form").forEach((form) => {
         email: emailInput.value.trim().toLowerCase(),
         senha: passwordInput.value
       });
-      // Sessao por aba (sessionStorage): logar como usina em uma aba nao derruba a empresa logada em outra.
-      ["usinalinkSession", "accessToken", "tipoUsuario", "nome"].forEach((key) => localStorage.removeItem(key));
-      sessionStorage.setItem("accessToken", result.accessToken || result.access_token);
-      sessionStorage.setItem("tipoUsuario", result.tipoUsuario);
-      sessionStorage.setItem("nome", result.nome || "");
-      sessionStorage.setItem("usinalinkSession", JSON.stringify({
-        tipo: result.tipoUsuario,
-        nome: result.nome || "",
-        empresaId: result.empresa?.idEmpresa,
-        usinaId: result.usina?.idUsina
-      }));
-      showToast("Login realizado com sucesso");
-      window.setTimeout(() => { window.location.href = redirect; }, 500);
+      if (result.requires2fa) { showTwoFactorStep(form, result, () => concluirLogin(result)); return; }
+      concluirLogin(result);
     } catch (error) {
       if (error instanceof TypeError) {
         setFieldState(emailInput, "Não foi possível conectar ao servidor.");

@@ -1,5 +1,5 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
-import { randomBytes } from 'node:crypto';
+import { createHmac, randomBytes } from 'node:crypto';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 
@@ -20,6 +20,11 @@ export class TokenService {
     } catch {
       throw new UnauthorizedException('Token invalido ou expirado.');
     }
+  }
+
+  /** Resumo HMAC de um texto com o segredo do servidor (usado para guardar códigos de verificação sem expô-los no banco). */
+  digest(contexto: string) {
+    return createHmac('sha256', this.secret()).update(contexto).digest('hex');
   }
 
   private secret() {
