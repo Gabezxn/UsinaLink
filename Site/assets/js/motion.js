@@ -56,11 +56,11 @@
     root.classList.add("js-motion");
     var obs = new IntersectionObserver(function (itens) {
       itens.forEach(function (item) {
-        if (!item.isIntersecting) return;
-        item.target.classList.add("is-visible");
-        obs.unobserve(item.target);
+        // entra ao aparecer na tela e volta ao estado inicial so depois de sair por completo; assim anima toda vez que rolar de novo
+        if (item.isIntersecting && item.intersectionRatio >= 0.12) item.target.classList.add("is-visible");
+        else if (!item.isIntersecting) item.target.classList.remove("is-visible");
       });
-    }, { threshold: 0.12, rootMargin: "0px 0px -6% 0px" });
+    }, { threshold: [0, 0.12], rootMargin: "0px 0px -6% 0px" });
     alvos.forEach(function (el) {
       el.setAttribute("data-reveal", "");
       // escalonado entre irmaos: cada cartao entra um pouco depois do anterior

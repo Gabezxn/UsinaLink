@@ -77,10 +77,17 @@ const browser = await chromium.launch();
   await page.goto(`${SITE}/index.html`);
   t.ok(await page.evaluate(() => document.documentElement.classList.contains('js-motion')), 'rolagem: efeito não foi ativado');
   const altura = await page.evaluate(() => document.body.scrollHeight);
+  const naTela = () => page.evaluate(() => [...document.querySelectorAll('[data-reveal]')].filter((el) => { const r = el.getBoundingClientRect(); return r.top < innerHeight * 0.85 && r.bottom > 80; }).filter((el) => !el.classList.contains('is-visible')).length);
+  const visiveis = () => page.evaluate(() => document.querySelectorAll('[data-reveal].is-visible').length);
   for (let y = 0; y < altura; y += 400) { await page.evaluate((v) => window.scrollTo(0, v), y); await page.waitForTimeout(120); }
   await page.waitForTimeout(900);
-  const ocultos = await page.evaluate(() => [...document.querySelectorAll('[data-reveal]')].filter((el) => !el.classList.contains('is-visible')).length);
-  t.ok(ocultos === 0, `rolagem: ${ocultos} bloco(s) ficaram invisíveis depois de rolar a página toda`);
+  t.ok(await naTela() === 0, 'rolagem: bloco na tela ficou invisível');
+  const primeiro = await page.evaluate(() => document.querySelector('[data-reveal]').classList.contains('is-visible'));
+  t.ok(!primeiro, 'rolagem: bloco do topo deveria voltar ao estado inicial depois de sair da tela');
+  // voltando ao topo, anima de novo
+  await page.evaluate(() => window.scrollTo(0, 0)); await page.waitForTimeout(1200);
+  t.ok(await naTela() === 0, 'rolagem: ao voltar ao topo os blocos não reapareceram');
+  t.ok(await visiveis() > 0, 'rolagem: nada visível ao voltar ao topo');
 }
 await browser.close();
 t.done('motion');

@@ -289,9 +289,9 @@ Para ver no seu PC: `git pull` na branch `claude/elegant-shannon-4ar9hg`.
 |---|---|
 | "Fale conosco" estava num azul claro diferente do resto. Agora usa o mesmo degradê azul-escuro dos botões do site (também no cabeçalho do chat). O botão de Acessibilidade perdeu o contorno branco e ganhou o mesmo degradê. Os dois sobem de leve e clareiam ao passar o mouse. Aplicado no site principal e na versão de teste | `Site/style.css`, `Site/assets/css/a11y.css` |
 
-## Pedido 26 (15/11): animações (VERSÃO DE TESTE, fora do site principal)
+## Pedido 26 (15/11): animações (agora no site principal, ver Pedido 32)
 
-Publicado só no endereço de teste (branch `teste-animacoes`). O site principal (`usinalink.com.br`) não muda até você aprovar.
+Criado primeiro numa versão de teste (branch `teste-animacoes`) e aprovado em 16/11.
 
 | Mudança | Onde |
 |---|---|
@@ -302,3 +302,11 @@ Publicado só no endereço de teste (branch `teste-animacoes`). O site principal
 | Para voltar atrás é simples: tirar as linhas de `motion.css` e `motion.js` das páginas. Nada do funcionamento depende delas | `Site/index.html`, `Site/cadastro*.html` |
 | Corrigido junto: clicar no cartão do tipo de conta disparava a troca duas vezes (o clique no rótulo gera outro no campo); agora só uma | `Site/script.js` |
 | Teste novo: chat digitando (tempo longo x curto, atalhos travados, movimento reduzido), pintura (começa, termina, sem sobras com cliques rápidos), rolagem sem blocos invisíveis | `qa/flows/motion.mjs`, `qa/run-all.mjs` |
+
+## Pedido 32 (16/11): animações no site principal, repetindo ao rolar
+
+| Mudança | Onde |
+|---|---|
+| As animações do Pedido 26 (chat digitando, troca de conta pintada, entrada ao rolar) foram aprovadas e entraram no site principal | `Site/assets/js/motion.js`, `Site/assets/css/motion.css`, `Site/assets/js/chat-contato.js`, `Site/script.js` |
+| Página inicial: os blocos agora animam **toda vez** que aparecem na tela. Ao descer eles sobem para o lugar; ao subir de volta e descer de novo, repetem. Voltam ao estado inicial só depois de sair da tela por completo, então ninguém vê o bloco "pular" | `Site/assets/js/motion.js` |
+| Teste da rolagem atualizado: bloco do topo volta ao estado inicial ao sair da tela e reaparece ao voltar | `qa/flows/motion.mjs` |
