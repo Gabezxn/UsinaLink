@@ -5,6 +5,8 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { LoginDto } from './dto/login.dto';
 import { ReenviarDoisFatoresDto, VerificarDoisFatoresDto } from './dto/dois-fatores.dto';
+import { EsqueciSenhaDto, RedefinirSenhaDto } from './dto/redefinir-senha.dto';
+import { RedefinicaoSenhaService } from '../auth/redefinicao-senha.service';
 import { TrocarSenhaDto } from './dto/trocar-senha.dto';
 import { UsuarioService } from './usuario.service';
 
@@ -12,7 +14,7 @@ const LOGIN_THROTTLE = { default: { limit: Number(process.env.LOGIN_THROTTLE_LIM
 
 @Controller('api')
 export class UsuarioController {
-  constructor(private readonly service: UsuarioService) {}
+  constructor(private readonly service: UsuarioService, private readonly redefinicao: RedefinicaoSenhaService) {}
 
   @Throttle(LOGIN_THROTTLE)
   @Post('auth/login/empresa') loginEmpresa(@Body() dto: LoginDto) { return this.service.loginArea(dto, 'empresa'); }
@@ -27,6 +29,11 @@ export class UsuarioController {
   @Post('auth/2fa/verificar') verificarDoisFatores(@Body() dto: VerificarDoisFatoresDto) { return this.service.verificarDoisFatores(dto.desafio, dto.codigo); }
   @Throttle(LOGIN_THROTTLE)
   @Post('auth/2fa/reenviar') reenviarDoisFatores(@Body() dto: ReenviarDoisFatoresDto) { return this.service.reenviarDoisFatores(dto.desafio); }
+
+  @Throttle({ default: { limit: Number(process.env.LOGIN_THROTTLE_LIMIT) || 5, ttl: 60000 } })
+  @Post('auth/senha/esqueci') esqueciSenha(@Body() dto: EsqueciSenhaDto) { return this.redefinicao.solicitar(dto.email, dto.origem); }
+  @Throttle(LOGIN_THROTTLE)
+  @Post('auth/senha/redefinir') redefinirSenha(@Body() dto: RedefinirSenhaDto) { return this.redefinicao.redefinir(dto.token, dto.novaSenha, dto.confirmarSenha); }
 
   @Post('cadastro/empresa') empresa(@Body() dto: CreateUsuarioDto) { return this.service.cadastrar(dto, 'empresa'); }
   @Post('cadastro/usina') usina(@Body() dto: CreateUsuarioDto) { return this.service.cadastrar(dto, 'usina'); }

@@ -74,7 +74,7 @@
 
   document.addEventListener("DOMContentLoaded", function () {
     if (document.querySelector(".lp-hero")) {
-      revelar([".lp-hero > *", ".lp-numbers .lp-stats", ".section > h2:not(.a11y-sr-only)", ".card.step-card", ".card.benefit-card", ".lp-profile", ".partner-card", ".lp-cta"]);
+      revelar([".lp-hero > *", ".section > h2:not(.a11y-sr-only)", ".card.step-card", ".card.benefit-card", ".lp-profile", ".lp-cta"]);
     }
   });
 }());

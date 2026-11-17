@@ -13,7 +13,7 @@ export class AppThrottlerGuard extends ThrottlerGuard {
   private readonly porIp = new Map<string, { inicio: number; total: number }>();
 
   private ehLogin(req: Record<string, any>) {
-    return /\/auth\/login\//.test(req.originalUrl || req.url || '');
+    return /\/auth\/(login|senha)\//.test(req.originalUrl || req.url || '');
   }
 
   protected async getTracker(req: Record<string, any>): Promise<string> {

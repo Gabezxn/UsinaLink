@@ -364,9 +364,9 @@ Publicado só na branch `teste-stripe`. Sem `STRIPE_SECRET_KEY` no servidor, nad
 |---|---|
 | Saiu a etiqueta solta ("Pessoa física", "Empresa", "Usina") no fim do cabeçalho do perfil, que aparecia como um retângulo desalinhado. O tipo da conta continua visível no menu lateral | `Site/perfil-pessoa-fisica.html`, `perfil-empresa.html`, `perfil-usina.html` |
 
-## Pedido 36 (17/11): correções da equipe (Observações.docx) — VERSÃO DE TESTE
+## Pedido 36 (17/11): correções da equipe (Observações.docx)
 
-Publicado só na branch `teste-correcoes`. O site principal só muda depois da sua aprovação.
+Publicado no site principal com a aprovação do dono do projeto.
 
 | Observação da equipe | O que foi feito | Onde |
 |---|---|---|
@@ -380,3 +380,20 @@ Publicado só na branch `teste-correcoes`. O site principal só muda depois da s
 | Teste | Cadastro sem CEP é recusado; endereço salvo para as três contas; menus; foto sem abrir aba; entrega na proposta. Testes de cadastro e "mostrar senha" ajustados aos campos novos | `qa/flows/correcoes.mjs`, `qa/flows/ui-p24.mjs`, `qa/security/_lib.mjs` |
 
 **Atenção:** contas antigas sem CEP continuam entrando normalmente; só o cadastro novo exige. Na pessoa física demo do site no ar o endereço está vazio: preencha pela nova aba do perfil.
+
+## Pedido 37 (17/11): esqueci minha senha, Libras no modo escuro e revisão geral — VERSÃO DE TESTE
+
+Publicado só na branch `revisao-final`. O site principal só muda depois da sua aprovação.
+
+| Mudança | Onde |
+|---|---|
+| **Esqueci minha senha**: link "Esqueci minha senha" nos 4 logins, tela para pedir o link e tela para criar a nova senha. O link vai por e-mail, vale 30 minutos, só funciona uma vez, o pedido novo cancela o anterior, a resposta é igual exista a conta ou não, o código fica só como HMAC no banco, o link usa o "#" do endereço (não vai para servidor nenhum) e há limite de pedidos por minuto. Precisa do `RESEND_API_KEY` no Render (o mesmo da verificação em duas etapas) | `esqueci-senha.html`, `redefinir-senha.html`, `assets/js/senha.js`, `backend/src/auth/redefinicao-senha.service.ts`, `usuario.controller.ts`, `common/origem.ts` (lista de endereços aceitos, agora compartilhada com o pagamento) |
+| **Libras no modo escuro**: o widget era invertido duas vezes (cores trocadas). Agora imagens e canvas dentro dele não invertem de novo | `assets/css/a11y.css` |
+| **Visual**: gradientes viraram cores chapadas, sombras discretas, cantos em dois tamanhos, tipografia mais leve, "Como funciona" e "Benefícios" sem cartões repetidos, sem roxo | `style.css` |
+| **Página inicial**: textos reescritos, preço no exemplo, saíram a faixa de números e os "clientes de exemplo" | `index.html`, `assets/js/motion.js` |
+| **Textos de login e cadastro** mais diretos, acentos corrigidos | `login*.html`, `cadastro*.html`, `dashboard-*.html` |
+| **Celular**: campos sem zoom no iPhone, alvos de toque de 44px, botão de acessibilidade não cobre "Enviar", menu lateral rola | `style.css` |
+| **Revisão de código**: removidos busca de organização desativada, contas guardadas no navegador que nunca eram gravadas e 69 regras de CSS sem uso; perfil de empresa e usina lista os 27 estados; lista de funcionários usa os campos que a API devolve; situações sem cor ganharam cor; `console.log` virou `Logger` | `script.js`, `style.css`, `backend/src/main.ts` |
+| Teste | `qa/security/sec-senha.mjs` novo; teste de fundo do login ajustado para cor chapada | `qa/` |
+
+**Não alterado, decisão do dono do projeto:** o frete aparece no total da proposta mas o pagamento cobra só o valor; o convite de funcionário não funciona de ponta a ponta; contas demo são criadas também em produção; compra de peça do catálogo é marcada como paga sem Stripe; cerca de 150 textos ainda sem acento; `pagamentos.html` e `perfil.html` sem link no menu. Quem já está logado continua logado por até 8 horas depois de trocar a senha.

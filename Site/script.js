@@ -63,8 +63,6 @@ const signupConfig = {
   }
 };
 
-const signupStorageKey = "usinalinkAccounts";
-
 function onlyDigits(value) {
   return String(value || "").replace(/\D/g, "");
 }
@@ -119,15 +117,6 @@ function isValidCnpj(value) {
   return cnpj.length === 14;
 }
 
-function getStoredAccounts() {
-  try {
-    const accounts = JSON.parse(localStorage.getItem(signupStorageKey) || "[]");
-    return Array.isArray(accounts) ? accounts : [];
-  } catch {
-    return [];
-  }
-}
-
 function setFieldState(input, message) {
   const field = input?.closest(".field");
   if (!field) return;
@@ -148,15 +137,13 @@ function setFieldState(input, message) {
 
 const SIGNUP_UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
 
-function validateSignupInput(input, accounts) {
+function validateSignupInput(input) {
   const key = input.dataset.fieldKey;
   const value = input.value.trim();
   if (!input.required || input.closest(".field")?.hidden) return "";
   if (!value) return "Este campo e obrigatorio.";
   if (key === "email") {
-    const normalized = value.toLowerCase();
     if (!isValidEmail(value)) return "Informe um e-mail valido.";
-    if (accounts.some((account) => account.email === normalized)) return "Este e-mail ja esta cadastrado.";
   }
   if (key === "cep" && onlyDigits(value).length !== 8) return "Informe o CEP com 8 numeros.";
   if (key === "cidade" && value.length < 2) return "Informe a cidade.";
@@ -167,14 +154,10 @@ function validateSignupInput(input, accounts) {
     if (value !== password) return "Senha e confirmar senha precisam ser iguais.";
   }
   if (key === "cpf") {
-    const cpf = onlyDigits(value);
     if (!isValidCpf(value)) return "Informe um CPF valido no formato 000.000.000-00.";
-    if (accounts.some((account) => account.cpf === cpf)) return "Este CPF ja esta cadastrado.";
   }
   if (key === "cnpj") {
-    const cnpj = onlyDigits(value);
     if (!isValidCnpj(value)) return "Informe um CNPJ valido no formato 00.000.000/0000-00.";
-    if (accounts.some((account) => account.cnpj === cnpj)) return "Este CNPJ ja esta cadastrado.";
   }
   return "";
 }
@@ -311,68 +294,21 @@ if (urlSignupType) {
 document.querySelectorAll(".signup-dynamic-form input").forEach((input) => {
   input.addEventListener("input", () => {
     applyMaskByKey(input);
-    setFieldState(input, validateSignupInput(input, getStoredAccounts()));
+    setFieldState(input, validateSignupInput(input));
   });
-  input.addEventListener("blur", () => setFieldState(input, validateSignupInput(input, getStoredAccounts())));
+  input.addEventListener("blur", () => setFieldState(input, validateSignupInput(input)));
 });
 
 const signupForm = document.querySelector(".signup-dynamic-form");
 if (signupForm) {
-  let signupLookupTimer;
-  const lookupSignupOrganization = async () => {
-    // Desativado por privacidade: o cadastro não consulta mais dados de outras empresas/usinas (SEC-13).
-    return;
-    // eslint-disable-next-line no-unreachable
-    const type = signupForm.dataset.accountType;
-    if (!["empresa", "usina"].includes(type) || !window.UsinaLinkApi) return;
-    const nameInput = signupForm.querySelector('[data-field-key="nome"]');
-    const name = nameInput?.value.trim();
-    if (!name || name.length < 3) return;
-    const path = type === "usina" ? `/usinas/buscar?nome=${encodeURIComponent(name)}` : `/empresas/buscar?nome=${encodeURIComponent(name)}`;
-    try {
-      const data = await window.UsinaLinkApi.get(path);
-      const fieldMap = {
-        cnpj: data.cnpj,
-        email: data.email,
-        responsavel: data.responsavel,
-        cargo: type === "empresa" ? data.cargo : data.especialidade,
-        especialidade: data.especialidade,
-        telefone: data.telefone
-      };
-      Object.entries(fieldMap).forEach(([key, value]) => {
-        const input = signupForm.querySelector(`[data-field-key="${key}"]`);
-        if (input && value) {
-          input.value = value;
-          applyMaskByKey(input);
-          setFieldState(input, "");
-        }
-      });
-      showToast(`${type === "usina" ? "Usina" : "Empresa"} encontrada. Dados preenchidos automaticamente.`);
-    } catch (error) {
-      showToast(type === "usina" ? "Usina não encontrada. Preencha os dados manualmente." : "Empresa não encontrada. Preencha os dados manualmente.");
-    }
-  };
-
-  signupForm.addEventListener("input", (event) => {
-    const input = event.target.closest('[data-field-key="nome"]');
-    if (!input) return;
-    window.clearTimeout(signupLookupTimer);
-    signupLookupTimer = window.setTimeout(lookupSignupOrganization, 600);
-  });
-
-  signupForm.addEventListener("blur", (event) => {
-    if (event.target.matches('[data-field-key="nome"]')) lookupSignupOrganization();
-  }, true);
-
   signupForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const submitButton = signupForm.querySelector('[type="submit"]');
     const originalButtonText = submitButton?.textContent || "Cadastrar";
-    const accounts = getStoredAccounts();
     const inputs = [...signupForm.querySelectorAll("input[data-field-key]")].filter((input) => !input.closest(".field")?.hidden);
     const errors = inputs.map((input) => {
       applyMaskByKey(input);
-      const error = validateSignupInput(input, accounts);
+      const error = validateSignupInput(input);
       setFieldState(input, error);
       return error;
     }).filter(Boolean);
@@ -594,7 +530,7 @@ const profileData = {
         ]
       },
       contato: { title: "Contato", subtitle: "Canais comerciais e respons\u00e1veis por comunica\u00e7\u00e3o.", fields: [["E-mail comercial", "email", "", null, "email"], ["Telefone", "tel", "", null, "telefone"], ["WhatsApp", "tel", "", null, "whatsapp"], ["Site", "url", "", null, "site"], ["Respons\u00e1vel principal", "text", "", null, "responsavel"]] },
-      endereco: { title: "Endere\u00e7o", subtitle: "Localiza\u00e7\u00e3o fiscal e operacional da organiza\u00e7\u00e3o.", fields: [["CEP", "text", "", null, "cep"], ["Rua", "text", "", null, "rua"], ["N\u00famero", "text", "", null, "numero"], ["Bairro", "text", "", null, "bairro"], ["Cidade", "text", "", null, "cidade"], ["Estado", "select", "", ["SP", "MG", "RJ", "PR", "SC", "RS"], "estado"], ["Complemento", "text", "", null, "complemento"]] },
+      endereco: { title: "Endere\u00e7o", subtitle: "Localiza\u00e7\u00e3o fiscal e operacional da organiza\u00e7\u00e3o.", fields: [["CEP", "text", "", null, "cep"], ["Rua", "text", "", null, "rua"], ["N\u00famero", "text", "", null, "numero"], ["Bairro", "text", "", null, "bairro"], ["Cidade", "text", "", null, "cidade"], ["Estado", "select", "", SIGNUP_UFS, "estado"], ["Complemento", "text", "", null, "complemento"]] },
       documentos: { title: "Documentos", subtitle: "Registros e comprovantes usados na valida\u00e7\u00e3o comercial.", fields: [["CNPJ", "text", "", null, "cnpj"], ["Inscri\u00e7\u00e3o Estadual", "text", "", null, "inscricaoEstadual"], ["Contrato Social", "file", "", null, "contratoSocial"], ["Alvar\u00e1", "file", "", null, "alvara"], ["Certifica\u00e7\u00f5es", "text", "", null, "certificacoes"]] },
       seguranca: { title: "Seguran\u00e7a", subtitle: "Proteja o acesso dos usu\u00e1rios vinculados \u00e0 organiza\u00e7\u00e3o.", fields: [["Senha atual", "password", "", null, "senhaAtual"], ["Nova senha", "password", "", null, "novaSenha"], ["Confirmar nova senha", "password", "", null, "confirmarSenha"]] },
       notificacoes: { title: "Notifica\u00e7\u00f5es", subtitle: "Configure quais avisos devem chegar para a equipe.", fields: [["Receber propostas por e-mail", "checkbox", false, null, "propostasEmail"], ["Receber alertas de prazo", "checkbox", false, null, "alertasPrazo"], ["Receber mensagens de fornecedores", "checkbox", false, null, "mensagensFornecedores"], ["Receber resumo semanal", "checkbox", false, null, "resumoSemanal"]] }
@@ -616,7 +552,7 @@ const profileData = {
     sections: {
       gerais: { title: "Informa\u00e7\u00f5es gerais", subtitle: "Dados industriais exibidos para empresas compradoras.", fields: [["Nome da usina", "text", "", null, "nomeFantasia"], ["Especialidade principal", "text", "", null, "especialidade"], ["Capacidade produtiva", "text", "", null, "capacidadeProducao"], ["Descri\u00e7\u00e3o industrial", "textarea", "", null, "descricao"]] },
       contato: { title: "Contato", subtitle: "Canais da equipe comercial da usina.", fields: [["E-mail industrial", "email", "", null, "email"], ["Telefone", "tel", "", null, "telefone"], ["Respons\u00e1vel comercial", "text", "", null, "responsavel"]] },
-      endereco: { title: "Endere\u00e7o", subtitle: "Localiza\u00e7\u00e3o operacional da usina.", fields: [["CEP", "text", "", null, "cep"], ["Rua", "text", "", null, "rua"], ["N\u00famero", "text", "", null, "numero"], ["Bairro", "text", "", null, "bairro"], ["Cidade", "text", "", null, "cidade"], ["Estado", "select", "", ["MG", "SP", "RJ", "PR", "SC", "RS"], "estado"], ["Complemento", "text", "", null, "complemento"]] },
+      endereco: { title: "Endere\u00e7o", subtitle: "Localiza\u00e7\u00e3o operacional da usina.", fields: [["CEP", "text", "", null, "cep"], ["Rua", "text", "", null, "rua"], ["N\u00famero", "text", "", null, "numero"], ["Bairro", "text", "", null, "bairro"], ["Cidade", "text", "", null, "cidade"], ["Estado", "select", "", SIGNUP_UFS, "estado"], ["Complemento", "text", "", null, "complemento"]] },
       producao: { title: "Produ\u00e7\u00e3o", subtitle: "Capacidade operacional para avaliar pedidos.", fields: [["M\u00e1quinas dispon\u00edveis", "textarea", "", null, "maquinasDisponiveis"], ["Capacidade mensal", "text", "", null, "capacidadeMensal"], ["Turnos", "select", "", ["1 turno", "2 turnos", "3 turnos"], "turnos"], ["Prazo m\u00e9dio", "text", "", null, "prazoMedio"]] },
       certificacoes: { title: "Certifica\u00e7\u00f5es", subtitle: "Compet\u00eancias e certificados produtivos.", fields: [["ISO 9001", "checkbox", false, null, "iso9001"], ["CNC", "checkbox", false, null, "cnc"], ["Corte laser", "checkbox", false, null, "corteLaser"], ["Fundi\u00e7\u00e3o", "checkbox", false, null, "fundicao"], ["Soldagem", "checkbox", false, null, "soldagem"]] },
       seguranca: { title: "Seguran\u00e7a", subtitle: "Proteja o acesso da equipe da usina.", fields: [["Senha atual", "password", "", null, "senhaAtual"], ["Nova senha", "password", "", null, "novaSenha"], ["Confirmar senha", "password", "", null, "confirmarSenha"]] },
@@ -832,8 +768,10 @@ function renderEmployeeRowActions(row) {
 }
 
 function employeeRowMarkup(item) {
-  const status = item.status || "Pendente";
-  return `<tr data-search-row data-employee-id="${escapeHtml(item.id || "")}"><td>${escapeHtml(item.nome || "")}</td><td>${escapeHtml(item.email || "")}</td><td>${escapeHtml(item.cargo || "-")}</td><td>${escapeHtml(item.tipo || "-")}</td><td><span class="badge ${statusClass(status)}">${escapeHtml(status)}</span></td><td></td></tr>`;
+  const bruto = String(item.status || "pendente");
+  const status = bruto.charAt(0).toUpperCase() + bruto.slice(1);
+  const tipo = item.tipoAcesso || item.tipo;
+  return `<tr data-search-row data-employee-id="${escapeHtml(item.idFuncionario || item.id || "")}"><td>${escapeHtml(item.nome || "")}</td><td>${escapeHtml(item.email || "")}</td><td>${escapeHtml(item.cargo || "-")}</td><td>${escapeHtml(tipo || "-")}</td><td><span class="badge ${statusClass(status)}">${escapeHtml(status)}</span></td><td></td></tr>`;
 }
 
 async function loadEmployeesFromApi() {

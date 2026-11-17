@@ -1,3 +1,4 @@
+import { origemPermitida } from '../common/origem';
 import { BadRequestException, ForbiddenException, Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -85,17 +86,11 @@ export class PagamentoService {
     return this.registrarPago(base, dto.metodo || dto.method);
   }
 
-  private origemPermitida(origem?: string) {
-    if (!origem) return false;
-    const fixas = (this.config.get<string>('ALLOWED_ORIGINS', 'http://localhost:5500,http://127.0.0.1:5500,http://localhost:3000') || '').split(',').map(o => o.trim()).filter(Boolean);
-    return fixas.includes(origem) || /^https:\/\/(www\.)?usinalink\.com\.br$/.test(origem) || /^https:\/\/[a-z0-9-]+-usinalink\.tibiel2010\.workers\.dev$/.test(origem);
-  }
-
   /** Cria a sessao de pagamento na Stripe e devolve o endereco para onde levar o cliente. */
   async criarCheckout(dto: CheckoutDto, user: any) {
     if (!this.stripe.ligado()) throw new ServiceUnavailableException('Pagamento online nao configurado.');
     const base = await this.prepararPagamento(dto.pedidoId, user);
-    const origem = this.origemPermitida(dto.retorno) ? (dto.retorno as string) : 'https://usinalink.com.br';
+    const origem = origemPermitida(this.config, dto.retorno) ? (dto.retorno as string) : 'https://usinalink.com.br';
     const valor = Math.round(Number(base.proposta.valor) * 100);
     if (!Number.isFinite(valor) || valor < 50) throw new BadRequestException('Valor do pedido invalido para pagamento.');
     const pagina = `${origem}/pagamento-pedido.html?pedidoId=${base.pedido.idPedido}`;

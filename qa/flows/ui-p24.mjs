@@ -14,7 +14,7 @@ const fundoBotao = (page, sel) => page.locator(sel).first().evaluate((el) => get
   for (const [nome, arq] of [['empresa', 'login-empresa.html'], ['pf', 'login-pessoa-fisica.html'], ['usina', 'login-usina.html']]) {
     await page.goto(`${SITE}/${arq}`);
     cores[nome] = await fundoBotao(page, 'form.js-login-form [type="submit"]');
-    cores[nome + '_fundo'] = await page.evaluate(() => getComputedStyle(document.body).backgroundImage);
+    cores[nome + '_fundo'] = await page.evaluate(() => getComputedStyle(document.body).backgroundColor);
   }
   t.ok(cores.empresa !== cores.pf, 'login: botão da pessoa física tem a mesma cor da empresa');
   t.ok(cores.empresa_fundo !== cores.pf_fundo, 'login: fundo da pessoa física igual ao da empresa');

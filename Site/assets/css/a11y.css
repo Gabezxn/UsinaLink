@@ -69,6 +69,8 @@ html.a11y-contrast-high input, html.a11y-contrast-high select, html.a11y-contras
 /* Modo escuro: inversão de cores (o site tem milhares de cores fixas), mídia re-invertida */
 html.a11y-dark { filter: invert(1) hue-rotate(180deg); background: #fff; }
 html.a11y-dark img, html.a11y-dark video, html.a11y-dark canvas, html.a11y-dark [vw], html.a11y-dark svg image, html.a11y-dark [style*="background-image"] { filter: invert(1) hue-rotate(180deg); }
+/* VLibras: o widget inteiro já é re-invertido uma vez; imagens e canvas dentro dele não podem inverter de novo (senão as cores ficam trocadas). */
+html.a11y-dark [vw] img, html.a11y-dark [vw] video, html.a11y-dark [vw] canvas, html.a11y-dark [vw] [style*="background-image"] { filter: none; }
 
 /* Responsividade (reflow 320px / zoom 200%) */
 img, video { max-width: 100%; height: auto; }

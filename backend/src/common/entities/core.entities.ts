@@ -382,8 +382,18 @@ export class CodigoDoisFatores {
   @CreateDateColumn({ name: 'data_criacao' }) dataCriacao: Date;
 }
 
+@Entity({ name: 'redefinicao_senha' })
+export class RedefinicaoSenha {
+  @PrimaryGeneratedColumn({ name: 'id_redefinicao' }) idRedefinicao: number;
+  @Column({ name: 'id_usuario' }) idUsuario: number;
+  @Column({ name: 'token_hash', unique: true }) tokenHash: string;
+  @Column({ name: 'expira_em', type: 'timestamp' }) expiraEm: Date;
+  @Column({ name: 'usado_em', type: 'timestamp', nullable: true }) usadoEm?: Date | null;
+  @CreateDateColumn({ name: 'data_criacao' }) dataCriacao: Date;
+}
+
 export const ENTITIES = [
   Usuario, PessoaFisica, Empresa, Usina, Funcionario, EnderecoEmpresa, EnderecoUsina, Peca,
   Pedido, ItemPedido, ArquivoPedido, Proposta, Pagamento, AvaliacaoEntrega, Solicitacao, SolicitacaoComercial,
-  SolicitacaoBloqueioUsina, BloqueioUsina, HistoricoStatusPedido, ModeloContrato, Notificacao, PecaComercial, Favorito, CodigoDoisFatores,
+  SolicitacaoBloqueioUsina, BloqueioUsina, HistoricoStatusPedido, ModeloContrato, Notificacao, PecaComercial, Favorito, CodigoDoisFatores, RedefinicaoSenha,
 ];

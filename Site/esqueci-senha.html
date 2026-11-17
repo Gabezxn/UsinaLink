@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Esqueci minha senha | Usinalink</title>
+  <meta name="description" content="Recupere o acesso à sua conta Usinalink com um link enviado para o seu e-mail.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/a11y.css">
+  <script src="assets/js/safe-html.js"></script>
+</head>
+<body class="auth-page">
+  <main class="auth-shell">
+    <a class="brand auth-brand" href="index.html">
+      <span class="brand-icon" aria-hidden="true"><svg class="brand-mark" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 2.5l8 4.5v10l-8 4.5-8-4.5V7z"/><circle cx="12" cy="12" r="3.2"/></svg></span>
+      <span>Usinalink</span>
+    </a>
+    <section class="card auth-card">
+      <span class="eyebrow">Recuperar acesso</span>
+      <h1>Esqueci minha senha</h1>
+      <p>Digite o e-mail da sua conta. Se ele tiver cadastro, enviamos um link para criar uma nova senha.</p>
+      <form class="form" id="form-esqueci" novalidate>
+        <label class="field">
+          <span>E-mail da conta</span>
+          <div class="input-icon"><span aria-hidden="true">@</span><input id="esqueci-email" name="email" type="email" autocomplete="email" placeholder="voce@empresa.com.br" required></div>
+        </label>
+        <button class="btn full" type="submit">Enviar link</button>
+      </form>
+      <p class="form-notice" id="esqueci-resultado" role="status" hidden></p>
+      <a class="text-link centered" href="login.html">Voltar para o login</a>
+    </section>
+  </main>
+  <script src="assets/js/api.js"></script>
+  <script src="script.js"></script>
+  <script src="assets/js/senha.js"></script>
+  <script src="assets/js/a11y.js" defer></script>
+</body>
+</html>
