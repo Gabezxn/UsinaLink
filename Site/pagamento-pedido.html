@@ -6,6 +6,7 @@
   <title>Pagamento do Pedido | Usinalink</title>
   <meta name="description" content="Pagamento do Pedido na Usinalink, marketplace B2B de peças industriais que conecta empresas, usinas e compradores.">
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+  <script src="assets/js/a11y-inicial.js"></script>
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="assets/css/a11y.css">
   <link rel="stylesheet" href="assets/css/tema-escuro.css">
@@ -56,12 +57,12 @@
           <article class="card payment-panel">
             <span class="eyebrow">Forma de pagamento</span>
             <input id="payment-method" type="hidden" value="PIX">
-            <div class="payment-methods" role="tablist" aria-label="Formas de pagamento">
+            <div class="payment-methods" role="tablist" aria-label="Formas de pagamento" hidden>
               <button class="payment-method" type="button" data-payment-method="PIX">PIX</button>
               <button class="payment-method" type="button" data-payment-method="Cartao">Cart&atilde;o</button>
               <button class="payment-method" type="button" data-payment-method="Boleto">Boleto</button>
             </div>
-            <div class="method-panel" data-method-panel="PIX">
+            <div class="method-panel" data-method-panel="PIX" hidden>
               <div class="qr-placeholder" aria-label="QR Code fictício">QR</div>
               <p>Chave PIX fict&iacute;cia: <strong>pix-teste@usinalink.com</strong></p>
               <button class="btn btn-ghost btn-small" type="button" data-copy-pix>Copiar chave</button>

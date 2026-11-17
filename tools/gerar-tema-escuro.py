@@ -96,7 +96,17 @@ def borda(h, s, l, a):
     return h, s, min(l + 0.12, 0.6)
 
 
+RE_URL = re.compile(r'url\([^)]*\)')
+
+
 def trocar_cores(valor, papel):
+    # O que está dentro de url(...) não pode ser mexido: num SVG embutido um "#" sem escape quebra a imagem inteira.
+    partes = RE_URL.split(valor)
+    urls = RE_URL.findall(valor)
+    return ''.join(_trocar(parte, papel) + (urls[i] if i < len(urls) else '') for i, parte in enumerate(partes))
+
+
+def _trocar(valor, papel):
     def uma(m):
         c = parse(m.group(0))
         if c is None:
@@ -110,7 +120,8 @@ def trocar_cores(valor, papel):
     return RE_COR.sub(uma, valor)
 
 
-ABREVIACOES = {'border', 'border-top', 'border-right', 'border-bottom', 'border-left', 'background', 'outline'}
+ABREVIACOES = {'color', 'fill', 'stroke', 'caret-color', 'background', 'background-color', 'border', 'border-top', 'border-right', 'border-bottom', 'border-left',
+               'border-color', 'border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color', 'outline', 'outline-color', 'text-decoration-color'}
 
 
 def papel_da_propriedade(p):
@@ -210,8 +221,8 @@ def regras(css, nivel=0):
             papel = papel_da_propriedade(nome)
             if not papel:
                 continue
-            if not RE_COR.search(valor):
-                # "border: 0", "background: transparent" etc. precisam ser copiados: senão a versão escura de outra regra
+            if not RE_COR.search(re.sub(RE_URL, '', valor)):
+                # "border: 0", "background: transparent", "color: inherit" etc. precisam ser copiados: senão a versão escura de outra regra
                 # (com cor) ganharia deles e a caixa voltaria a ter borda/fundo.
                 if nome.lower() in ABREVIACOES:
                     decls.append(f'  {nome}: {valor};')

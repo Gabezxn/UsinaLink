@@ -683,18 +683,6 @@ document.querySelectorAll("[data-history-body]").forEach((body) => {
   historyObserver.observe(body, { childList: true });
 });
 
-document.querySelectorAll(".js-demo-form").forEach((form) => {
-  if (form.classList.contains("signup-dynamic-form")) return;
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    const submitter = event.submitter;
-    const label = submitter ? submitter.textContent.trim() : "A\u00e7\u00e3o";
-    const redirect = form.dataset.redirect;
-    showToast(`${label} realizado com sucesso`);
-    if (redirect) window.setTimeout(() => { window.location.href = redirect; }, 700);
-  });
-});
-
 function ensureActionModal() {
   let modal = document.querySelector("#action-modal");
   if (modal) return modal;
@@ -786,29 +774,6 @@ async function loadEmployeesFromApi() {
       table.innerHTML = `<tr><td colspan="6" class="td-empty">Falha ao carregar funcionários: ${escapeHtml(error.message)}</td></tr>`;
     }
   });
-}
-
-function renderProposalDetails(data, includeDecision = false) {
-  return `
-    <div class="proposal-detail-head">
-      <div><span>Usina</span><strong>${escapeHtml(data.usina || data[1] || "Usina")}</strong></div>
-      <strong class="modal-price">${escapeHtml(data.valor || data[2] || "R$ 0,00")}</strong>
-    </div>
-    <div class="action-modal-grid">
-      <div><span>Prazo de fabricação</span><strong>${escapeHtml(formatPrazo(data.prazo || data[3], "18 dias"))}</strong></div>
-      <div><span>Frete</span><strong>${escapeHtml(data.frete || "R$ 950,00")}</strong></div>
-      <div><span>Avaliacao</span><strong>${escapeHtml(data.avaliacao || "4,8/5")}</strong></div>
-      <div><span>Regiao</span><strong>${escapeHtml(data.regiao || "Sudeste")}</strong></div>
-      <div><span>Peça/Pedido</span><strong>${escapeHtml(data.peca || data[0] || "Peça industrial")}</strong></div>
-      <div><span>Material</span><strong>${escapeHtml(data.material || "Aco carbono")}</strong></div>
-      <div><span>Quantidade</span><strong>${escapeHtml(data.quantidade || "60 unidades")}</strong></div>
-      <div><span>Arquivo tecnico</span><strong>${escapeHtml(data.arquivo || "arquivo-tecnico.pdf")}</strong></div>
-    </div>
-    <div class="detail-list"><div><span>Observações</span><strong>${escapeHtml(data.observacao || "Proposta com condicoes comerciais completas.")}</strong></div></div>
-    <div class="form-actions">
-      <button class="btn btn-ghost js-action-modal-close" type="button">Fechar</button>
-      ${includeDecision ? '<button class="btn js-modal-accept-proposal" type="button">Aceitar proposta</button><button class="btn btn-ghost js-modal-reject-proposal" type="button">Recusar proposta</button>' : ""}
-    </div>`;
 }
 
 function currentSession() {
@@ -1045,30 +1010,6 @@ function openEmployeeEdit(row) {
   });
 }
 
-function openProposalEdit(row) {
-  const cells = rowCells(row);
-  openActionModal({
-    title: "Editar proposta",
-    kicker: "Comercial",
-    body: `
-      <form class="form-grid js-inline-proposal-edit">
-        <label class="field"><span>Valor</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">R$</span><input name="valor" value="${escapeHtml(cells[2])}"></div></label>
-        <label class="field"><span>Prazo</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">P</span><input name="prazo" value="${escapeHtml(cells[3])}"></div></label>
-        <label class="field"><span>Frete</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">F</span><input name="frete" value="R$ 950,00"></div></label>
-        <label class="field"><span>Observacao</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">O</span><input name="observacao" value="Proposta com inspecao dimensional."></div></label>
-        <div class="form-actions span-2"><button class="btn btn-ghost js-action-modal-close" type="button">Cancelar</button><button class="btn btn-orange" type="submit">Salvar proposta</button></div>
-      </form>`
-  });
-  document.querySelector(".js-inline-proposal-edit").addEventListener("submit", (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    row.children[2].textContent = data.get("valor");
-    row.children[3].textContent = data.get("prazo");
-    ensureActionModal().hidden = true;
-    showToast("Proposta atualizada com sucesso");
-  });
-}
-
 function openSimpleConfirm({ title, message, confirmText, onConfirm, orange = false, cancelText = "Voltar" }) {
   openActionModal({
     title,
@@ -1129,17 +1070,6 @@ document.addEventListener("click", (event) => {
     return;
   }
 
-  if (commercialCard && action === "Solicitar compra") {
-    const title = commercialCard.querySelector("h2")?.textContent.trim() || "peca comercial";
-    openSimpleConfirm({
-      title: "Solicitar compra",
-      message: `Deseja registrar interesse de compra para ${title}?`,
-      confirmText: "Confirmar interesse",
-      onConfirm: () => showToast("Solicitacao comercial registrada")
-    });
-    return;
-  }
-
   if (card && action === "Ver detalhes" && card.dataset.proposalId) {
     modalPropostaId = card.dataset.proposalId;
     const item = ultimasPropostasRecebidas.find((p) => String(p.idProposta) === modalPropostaId);
@@ -1172,12 +1102,6 @@ document.addEventListener("click", (event) => {
       openActionModal({ title: "Detalhes da proposta", kicker: "Proposta enviada", body: renderSentProposalDetails(enviada) });
       return;
     }
-    const cells = rowCells(row);
-    openActionModal({ title: "Detalhes da proposta", kicker: "Proposta enviada", body: renderProposalDetails(cells) });
-    return;
-  }
-  if (row && action === "Editar proposta") {
-    openProposalEdit(row);
     return;
   }
   if (row && action === "Cancelar proposta") {
@@ -1228,7 +1152,6 @@ document.addEventListener("click", (event) => {
     } });
     return;
   }
-  showToast(`${action} acionado`);
 });
 
 document.querySelectorAll(".js-table-search").forEach((input) => {

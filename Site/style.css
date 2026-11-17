@@ -3553,3 +3553,5 @@ dd,
 .proposal-group-head:first-child { margin-top: 0; }
 .proposal-group-head h2 { margin: 0; font-size: 1.1rem; }
 .proposal-group-head span { color: var(--muted, #5b6b86); font-size: 0.9rem; }
+
+.payment-methods[hidden] { display: none; }

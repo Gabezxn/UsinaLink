@@ -150,8 +150,12 @@
     document.querySelector("[data-copy-pix]")?.addEventListener("click", () => navigator.clipboard?.writeText("pix-teste@usinalink.com").then(() => ui.showFeedback("Chave PIX copiada.")));
     document.querySelector("[data-copy-boleto]")?.addEventListener("click", () => navigator.clipboard?.writeText("34191.79001 01043.510047 91020.150008 8 98760000018500").then(() => ui.showFeedback("Linha digitavel copiada.")));
     document.querySelectorAll("[data-payment-method]").forEach(button => button.addEventListener("click", () => setMethod(button.dataset.paymentMethod)));
-    setMethod("PIX");
     const stripe = await service.stripeAtivo();
+    if (!stripe) {
+      // Pagamento simulado: só agora as formas de pagamento aparecem (antes ficam escondidas, para não piscarem com a Stripe ligada).
+      document.querySelector(".payment-methods")?.removeAttribute("hidden");
+      setMethod("PIX");
+    }
     if (stripe) {
       // Pagamento online: esconde as formas ficticias e leva o cliente para a pagina segura da Stripe.
       document.querySelectorAll(".payment-methods, .method-panel").forEach(el => { el.hidden = true; });

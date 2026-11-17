@@ -435,6 +435,17 @@ Publicado direto na main a pedido do dono do projeto.
 
 A imagem de compartilhamento em redes sociais (`Site/assets/img/preview.png`, 1200×630) foi refeita com a logo nova, no mesmo texto de antes e com fundo azul liso.
 
+## Pedido 46 (17/11): modo escuro sem piscada, ícones do menu e dados de exemplo removidos
+
+| Problema | Correção | Onde |
+|---|---|---|
+| Ao atualizar a página, ela aparecia clara por um instante e só depois ficava escura | Um script pequeno no `<head>` aplica as preferências de acessibilidade (modo escuro, contraste, tamanho da fonte...) antes da primeira pintura. O `a11y.js` continua montando o painel | `Site/assets/js/a11y-inicial.js` (novo), 49 páginas HTML |
+| Ícones do menu lateral não apareciam no modo escuro | O gerador do tema escuro trocava `black` por `#000000` dentro do SVG embutido, e o `#` sem escape quebrava a imagem. Agora o conteúdo de `url(...)` não é mexido. O gerador também passou a copiar `color: inherit` e parecidos, que perdiam para a cor do tema escuro | `tools/gerar-tema-escuro.py`, `Site/assets/css/tema-escuro.css` |
+| Na piscada (e antes do carregamento) apareciam dados de exemplo: "Metal Forte", "Usina Atlas Metais", "Ana Martins", "Carlos Mendes", valores R$ 19.450 / 18.500 / 950 e "18 dias" na tela de proposta, e as formas de pagamento fictícias (PIX, boleto) mesmo com a Stripe ligada | Textos neutros nas páginas ("Minha empresa", "Minha usina", "Perfil da empresa", R$ 0,00, "A combinar"); as formas de pagamento ficam escondidas e só aparecem no pagamento simulado (sem Stripe) | `Site/dashboard-empresa.html`, `dashboard-usina.html`, `perfil-empresa.html`, `perfil-usina.html`, `enviar-proposta.html`, `pagamento-pedido.html`, `Site/assets/js/order-history.js` |
+| Código que inventava dados ou sucesso | Removidos: detalhes de proposta com valores de fallback (R$ 950, 4,8/5, Sudeste...), "Editar proposta" que só mudava a tela, "Solicitar compra" que só mostrava aviso, o tratamento `.js-demo-form` (que nunca rodava) e o aviso genérico "X acionado" para qualquer botão | `Site/script.js` |
+
+Mantidos de propósito: o cartão "Exemplo ilustrativo" da página inicial (está rotulado como ilustração) e as formas de pagamento fictícias do pagamento simulado, quando a Stripe está desligada.
+
 ## Pedido 45 (17/11): usina vê e baixa o arquivo técnico antes da proposta ser aceita
 
 | Problema | Correção | Onde |
