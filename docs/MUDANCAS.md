@@ -435,6 +435,14 @@ Publicado direto na main a pedido do dono do projeto.
 
 A imagem de compartilhamento em redes sociais (`Site/assets/img/preview.png`, 1200×630) foi refeita com a logo nova, no mesmo texto de antes e com fundo azul liso.
 
+## Pedido 43 (17/11): fork e repositório principal
+
+| Mudança | Onde |
+|---|---|
+| O site publica a partir do fork `Gabezxn/UsinaLink`, que é fork do repositório principal `sxrtori/UsinaLink`. Os 4 commits antigos do principal foram trazidos para o fork (mantendo as versões do fork de `Site/login.html` e `Site/assets/js/api.js`) e o Pull Request nº 12 levou os 134 commits para o principal, já aceito | GitHub: `sxrtori/UsinaLink` |
+| `git push origin` agora envia para os dois repositórios (fork e principal). O remote `upstream` aponta para o principal, só para consulta | configuração do Git local |
+| O deploy (Render e Cloudflare) continua ligado ao fork; mudar isso depende do dono do repositório principal | — |
+
 ## Pedido 42 (17/11): Libras com cores certas no modo escuro
 
 | Problema | Correção | Onde |
