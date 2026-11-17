@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, Like, Repository } from 'typeorm';
 import {
   PessoaFisica, Empresa, Usina, EnderecoEmpresa, Pedido, ItemPedido, Proposta, AvaliacaoEntrega, Pagamento,
-  Solicitacao, SolicitacaoComercial, PecaComercial, HistoricoStatusPedido,
+  Solicitacao, SolicitacaoComercial, PecaComercial, HistoricoStatusPedido, ConfiguracaoSistema,
 } from '../common/entities/core.entities';
 
 const MARCA = 'PED-AUTO-';
@@ -20,11 +20,16 @@ const PECAS = [
 // Do pedido recém-aberto ao concluído: cada conta sem pedido recebe um estado diferente, para o teste ter de tudo.
 const ESTADOS = ['em_negociacao', 'aberto', 'proposta_aceita', 'concluido', 'em_producao'] as const;
 
+const CHAVE_JA_RODOU = 'popular_contas_executado';
+
 /**
  * Dá um pouco de movimento às contas que ainda estão vazias, para testar e apresentar o sistema.
- * Só roda quando a variável SEED_POPULAR_CONTAS está ligada ("true" cria, "remover" apaga o que foi criado por aqui).
- * Só mexe em conta que não tem nenhum pedido (compradores), nenhuma proposta (usinas) e nenhuma peça/compra de catálogo;
- * pode rodar quantas vezes quiser. Tudo que ele cria é marcado ("PED-AUTO-...") para poder ser removido depois.
+ * - No Render (que define RENDER=true) roda sozinho UMA vez: na primeira subida depois da publicação, nas contas que já existem,
+ *   e anota no banco que já rodou (tabela configuracao_sistema), então as subidas seguintes não fazem nada.
+ * - A variável SEED_POPULAR_CONTAS força: "true" cria de novo (só para contas ainda vazias), "remover" apaga o que foi criado por aqui
+ *   (e também anota que já rodou, para não recriar sozinho).
+ * Só mexe em conta que não tem nenhum pedido (compradores), nenhuma proposta (usinas) e nenhuma peça/compra de catálogo.
+ * Tudo que cria é marcado ("PED-AUTO-...") para poder ser removido depois. Fora do Render e sem a variável, não faz nada.
  */
 @Injectable()
 export class PopularContasService implements OnApplicationBootstrap {
@@ -44,17 +49,30 @@ export class PopularContasService implements OnApplicationBootstrap {
     @InjectRepository(SolicitacaoComercial) private readonly compras: Repository<SolicitacaoComercial>,
     @InjectRepository(PecaComercial) private readonly catalogo: Repository<PecaComercial>,
     @InjectRepository(HistoricoStatusPedido) private readonly historico: Repository<HistoricoStatusPedido>,
+    @InjectRepository(ConfiguracaoSistema) private readonly configuracao: Repository<ConfiguracaoSistema>,
   ) {}
 
   async onApplicationBootstrap() {
     const modo = (process.env.SEED_POPULAR_CONTAS || '').toLowerCase();
-    if (modo !== 'true' && modo !== 'remover') return;
     try {
-      const resumo = modo === 'remover' ? await this.remover() : await this.popular();
-      this.log.log(`${modo === 'remover' ? 'Removido' : 'Criado'}: ${JSON.stringify(resumo)}`);
+      if (modo === 'remover') {
+        this.log.log(`Removido: ${JSON.stringify(await this.remover())}`);
+        await this.marcarComoRodado();
+        return;
+      }
+      const forcado = modo === 'true';
+      const automatico = !!process.env.RENDER && !(await this.configuracao.findOne({ where: { chave: CHAVE_JA_RODOU } }));
+      if (!forcado && !automatico) return;
+      const resumo = await this.popular();
+      this.log.log(`Criado${automatico && !forcado ? ' (automático, uma vez)' : ''}: ${JSON.stringify(resumo)}`);
+      await this.marcarComoRodado();
     } catch (erro) {
       this.log.error(`Falhou: ${(erro as Error).message}`);
     }
+  }
+
+  private async marcarComoRodado() {
+    await this.configuracao.save(this.configuracao.create({ chave: CHAVE_JA_RODOU, valor: new Date().toISOString() }));
   }
 
   private async localDe(comprador: { empresa?: Empresa; pessoa?: PessoaFisica }) {

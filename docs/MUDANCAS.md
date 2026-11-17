@@ -435,12 +435,13 @@ Publicado direto na main a pedido do dono do projeto.
 
 A imagem de compartilhamento em redes sociais (`Site/assets/img/preview.png`, 1200×630) foi refeita com a logo nova, no mesmo texto de antes e com fundo azul liso.
 
-## Pedido 48 (17/11): dar movimento às contas vazias (opcional, desligado por padrão)
+## Pedido 48 (17/11): contas vazias ganham pedidos de exemplo, uma única vez e sozinho
 
-| O que é | Como usar | Onde |
+| O que é | Como funciona | Onde |
 |---|---|---|
-| Rotina que dá um pouco de movimento às contas que ainda estão vazias, para testar e apresentar. Cada empresa e pessoa física sem pedido ganha 1 pedido sob medida, cada um num estado diferente (recebendo propostas, aberto, aguardando pagamento, em produção, concluído, com proposta, pagamento e avaliação). Cada usina sem proposta ganha uma proposta, e quem não tem peça no catálogo ou compra de catálogo ganha uma de exemplo | Só roda se a variável `SEED_POPULAR_CONTAS` estiver como `true` quando a API sobe (no Render: Environment, adicionar a variável e deixar reiniciar; depois dá para apagar a variável). Com o valor `remover`, apaga tudo que ela criou. Só mexe em conta que não tem nada e pode rodar de novo sem duplicar. Tudo que cria é marcado (`PED-AUTO-...`, "exemplo") | `backend/src/database/popular-contas.service.ts`, `database.module.ts` |
-| Teste: cria contas novas, roda a rotina, confere que cada uma ganhou movimento, que rodar de novo não duplica e que `remover` desfaz | | `qa/security/sec-popular.mjs` |
+| Rotina que dá movimento às contas que ainda estão vazias, para testar e apresentar. Cada empresa e pessoa física sem pedido ganha 1 pedido sob medida, cada um em um estado diferente (recebendo propostas, aberto, aguardando pagamento, em produção, concluído, com proposta, pagamento e avaliação). Cada usina sem proposta ganha uma, e quem não tem peça no catálogo ou compra de catálogo ganha uma de exemplo | No Render roda **sozinha, uma única vez**, na primeira subida da API depois da publicação (o Render define `RENDER=true`), e anota no banco (tabela nova `configuracao_sistema`) que já rodou. Nas subidas seguintes não faz nada, então contas criadas depois não ganham pedidos. Não precisa mexer no Render. Só mexe em conta que não tem nada. Tudo que cria é marcado (`PED-AUTO-...`, "exemplo") | `backend/src/database/popular-contas.service.ts`, `database.module.ts`, entidade `ConfiguracaoSistema` |
+| Opcional: a variável `SEED_POPULAR_CONTAS` no Render continua existindo. `true` força rodar de novo (só nas contas ainda vazias) e `remover` apaga tudo que a rotina criou (e não deixa recriar sozinha) | Fora do Render e sem a variável, a rotina não faz nada | |
+| Teste: cria contas novas, confere a execução automática, que rodar de novo não duplica, que `remover` desfaz e que uma subida seguinte não recria | | `qa/security/sec-popular.mjs` |
 
 ## Pedido 47 (17/11): pedido aceito "sumia" para a empresa e não havia Pagamentos no menu
 

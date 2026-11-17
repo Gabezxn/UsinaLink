@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, Relation, UpdateDateColumn } from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryColumn, PrimaryGeneratedColumn, Relation, UpdateDateColumn } from 'typeorm';
 
 @Entity({ name: 'usuario' })
 export class Usuario {
@@ -392,8 +392,15 @@ export class RedefinicaoSenha {
   @CreateDateColumn({ name: 'data_criacao' }) dataCriacao: Date;
 }
 
+@Entity({ name: 'configuracao_sistema' })
+export class ConfiguracaoSistema {
+  @PrimaryColumn({ name: 'chave' }) chave: string;
+  @Column({ name: 'valor', type: 'text', nullable: true }) valor?: string;
+  @UpdateDateColumn({ name: 'data_atualizacao' }) dataAtualizacao: Date;
+}
+
 export const ENTITIES = [
   Usuario, PessoaFisica, Empresa, Usina, Funcionario, EnderecoEmpresa, EnderecoUsina, Peca,
   Pedido, ItemPedido, ArquivoPedido, Proposta, Pagamento, AvaliacaoEntrega, Solicitacao, SolicitacaoComercial,
-  SolicitacaoBloqueioUsina, BloqueioUsina, HistoricoStatusPedido, ModeloContrato, Notificacao, PecaComercial, Favorito, CodigoDoisFatores, RedefinicaoSenha,
+  SolicitacaoBloqueioUsina, BloqueioUsina, HistoricoStatusPedido, ModeloContrato, Notificacao, PecaComercial, Favorito, CodigoDoisFatores, RedefinicaoSenha, ConfiguracaoSistema,
 ];

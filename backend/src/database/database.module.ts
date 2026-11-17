@@ -4,7 +4,7 @@ import { AuthModule } from '../auth/auth.module';
 import {
   Usuario, PessoaFisica, Empresa, Usina, Funcionario, EnderecoEmpresa, EnderecoUsina,
   Pedido, ItemPedido, Proposta, AvaliacaoEntrega, Pagamento, Notificacao,
-  Solicitacao, SolicitacaoComercial, SolicitacaoBloqueioUsina, PecaComercial, HistoricoStatusPedido,
+  Solicitacao, SolicitacaoComercial, SolicitacaoBloqueioUsina, PecaComercial, HistoricoStatusPedido, ConfiguracaoSistema,
 } from '../common/entities/core.entities';
 import { SeedService } from './seed.service';
 import { PopularContasService } from './popular-contas.service';
@@ -16,7 +16,7 @@ import { PopularContasService } from './popular-contas.service';
     TypeOrmModule.forFeature([
       Usuario, PessoaFisica, Empresa, Usina, Funcionario, EnderecoEmpresa, EnderecoUsina,
       Pedido, ItemPedido, Proposta, AvaliacaoEntrega, Pagamento, Notificacao,
-      Solicitacao, SolicitacaoComercial, SolicitacaoBloqueioUsina, PecaComercial, HistoricoStatusPedido,
+      Solicitacao, SolicitacaoComercial, SolicitacaoBloqueioUsina, PecaComercial, HistoricoStatusPedido, ConfiguracaoSistema,
     ]),
   ],
   providers: [SeedService, PopularContasService],
