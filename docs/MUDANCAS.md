@@ -435,6 +435,13 @@ Publicado direto na main a pedido do dono do projeto.
 
 A imagem de compartilhamento em redes sociais (`Site/assets/img/preview.png`, 1200×630) foi refeita com a logo nova, no mesmo texto de antes e com fundo azul liso.
 
+## Pedido 48 (17/11): dar movimento às contas vazias (opcional, desligado por padrão)
+
+| O que é | Como usar | Onde |
+|---|---|---|
+| Rotina que dá um pouco de movimento às contas que ainda estão vazias, para testar e apresentar. Cada empresa e pessoa física sem pedido ganha 1 pedido sob medida, cada um num estado diferente (recebendo propostas, aberto, aguardando pagamento, em produção, concluído, com proposta, pagamento e avaliação). Cada usina sem proposta ganha uma proposta, e quem não tem peça no catálogo ou compra de catálogo ganha uma de exemplo | Só roda se a variável `SEED_POPULAR_CONTAS` estiver como `true` quando a API sobe (no Render: Environment, adicionar a variável e deixar reiniciar; depois dá para apagar a variável). Com o valor `remover`, apaga tudo que ela criou. Só mexe em conta que não tem nada e pode rodar de novo sem duplicar. Tudo que cria é marcado (`PED-AUTO-...`, "exemplo") | `backend/src/database/popular-contas.service.ts`, `database.module.ts` |
+| Teste: cria contas novas, roda a rotina, confere que cada uma ganhou movimento, que rodar de novo não duplica e que `remover` desfaz | | `qa/security/sec-popular.mjs` |
+
 ## Pedido 47 (17/11): pedido aceito "sumia" para a empresa e não havia Pagamentos no menu
 
 | Problema | Correção | Onde |

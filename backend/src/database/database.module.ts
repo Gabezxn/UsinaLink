@@ -4,9 +4,10 @@ import { AuthModule } from '../auth/auth.module';
 import {
   Usuario, PessoaFisica, Empresa, Usina, Funcionario, EnderecoEmpresa, EnderecoUsina,
   Pedido, ItemPedido, Proposta, AvaliacaoEntrega, Pagamento, Notificacao,
-  Solicitacao, SolicitacaoComercial, SolicitacaoBloqueioUsina, PecaComercial,
+  Solicitacao, SolicitacaoComercial, SolicitacaoBloqueioUsina, PecaComercial, HistoricoStatusPedido,
 } from '../common/entities/core.entities';
 import { SeedService } from './seed.service';
+import { PopularContasService } from './popular-contas.service';
 
 @Global()
 @Module({
@@ -15,9 +16,9 @@ import { SeedService } from './seed.service';
     TypeOrmModule.forFeature([
       Usuario, PessoaFisica, Empresa, Usina, Funcionario, EnderecoEmpresa, EnderecoUsina,
       Pedido, ItemPedido, Proposta, AvaliacaoEntrega, Pagamento, Notificacao,
-      Solicitacao, SolicitacaoComercial, SolicitacaoBloqueioUsina, PecaComercial,
+      Solicitacao, SolicitacaoComercial, SolicitacaoBloqueioUsina, PecaComercial, HistoricoStatusPedido,
     ]),
   ],
-  providers: [SeedService],
+  providers: [SeedService, PopularContasService],
 })
 export class DatabaseModule {}
