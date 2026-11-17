@@ -6,10 +6,11 @@ import { NotificacaoModule } from '../notificacao/notificacao.module';
 import { Pagamento, Pedido, Proposta } from '../common/entities/core.entities';
 import { PagamentoController } from './pagamento.controller';
 import { PagamentoService } from './pagamento.service';
+import { StripeService } from './stripe.service';
 
 @Module({
   imports: [AuthModule, ContextoUsuarioModule, NotificacaoModule, TypeOrmModule.forFeature([Pagamento, Pedido, Proposta])],
   controllers: [PagamentoController],
-  providers: [PagamentoService],
+  providers: [PagamentoService, StripeService],
 })
 export class PagamentoModule {}

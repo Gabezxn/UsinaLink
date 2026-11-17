@@ -3850,3 +3850,5 @@ body.signup-usina .signup-panel { border-color: rgba(249, 115, 22, 0.2); }
 .two-factor-actions .text-link:disabled { color: var(--muted); cursor: default; }
 form[hidden] { display: none !important; }
 .two-factor .input-icon input { border: 0; box-shadow: none; }
+
+.payment-methods[hidden], .method-panel[hidden] { display: none !important; }

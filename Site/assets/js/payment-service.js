@@ -118,9 +118,23 @@
     };
   }
 
+  // Pagamento online (Stripe Checkout): o servidor diz se esta ligado; se estiver, o cartao e digitado na pagina da Stripe.
+  async function stripeAtivo() {
+    try { return !!(await apiGet("/pagamentos/config")).stripe; } catch { return false; }
+  }
+
+  async function iniciarStripe(order) {
+    const r = await apiPost("/pagamentos/checkout", { pedidoId: order.idPedido, retorno: window.location.origin });
+    return r.url;
+  }
+
+  async function confirmarStripe(sessionId) {
+    return apiPost("/pagamentos/checkout/confirmar", { sessionId });
+  }
+
   async function confirmarEntrega(order) {
     return apiPatch(`/pedidos/${order.idPedido}/confirmar-entrega`);
   }
 
-  window.UsinaLinkPayments = { getOrders, getOrder, savePayment, confirmarEntrega, currentSession };
+  window.UsinaLinkPayments = { getOrders, getOrder, savePayment, stripeAtivo, iniciarStripe, confirmarStripe, confirmarEntrega, currentSession };
 }());

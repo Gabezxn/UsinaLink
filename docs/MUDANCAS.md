@@ -329,3 +329,25 @@ Depois da senha correta, o servidor manda um **código de 6 dígitos para o e-ma
 2. No Render, em Environment, criar: `RESEND_API_KEY` (a chave do Resend), `MAIL_FROM` = `Usinalink <nao-responda@usinalink.com.br>`.
 3. **Por último**: `TWO_FACTOR_ENABLED` = `true`. Para manter as contas de demonstração entrando direto (apresentação), criar também `TWO_FACTOR_SKIP_EMAILS` = `empresa@demo.com,usina@demo.com,pessoa@demo.com`.
 4. Para desligar a qualquer momento: `TWO_FACTOR_ENABLED` = `false`.
+
+## Pedido 33 (16/11): pagamento online com Stripe em modo de teste (VERSÃO DE TESTE)
+
+Publicado só na branch `teste-stripe`. Sem `STRIPE_SECRET_KEY` no servidor, nada muda: o pagamento simulado continua como hoje.
+
+| Mudança | Onde |
+|---|---|
+| "Confirmar pagamento" leva à página segura da Stripe (Stripe Checkout); o cartão é digitado lá, não no site. Na volta, o site pede ao servidor para conferir o pagamento e só então o pedido vai para "em produção" | `Site/assets/js/order-history.js`, `Site/assets/js/payment-service.js`, `Site/style.css` |
+| O servidor cria a sessão de pagamento com o valor da proposta aceita (nunca o valor vindo do navegador) e, na volta, consulta a Stripe: confere se foi pago, de quem é a sessão, e se o valor bate com o pedido. Repetir a confirmação não cobra nem registra duas vezes | `backend/src/pagamento/stripe.service.ts`, `pagamento.service.ts`, `pagamento.controller.ts`, DTOs |
+| Com a Stripe ligada, o pagamento simulado fica bloqueado (senão daria para "pagar" sem pagar). O endereço de retorno só aceita o site oficial e as versões de teste | `pagamento.service.ts` |
+| Sem biblioteca nova: só chamadas HTTPS à API da Stripe | — |
+| Testes: Stripe falsa local (sem chamadas reais) para servidor e tela | `qa/security/sec-stripe.mjs`, `qa/flows/stripe-ui.mjs`, `qa/run-all.mjs` |
+
+**Para ligar (modo de teste, sem dinheiro real):**
+1. Conta em stripe.com, no modo de teste (Test mode).
+2. Developers, API keys: copiar a Secret key de teste (`sk_test_...`).
+3. Render, Environment: `STRIPE_SECRET_KEY` com essa chave.
+4. Pagar com o cartão `4242 4242 4242 4242`, qualquer validade futura e qualquer CVV.
+
+**Para desligar:** apagar `STRIPE_SECRET_KEY` (volta o pagamento simulado).
+
+**Limites desta versão:** o dinheiro não é repassado à usina (isso pede Stripe Connect); Pix e boleto dependem do que a conta Stripe liberar.

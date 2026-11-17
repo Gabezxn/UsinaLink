@@ -15,6 +15,7 @@ const passos = [
   ['security/sec-1-2-seed-jwt', 'node', ['qa/security/sec-1-2-seed-jwt.mjs']],
   ['security/sec-7-throttle', 'node', ['qa/security/sec-7-throttle.mjs']],
   ['security/sec-2fa', 'node', ['qa/security/sec-2fa.mjs']],
+  ['security/sec-stripe', 'node', ['qa/security/sec-stripe.mjs']],
   ['security/xss-sweep', 'node', ['qa/security/xss-sweep.mjs']],
   ['flows/a11y-base', 'node', ['qa/flows/a11y-base.mjs']],
   ['flows/a11y-pages', 'node', ['qa/flows/a11y-pages.mjs']],
@@ -27,6 +28,7 @@ const passos = [
   ['flows/ui-p24', 'node', ['qa/flows/ui-p24.mjs']],
   ['flows/motion', 'node', ['qa/flows/motion.mjs']],
   ['flows/two-factor-ui', 'node', ['qa/flows/two-factor-ui.mjs']],
+  ['flows/stripe-ui', 'node', ['qa/flows/stripe-ui.mjs']],
   ['checks/axe', 'node', ['qa/checks/axe.mjs']],
   ['checks/console', 'node', ['qa/checks/console.mjs']],
 ];

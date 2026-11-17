@@ -9,3 +9,12 @@ export class CreatePagamentoDto {
   @IsOptional() @IsString() metodo?: string;
   @IsOptional() @IsString() method?: string;
 }
+
+export class CheckoutDto {
+  @Transform(paraTexto) @IsNotEmpty({ message: 'Informe o pedido a pagar.' }) @IsString() pedidoId: string;
+  @IsOptional() @IsString() retorno?: string;
+}
+
+export class ConfirmarCheckoutDto {
+  @IsNotEmpty({ message: 'Informe a sessao de pagamento.' }) @IsString() sessionId: string;
+}

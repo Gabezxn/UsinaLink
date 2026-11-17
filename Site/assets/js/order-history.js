@@ -109,6 +109,18 @@
   async function renderPaymentPage() {
     const root = document.querySelector("[data-payment-page]");
     if (!root) return;
+    // Volta da Stripe: o servidor confere la se o pagamento foi feito antes de marcar o pedido como pago.
+    const stripeVolta = params.get("stripe");
+    if (stripeVolta === "ok" && params.get("session_id")) {
+      root.innerHTML = '<div class="empty-state" role="status"><strong>Confirmando seu pagamento...</strong><span>Só um instante.</span></div>';
+      try {
+        await service.confirmarStripe(params.get("session_id"));
+        window.location.replace(`confirmacao-pedido.html?pedidoId=${encodeURIComponent(params.get("pedidoId") || "")}`);
+      } catch (error) {
+        root.innerHTML = `<div class="empty-state" role="alert"><strong>Não foi possível confirmar o pagamento</strong><span>${ui.escapeHtml ? ui.escapeHtml(error.message) : "Tente novamente em instantes."}</span><a class="btn btn-small" href="pagamento-pedido.html?pedidoId=${encodeURIComponent(params.get("pedidoId") || "")}">Voltar ao pagamento</a></div>`;
+      }
+      return;
+    }
     const order = await service.getOrder(params.get("pedidoId"));
     if (!order) {
       root.innerHTML = '<div class="empty-state"><strong>Pedido nao encontrado</strong><span>Volte para pagamentos e tente novamente.</span></div>';
@@ -139,8 +151,35 @@
     document.querySelector("[data-copy-boleto]")?.addEventListener("click", () => navigator.clipboard?.writeText("34191.79001 01043.510047 91020.150008 8 98760000018500").then(() => ui.showFeedback("Linha digitavel copiada.")));
     document.querySelectorAll("[data-payment-method]").forEach(button => button.addEventListener("click", () => setMethod(button.dataset.paymentMethod)));
     setMethod("PIX");
+    const stripe = await service.stripeAtivo();
+    if (stripe) {
+      // Pagamento online: esconde as formas ficticias e leva o cliente para a pagina segura da Stripe.
+      document.querySelectorAll(".payment-methods, .method-panel").forEach(el => { el.hidden = true; });
+      const painel = document.querySelector("#payment-method")?.closest(".payment-panel");
+      if (painel) {
+        const aviso = document.createElement("p");
+        aviso.textContent = "Você será levado à página segura de pagamento da Stripe para pagar com cartão. Seus dados de cartão não passam pelo site da Usinalink.";
+        painel.appendChild(aviso);
+      }
+      const teste = document.querySelector(".test-warning"); if (teste) teste.textContent = "Ambiente de testes. Use o cartão 4242 4242 4242 4242, qualquer validade futura e qualquer CVV. Nenhuma cobrança real.";
+      const pequeno = document.querySelector(".payment-summary small"); if (pequeno) pequeno.textContent = "Pagamento processado pela Stripe.";
+      const botao = document.querySelector("[data-confirm-payment]"); if (botao) botao.textContent = "Pagar com cartão";
+      if (params.get("stripe") === "cancelado") ui.showFeedback("Pagamento cancelado. Você pode tentar de novo quando quiser.", "info");
+    }
     document.querySelector("[data-confirm-payment]")?.addEventListener("click", async (event) => {
       const button = event.currentTarget;
+      if (stripe) {
+        button.disabled = true;
+        button.textContent = "Abrindo pagamento...";
+        try {
+          window.location.href = await service.iniciarStripe(order);
+        } catch (error) {
+          ui.showFeedback(error.message, "error");
+          button.disabled = false;
+          button.textContent = "Pagar com cartão";
+        }
+        return;
+      }
       const method = document.querySelector("#payment-method").value;
       if (!validatePayment(method)) return;
       button.disabled = true;
