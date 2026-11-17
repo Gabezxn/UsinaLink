@@ -3547,3 +3547,6 @@ dd,
 .status-proposta-aceita, .status-aprovada { color: #166534; background: #dcfce7; }
 .status-proposta-recusada, .status-rejeitada, .status-cancelada { color: #991b1b; background: #fee2e2; }
 .status-enviado { color: #334155; background: #e2e8f0; }
+
+/* Logo nova (marca em SVG, branca sobre o quadrado azul) */
+.brand-icon .brand-mark { width: 72%; height: auto; }

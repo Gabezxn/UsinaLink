@@ -413,3 +413,14 @@ Publicado no site principal com a aprovação do dono do projeto.
 | `avaliacoes`, `funcionarios`, `pagamentos` (só da empresa) | `avaliacoes-empresa`, `funcionarios-empresa`, `pagamentos-empresa` |
 
 Os arquivos de script em `Site/assets/js` seguiram os mesmos nomes. Links, menus (`role-nav.js`), avisos do servidor e testes foram atualizados (142 referências). Os endereços antigos continuam funcionando por redirecionamento (`Site/_redirects`). Títulos alinhados ao menu: "Peças comerciais" (empresa) e "Usinas bloqueadas". As rotas internas da API (`/api/solicitacoes`) não mudaram.
+
+## Pedido 39 (17/11): logo nova — VERSÃO DE TESTE
+
+Publicado só na branch `teste-logo`. O site principal só muda depois da sua aprovação.
+
+| Mudança | Onde |
+|---|---|
+| A logo enviada (`logo.svg`, quatro elos hexagonais) virou a marca do site: aparece no quadrado colorido de cada tipo de conta (azul, laranja, verde-azulado), no cabeçalho, nos logins e no menu lateral. Fica nítida em qualquer tamanho por ser SVG | `Site/assets/img/logo-mark-branco.svg` (branca, para fundo colorido), `logo-mark.svg` (azul `#113272`, fundo transparente, para fundo claro), 50 páginas HTML, `Site/style.css` |
+| Ícone da aba do navegador (favicon) com a marca branca no quadrado azul | `Site/assets/img/favicon.svg` |
+
+A imagem de compartilhamento em redes sociais (`preview.png`) ainda tem o desenho antigo e precisa ser refeita à parte.
