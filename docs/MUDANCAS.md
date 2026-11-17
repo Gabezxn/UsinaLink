@@ -357,3 +357,9 @@ Publicado só na branch `teste-stripe`. Sem `STRIPE_SECRET_KEY` no servidor, nad
 | Mudança | Onde |
 |---|---|
 | A barrinha da página atual no menu lateral era sempre laranja. Agora segue o tipo de conta: empresa azul, pessoa física verde-azulado, usina laranja | `Site/style.css` |
+
+## Pedido 35 (16/11): etiqueta feia no topo do perfil
+
+| Mudança | Onde |
+|---|---|
+| Saiu a etiqueta solta ("Pessoa física", "Empresa", "Usina") no fim do cabeçalho do perfil, que aparecia como um retângulo desalinhado. O tipo da conta continua visível no menu lateral | `Site/perfil-pessoa-fisica.html`, `perfil-empresa.html`, `perfil-usina.html` |
