@@ -142,30 +142,37 @@
   }
 
   /* ---------- VLibras ---------- */
-  // O VLibras novo desenha o painel e o avatar dentro de um shadow DOM (#vlibras-app-root), fora do [vw].
-  // No modo escuro a página inteira é invertida por filtro, então o painel precisa de uma segunda inversão
-  // (aplicada em cada filho do shadow DOM; no host não serve, porque ele prende o painel ao fim da página).
+  // O VLibras novo desenha o painel/avatar (#vlibras-app-root) e o botão com a dica "Acessível com VLibras"
+  // (#vlibras-access-wrapper) dentro de shadow DOM, fora do [vw]. No modo escuro a página inteira é invertida
+  // por filtro, então cada peça desses dois precisa de uma segunda inversão (no host não serve: ele prenderia
+  // o painel ao fim da página).
+  var VLIBRAS_HOSTS = ["vlibras-app-root", "vlibras-access-wrapper"];
   function vlibrasEscuro() {
-    var host = document.getElementById("vlibras-app-root");
-    var sr = host && host.shadowRoot;
-    if (!sr) return;
     var escuro = root.classList.contains("a11y-dark");
-    Array.prototype.forEach.call(sr.children, function (c) {
-      if (c.tagName === "STYLE") return;
-      c.style.filter = escuro ? "invert(1) hue-rotate(180deg)" : "";
+    VLIBRAS_HOSTS.forEach(function (id) {
+      var host = document.getElementById(id);
+      var sr = host && host.shadowRoot;
+      if (!sr) return;
+      Array.prototype.forEach.call(sr.children, function (c) {
+        if (c.tagName === "STYLE") return;
+        c.style.filter = escuro ? "invert(1) hue-rotate(180deg)" : "";
+      });
     });
   }
   function vigiarVlibras() {
-    var tentativas = 0;
-    var timer = window.setInterval(function () {
-      var host = document.getElementById("vlibras-app-root");
-      var sr = host && host.shadowRoot;
-      if (sr && window.MutationObserver) {
-        window.clearInterval(timer);
-        new MutationObserver(vlibrasEscuro).observe(sr, { childList: true });
-        vlibrasEscuro();
-      } else if (++tentativas > 120) window.clearInterval(timer);
-    }, 500);
+    var vigiados = [];
+    // O painel só aparece quando a pessoa abre o Libras, então a checagem continua enquanto a página estiver aberta.
+    window.setInterval(function () {
+      VLIBRAS_HOSTS.forEach(function (id) {
+        var host = document.getElementById(id);
+        var sr = host && host.shadowRoot;
+        if (sr && vigiados.indexOf(id) < 0 && window.MutationObserver) {
+          vigiados.push(id);
+          new MutationObserver(vlibrasEscuro).observe(sr, { childList: true });
+        }
+      });
+      vlibrasEscuro();
+    }, 1000);
   }
 
   function vlibras() {
