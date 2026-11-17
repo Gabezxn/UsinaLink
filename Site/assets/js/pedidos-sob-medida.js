@@ -164,13 +164,8 @@
     });
   }
 
-  const STATUS_LABEL = { aberta: 'Aberta', em_analise: 'Em análise', concluida: 'Concluída', cancelada: 'Cancelada' };
-  function statusBadge(status) {
-    const map = { aberta: 'info', em_analise: 'warning', concluida: 'success', cancelada: 'muted' };
-    const cls = map[status] || 'info';
-    const label = STATUS_LABEL[status] || status || 'Aberta';
-    return `<span class="badge ${cls}">${label}</span>`;
-  }
+  // O status vem do pedido (ver status-pedido.js): aceitar uma proposta não deixa mais a solicitação "Concluída".
+  const statusBadge = (item) => window.UsinaLinkStatus.badge(item);
 
   async function loadSolicitacoes() {
     const body = document.querySelector('[data-solicitacoes-body]');
@@ -187,9 +182,9 @@
           <td>${esc(row.peca)}</td>
           <td>${esc(row.categoria)}</td>
           <td>${row.quantidade ?? '-'}</td>
-          <td>${statusBadge(row.status)}</td>
+          <td>${statusBadge(row)}</td>
           <td>${row.prazoDesejado ? new Date(row.prazoDesejado).toLocaleDateString('pt-BR') : '-'}</td>
-          <td><button class="table-action js-view-solicitacao" type="button">Ver</button> <a class="table-action" href="propostas.html">Ver propostas</a></td>
+          <td><button class="table-action js-view-solicitacao" type="button">Ver</button> <a class="table-action" href="propostas.html">Ver propostas</a> ${window.UsinaLinkStatus.acao(row)}</td>
         </tr>`).join('');
     } catch (error) {
       body.innerHTML = `<tr><td colspan="6" class="td-empty">Falha ao carregar solicitações: ${esc(error.message)}</td></tr>`;
@@ -215,7 +210,7 @@
         <div><span>Material</span><strong>${esc(item.material || '-')}</strong></div>
         <div><span>Quantidade</span><strong>${esc(item.quantidade ?? '-')}</strong></div>
         <div><span>Urgência</span><strong>${esc(formatUrgencia(item.urgencia, '-'))}</strong></div>
-        <div><span>Status</span><strong>${esc(STATUS_LABEL[item.status] || item.status || '-')}</strong></div>
+        <div><span>Status</span><strong>${esc(window.UsinaLinkStatus.rotulo(item))}</strong></div>
         <div><span>Prazo desejado</span><strong>${item.prazoDesejado ? new Date(item.prazoDesejado).toLocaleDateString('pt-BR') : '-'}</strong></div>
         <div><span>Local de entrega</span><strong>${esc(item.localEntrega || '-')}</strong></div>
         <div><span>Arquivo técnico</span><strong>${arquivoInfo}</strong></div>

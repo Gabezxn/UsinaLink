@@ -1,9 +1,5 @@
 (function () {
-  function statusBadge(status) {
-    const map = { aberta: ["info", "Aberta"], em_analise: ["warning", "Em analise"], concluida: ["success", "Concluida"], cancelada: ["muted", "Cancelada"] };
-    const [cls, label] = map[status] || ["info", status || "Aberta"];
-    return `<span class="badge ${cls}">${label}</span>`;
-  }
+  const statusBadge = (item) => window.UsinaLinkStatus.badge(item);
 
   function esc(value) {
     return typeof escapeHtml === "function" ? escapeHtml(value ?? "") : String(value ?? "");
@@ -14,7 +10,7 @@
       <td>${esc(item.peca)}</td>
       <td>${esc(item.categoria)}</td>
       <td>${item.quantidade ?? "-"}</td>
-      <td>${statusBadge(item.status)}</td>
+      <td>${statusBadge(item)}</td>
       <td>${item.prazoDesejado ? new Date(item.prazoDesejado).toLocaleDateString("pt-BR") : "-"}</td>
     </tr>`;
   }

@@ -61,6 +61,11 @@
     const orders = await service.getOrders();
     const stat = document.querySelector("[data-stat-aguardando-pagamento]");
     if (stat) stat.textContent = orders.filter(order => order.statusPedido === "proposta_aceita" && order.statusPagamento !== "Pago").length;
+    const pagos = orders.filter(order => order.statusPagamento === "Pago");
+    const statPagos = document.querySelector("[data-stat-pagos]");
+    if (statPagos) statPagos.textContent = pagos.length;
+    const statTotal = document.querySelector("[data-stat-total-pago]");
+    if (statTotal) statTotal.textContent = ui.formatCurrency(pagos.reduce((soma, order) => soma + (Number(order.totals?.total) || 0), 0));
     if (!orders.length) {
       container.innerHTML = '<div class="empty-state"><strong>Nenhum pedido encontrado</strong><span>Assim que houver propostas aceitas, os pedidos aparecem aqui.</span><a class="btn btn-small" href="' + (service.currentSession().tipo === "pessoa_fisica" ? "pecas-comerciais-pessoa-fisica.html" : "pedidos-sob-medida.html") + '">' + (service.currentSession().tipo === "pessoa_fisica" ? "Ver o catálogo" : "Ver solicitações") + '</a></div>';
       return;

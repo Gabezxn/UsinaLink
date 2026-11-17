@@ -15,6 +15,14 @@ t.ok(ok === 1, `pagamento simultaneo: esperava 1 sucesso, deu ${ok} (${resp.map(
 const meus = (await call('GET', '/api/pagamentos', emp)).json || [];
 t.ok(meus.filter((p) => p.idPedido === ped.idPedido).length === 1, 'deveria existir 1 pagamento do pedido');
 
+// 1b) Depois de aceitar a proposta, o comprador vê o pedido "aguardando pagamento" (e não "concluído") na lista de solicitações
+const sol = await call('POST', '/api/solicitacoes', emp, { peca: 'Status QA', categoria: 'x', material: 'x', quantidade: '1', prazoDesejado: '2099-01-01', urgencia: 'Normal', localEntrega: 'x', descricao: 'x', arquivoTecnico: 'data:image/png;base64,iVBORw0KGgo=', arquivoTecnicoNome: 'a.png' });
+const pedSol = sol.json?.idPedido;
+const propSol = await novaProposta(usi, pedSol);
+await call('PATCH', `/api/propostas/${propSol.idProposta}/aceitar`, emp);
+const minhas = (await call('GET', '/api/solicitacoes/meus', emp)).json || [];
+t.ok(minhas.find((x) => x.idSolicitacao === sol.json.idSolicitacao)?.statusPedido === 'proposta_aceita', 'solicitacao deveria trazer statusPedido proposta_aceita');
+
 // 2) Cancelar pedido com proposta aceita cancela a proposta e avisa a usina
 const ped2 = await novoPedido(emp);
 const prop2 = await novaProposta(usi, ped2.idPedido);

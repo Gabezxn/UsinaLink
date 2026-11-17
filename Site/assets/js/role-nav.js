@@ -24,7 +24,7 @@
     { chave: "propostas", icone: "R", empresa: ["propostas.html", "Propostas recebidas"], usina: ["propostas-usina.html", "Propostas enviadas"], pessoa_fisica: ["propostas.html", "Propostas recebidas"] },
     { chave: "compras", icone: "C", pessoa_fisica: ["compras-pessoa-fisica.html", "Minhas compras"] },
     { chave: "historico", icone: "H", empresa: ["historico-pedidos.html", "Histórico de pedidos"], usina: ["historico-pedidos.html", "Histórico relacionado"], pessoa_fisica: ["historico-pedidos.html", "Meus pedidos"] },
-    { chave: "pagamentos", icone: "$", pessoa_fisica: ["pagamentos-pessoa-fisica.html", "Pagamentos"] },
+    { chave: "pagamentos", icone: "$", empresa: ["pagamentos-empresa.html", "Pagamentos"], pessoa_fisica: ["pagamentos-pessoa-fisica.html", "Pagamentos"] },
     { chave: "avaliacoes", icone: "A", empresa: ["avaliacoes-empresa.html", "Avaliações"], usina: ["avaliacoes-usina.html", "Avaliações recebidas"], pessoa_fisica: ["avaliacoes-pessoa-fisica.html", "Avaliações"] },
     { chave: "notificacoes", icone: "N", pessoa_fisica: ["notificacoes-pessoa-fisica.html", "Notificações"] },
     { chave: "bloqueadas", icone: "B", empresa: ["usinas-bloqueadas.html", "Usinas bloqueadas"] },

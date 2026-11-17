@@ -23,7 +23,8 @@
         <a href="funcionarios-empresa.html" data-icon="F">Funcion&aacute;rios</a>
         <a href="pedidos-sob-medida.html" data-icon="S">Pedido sob medida</a>
         <a href="propostas.html" data-icon="R">Propostas recebidas</a>
-        <a class="active" href="historico-pedidos.html" data-icon="H">Hist&oacute;rico de pedidos</a>
+        <a href="historico-pedidos.html" data-icon="H">Hist&oacute;rico de pedidos</a>
+        <a class="active" href="pagamentos-empresa.html" data-icon="$">Pagamentos</a>
         <a href="avaliacoes-empresa.html" data-icon="A">Avalia&ccedil;&otilde;es</a>
         <a href="usinas-bloqueadas.html" data-icon="B">Usinas bloqueadas</a>
         <a href="index.html" data-icon="X">Sair</a>
@@ -32,16 +33,16 @@
     <main class="app-main">
       <header class="page-header premium-header">
         <div>
-          <span class="eyebrow">Financeiro em testes</span>
+          <span class="eyebrow">Financeiro</span>
           <h1>Pagamentos</h1>
-          <p>Acompanhe pedidos, valores e simule pagamentos por PIX, cart&atilde;o ou boleto sem enviar dados reais.</p>
+          <p>Pague os pedidos com proposta aceita e acompanhe o que j&aacute; foi pago, com os comprovantes.</p>
         </div>
         <a class="btn btn-ghost" href="historico-pedidos.html">Ver hist&oacute;rico</a>
       </header>
       <section class="summary-grid professional">
         <article class="card summary-card"><span>Aguardando pagamento</span><strong data-stat-aguardando-pagamento>-</strong><small>Pedidos com proposta aceita</small></article>
-        <article class="card summary-card"><span>Pagos</span><strong>Na conta</strong><small>Pagamentos simulados, registrados na sua conta</small></article>
-        <article class="card summary-card"><span>Ambiente</span><strong>Teste</strong><small>Nenhum dado real de cart&atilde;o</small></article>
+        <article class="card summary-card"><span>Pedidos pagos</span><strong data-stat-pagos>-</strong><small>Em produ&ccedil;&atilde;o ou conclu&iacute;dos</small></article>
+        <article class="card summary-card"><span>Total pago</span><strong data-stat-total-pago>-</strong><small>Soma dos pedidos pagos</small></article>
       </section>
       <section class="payments-grid" data-payments-list aria-live="polite"></section>
     </main>

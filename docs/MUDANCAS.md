@@ -435,6 +435,14 @@ Publicado direto na main a pedido do dono do projeto.
 
 A imagem de compartilhamento em redes sociais (`Site/assets/img/preview.png`, 1200×630) foi refeita com a logo nova, no mesmo texto de antes e com fundo azul liso.
 
+## Pedido 47 (17/11): pedido aceito "sumia" para a empresa e não havia Pagamentos no menu
+
+| Problema | Correção | Onde |
+|---|---|---|
+| Depois que a empresa aceitava uma proposta, o pedido aparecia como "Concluída" em "Pedido sob medida" e no painel, sem nenhuma ação, e parecia ter sumido ou terminado antes de pagar | O status mostrado vem do pedido: "Aguardando pagamento", "Em produção", "Concluída"... (a lista de solicitações do servidor passou a trazer `statusPedido`). Na lista aparece o botão "Pagar pedido" (ou "Acompanhar pedido" depois de pago) | `backend/src/solicitacao/solicitacao.service.ts` e `.module.ts`, `Site/assets/js/status-pedido.js` (novo), `pedidos-sob-medida.js`, `dashboard-empresa.js` |
+| O menu da empresa não tinha "Pagamentos" (só a pessoa física tinha) | "Pagamentos" no menu da empresa: lista os pedidos aguardando pagamento (com "Pagar pedido"), os pagos e os comprovantes. Textos da página sem a palavra "teste" e com números reais (pedidos pagos e total pago) | `Site/assets/js/role-nav.js`, `Site/pagamentos-empresa.html`, `Site/assets/js/order-history.js` |
+| Teste | A lista de solicitações traz o status do pedido depois do aceite | `qa/security/sec-revisao.mjs` |
+
 ## Pedido 46 (17/11): modo escuro sem piscada, ícones do menu e dados de exemplo removidos
 
 | Problema | Correção | Onde |

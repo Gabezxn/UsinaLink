@@ -1,9 +1,9 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { ContextoUsuarioService } from '../contexto-usuario/contexto-usuario.service';
 import { PedidoService } from '../pedido/pedido.service';
-import { Solicitacao } from '../common/entities/core.entities';
+import { Pedido, Solicitacao } from '../common/entities/core.entities';
 import { CreateSolicitacaoDto } from './dto/create-solicitacao.dto';
 
 function diasAte(dataIso?: string): number | undefined {
@@ -18,6 +18,7 @@ function diasAte(dataIso?: string): number | undefined {
 export class SolicitacaoService {
   constructor(
     @InjectRepository(Solicitacao) private readonly solicitacoes: Repository<Solicitacao>,
+    @InjectRepository(Pedido) private readonly pedidos: Repository<Pedido>,
     private readonly ctx: ContextoUsuarioService,
     private readonly pedidoService: PedidoService,
   ) {}
@@ -56,7 +57,12 @@ export class SolicitacaoService {
   async minhas(user: any) {
     const comprador = await this.ctx.obterComprador(user.sub);
     const where = comprador.idPessoaFisica ? { idPessoaFisica: comprador.idPessoaFisica } : { idEmpresa: comprador.idEmpresa };
-    return this.solicitacoes.find({ where, order: { criadoEm: 'DESC' } });
+    const linhas = await this.solicitacoes.find({ where, order: { criadoEm: 'DESC' } });
+    // O status que o comprador acompanha é o do pedido (aguardando pagamento, em produção...); o da solicitação fica "concluída" ao aceitar a proposta.
+    const ids = linhas.map(l => l.idPedido).filter((id): id is number => !!id);
+    const pedidos = ids.length ? await this.pedidos.find({ where: { idPedido: In(ids) }, select: ['idPedido', 'status'] }) : [];
+    const statusPorPedido = new Map(pedidos.map(p => [p.idPedido, p.status]));
+    return linhas.map(l => ({ ...l, statusPedido: l.idPedido ? statusPorPedido.get(l.idPedido) : undefined }));
   }
 
   async detalhe(id: number, user: any) {
