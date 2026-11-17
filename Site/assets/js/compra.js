@@ -90,7 +90,7 @@
             <div><span>Quantidade</span><strong>${esc(c.quantidade ?? 1)}</strong></div>
             <div><span>Valor unitário</span><strong>${esc(money(c.valorUnitario))}</strong></div>
             <div><span>Total</span><strong>${esc(c.total != null ? money(c.total) : "Sob consulta")}</strong></div>
-            <div><span>Usina</span><strong>${usina ? `<a class="text-link" href="usina-pessoa-fisica.html?id=${esc(usina.idUsina)}">${esc(usina.nome)}</a>` : esc(c.fornecedor || "-")}</strong></div>
+            <div><span>Usina</span><strong>${usina ? `<a class="text-link" href="usina.html?id=${esc(usina.idUsina)}">${esc(usina.nome)}</a>` : esc(c.fornecedor || "-")}</strong></div>
             <div><span>Contato da usina</span><strong>${esc([usina?.email, usina?.telefone].filter(Boolean).join(" / ") || "-")}</strong></div>
             <div><span>Solicitada em</span><strong>${esc(dateTime(c.criadoEm))}</strong></div>
             <div><span>Pagamento</span><strong>${c.pago ? esc(`${c.metodoPagamento} · ${date(c.dataPagamento)}`) : "Pendente"}</strong></div>
@@ -203,6 +203,6 @@
   try {
     const tipo = JSON.parse(sessionStorage.getItem("usinalinkSession") || "{}").tipo;
     const voltar = document.querySelector("[data-voltar-compra]");
-    if (tipo === "empresa" && voltar) voltar.setAttribute("href", "dashboard-pessoa-juridica.html");
+    if (tipo === "empresa" && voltar) voltar.setAttribute("href", "pecas-comerciais-empresa.html");
   } catch { /* sem sessão legível */ }
 })();

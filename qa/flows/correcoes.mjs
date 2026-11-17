@@ -42,7 +42,7 @@ const nav = (page) => page.locator('.side-nav a').allInnerTexts();
   t.ok(m.some((x) => /Pedido sob medida/.test(x)) && !m.some((x) => /^Solicitações$/.test(x.trim())), `menu da empresa deveria dizer "Pedido sob medida" (${m.join(' | ')})`);
   t.ok(m.some((x) => /^Usinas$/.test(x.trim())), `menu da empresa sem "Usinas" (${m.join(' | ')})`);
   await page.click('.side-nav a:has-text("Usinas")');
-  await page.waitForURL('**/usinas-pessoa-fisica.html');
+  await page.waitForURL('**/usinas.html');
   await page.waitForSelector('[data-usinas] .card', { timeout: 10000 }).catch(() => t.ok(false, 'lista de usinas não carregou para a empresa'));
   const nomeUsina = await page.locator('[data-usinas] .card a:has-text("Ver usina")').first().getAttribute('href').catch(() => null);
   t.ok(!!nomeUsina, 'usina sem link para detalhes');

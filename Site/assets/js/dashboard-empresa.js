@@ -50,7 +50,7 @@
         const recentes = [...solicitacoes].slice(0, 5);
         tableBody.innerHTML = recentes.length
           ? recentes.map(solicitacaoRowMarkup).join("")
-          : '<tr><td colspan="5" class="td-empty">Nenhuma solicitacao ainda. <a href="nova-solicitacao.html">Criar a primeira</a>.</td></tr>';
+          : '<tr><td colspan="5" class="td-empty">Nenhuma solicitacao ainda. <a href="novo-pedido-sob-medida.html">Criar a primeira</a>.</td></tr>';
       }
     } catch (error) {
       if (tableBody) tableBody.innerHTML = `<tr><td colspan="5" class="td-empty">Falha ao carregar: ${esc(error.message)}</td></tr>`;

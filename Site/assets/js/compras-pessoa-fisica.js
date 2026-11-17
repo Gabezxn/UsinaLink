@@ -11,7 +11,7 @@
   }
 
   function acaoRapida(c) {
-    const href = `compra-pessoa-fisica.html?id=${esc(c.idSolicitacaoComercial)}`;
+    const href = `compra.html?id=${esc(c.idSolicitacaoComercial)}`;
     const principal = { aceita: "Pagar", enviada: "Confirmar entrega" }[c.status];
     if (c.status === "entregue" && !c.avaliacao) return `<a class="table-action" href="avaliacoes-pessoa-fisica.html?compra=${esc(c.idSolicitacaoComercial)}">Avaliar</a>`;
     return `<a class="table-action" href="${href}">${principal || "Acompanhar"}</a>`;
@@ -21,7 +21,7 @@
     const visiveis = compras.filter((c) => filtro === "todas" || grupo(c) === filtro);
     corpo.innerHTML = visiveis.length
       ? visiveis.map((c) => `<tr data-search-row>
-          <td><a class="text-link" href="compra-pessoa-fisica.html?id=${esc(c.idSolicitacaoComercial)}">${esc(c.peca)}</a></td>
+          <td><a class="text-link" href="compra.html?id=${esc(c.idSolicitacaoComercial)}">${esc(c.peca)}</a></td>
           <td>${esc(c.usina?.nome || c.fornecedor || "-")}</td>
           <td>${esc(c.quantidade ?? 1)}</td>
           <td>${esc(c.total != null ? money(c.total) : "Sob consulta")}</td>
@@ -29,7 +29,7 @@
           <td>${esc(date(c.criadoEm))}</td>
           <td>${acaoRapida(c)}</td>
         </tr>`).join("")
-      : `<tr><td colspan="7" class="td-empty">${compras.length ? "Nenhuma compra neste filtro." : 'Você ainda não solicitou nenhuma peça. <a class="text-link" href="catalogo-pessoa-fisica.html">Ver o catálogo</a>.'}</td></tr>`;
+      : `<tr><td colspan="7" class="td-empty">${compras.length ? "Nenhuma compra neste filtro." : 'Você ainda não solicitou nenhuma peça. <a class="text-link" href="pecas-comerciais-pessoa-fisica.html">Ver o catálogo</a>.'}</td></tr>`;
   }
 
   document.querySelectorAll("[data-compra-filtro]").forEach((botao) => botao.addEventListener("click", () => {

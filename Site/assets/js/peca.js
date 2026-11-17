@@ -23,7 +23,7 @@
             <div><span>Estoque</span><strong>${esc(estoque)}</strong></div>
             <div><span>Prazo de entrega</span><strong>${esc(formatPrazo(peca.prazoEntregaDias))}</strong></div>
             <div><span>Valor unitário</span><strong>${esc(money(peca.valorUnitario))}</strong></div>
-            <div><span>Fornecedor</span><strong><a class="text-link" href="usina-pessoa-fisica.html?id=${esc(peca.idUsina)}">${esc(fornecedor)}</a></strong></div>
+            <div><span>Fornecedor</span><strong><a class="text-link" href="usina.html?id=${esc(peca.idUsina)}">${esc(fornecedor)}</a></strong></div>
           </div>
         </article>
         <article class="card detail-card">
@@ -58,7 +58,7 @@
       try {
         const compra = await api().post("/solicitacoes-comerciais", { pecaId: String(peca.idPecaComercial), peca: peca.nome, quantidade: String(quantidade) });
         toast("Solicitação enviada à usina.");
-        window.setTimeout(() => { window.location.href = `compra-pessoa-fisica.html?id=${compra.idSolicitacaoComercial}`; }, 600);
+        window.setTimeout(() => { window.location.href = `compra.html?id=${compra.idSolicitacaoComercial}`; }, 600);
       } catch (error) {
         toast(error.message);
         botao.disabled = false;

@@ -21,7 +21,7 @@
     const pagos = [
       ...compras.filter((c) => c.pago).map((c) => ({
         origem: "Compra de catálogo", descricao: `${c.quantidade}x ${c.peca}`, valor: Number(c.total), metodo: c.metodoPagamento,
-        data: c.dataPagamento, protocolo: c.protocoloPagamento, href: `compra-pessoa-fisica.html?id=${c.idSolicitacaoComercial}`,
+        data: c.dataPagamento, protocolo: c.protocoloPagamento, href: `compra.html?id=${c.idSolicitacaoComercial}`,
       })),
       ...pagamentos.filter((p) => p.status === "pago").map((p) => ({
         origem: "Pedido sob medida", descricao: nomePedido(p.idPedido), valor: Number(p.valor), metodo: p.metodo,
@@ -35,7 +35,7 @@
 
     // ---- a pagar ----
     const aPagarCompras = compras.filter((c) => c.status === "aceita").map((c) => ({
-      origem: "Compra de catálogo", descricao: `${c.quantidade}x ${c.peca}`, valor: Number(c.total), href: `compra-pessoa-fisica.html?id=${c.idSolicitacaoComercial}`,
+      origem: "Compra de catálogo", descricao: `${c.quantidade}x ${c.peca}`, valor: Number(c.total), href: `compra.html?id=${c.idSolicitacaoComercial}`,
     }));
     const aPagarPedidos = pedidos.filter((p) => p.status === "proposta_aceita").map((p) => {
       const aceita = propostas.find((x) => x.idPedido === p.idPedido && x.status === "aceita");

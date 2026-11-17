@@ -155,7 +155,7 @@
 
         await window.UsinaLinkApi.post('/solicitacoes', payload);
         notify('Solicitação publicada com o arquivo anexado.', 'success');
-        window.setTimeout(() => { window.location.href = form.dataset.redirect || 'solicitacoes.html'; }, 600);
+        window.setTimeout(() => { window.location.href = form.dataset.redirect || 'pedidos-sob-medida.html'; }, 600);
       } catch (error) {
         notify(error.message, 'error');
         button.disabled = false;
@@ -179,7 +179,7 @@
       const rows = await window.UsinaLinkApi.get('/solicitacoes/meus');
       ultimasSolicitacoes = rows;
       if (!rows.length) {
-        body.innerHTML = '<tr><td colspan="6" class="td-empty">Nenhuma solicitação encontrada. <a href="nova-solicitacao.html">Criar a primeira</a>.</td></tr>';
+        body.innerHTML = '<tr><td colspan="6" class="td-empty">Nenhuma solicitação encontrada. <a href="novo-pedido-sob-medida.html">Criar a primeira</a>.</td></tr>';
         return;
       }
       body.innerHTML = rows.map(row => `

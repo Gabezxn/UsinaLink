@@ -16,14 +16,14 @@
       <a class="brand" href="index.html"><span class="brand-icon"><svg class="brand-mark" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 2.5l8 4.5v10l-8 4.5-8-4.5V7z"/><circle cx="12" cy="12" r="3.2"/></svg></span><span>Usinalink</span></a>
       <nav class="side-nav" data-role-nav="empresa">
         <a href="dashboard-empresa.html" data-icon="D">Início</a>
-        <a href="dashboard-pessoa-juridica.html" data-icon="P">Pe&ccedil;as comerciais</a>
+        <a href="pecas-comerciais-empresa.html" data-icon="P">Pe&ccedil;as comerciais</a>
         <a href="perfil-empresa.html" data-icon="I">Perfil</a>
-        <a href="funcionarios.html" data-icon="F">Funcion&aacute;rios</a>
-        <a href="solicitacoes.html" data-icon="S">Pedido sob medida</a>
+        <a href="funcionarios-empresa.html" data-icon="F">Funcion&aacute;rios</a>
+        <a href="pedidos-sob-medida.html" data-icon="S">Pedido sob medida</a>
         <a href="propostas.html" data-icon="R">Propostas recebidas</a>
         <a href="historico-pedidos.html" data-icon="H">Hist&oacute;rico de pedidos</a>
-        <a href="avaliacoes.html" data-icon="A">Avalia&ccedil;&otilde;es</a>
-        <a href="solicitacoes-bloqueio-usina.html" data-icon="B">Usinas bloqueadas</a>
+        <a href="avaliacoes-empresa.html" data-icon="A">Avalia&ccedil;&otilde;es</a>
+        <a href="usinas-bloqueadas.html" data-icon="B">Usinas bloqueadas</a>
         <a href="index.html" data-icon="X">Sair</a>
       </nav>
     </aside>
@@ -37,7 +37,7 @@
           <h2>Dados da solicita&ccedil;&atilde;o</h2>
           <p>Informe as especifica&ccedil;&otilde;es principais para receber propostas compar&aacute;veis.</p>
         </div>
-        <form class="form-grid request-form js-solicitacao-form" data-redirect="solicitacoes.html" novalidate>
+        <form class="form-grid request-form js-solicitacao-form" data-redirect="pedidos-sob-medida.html" novalidate>
           <label class="field"><span>Nome da pe&ccedil;a</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">P</span><input name="peca" type="text" placeholder="Ex.: Mancal de rolamento" required></div></label>
           <label class="field"><span>Categoria</span><div class="input-wrap select-field"><span class="input-symbol" aria-hidden="true">C</span><select name="categoria" required><option value="">Selecione</option><option>Usinagem</option><option>Fundi&ccedil;&atilde;o</option><option>Caldeiraria</option><option>Corte e dobra</option></select></div></label>
           <label class="field"><span>Material</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">M</span><input name="material" type="text" placeholder="A&ccedil;o carbono SAE 1020" required></div></label>
@@ -47,7 +47,7 @@
           <label class="field span-2"><span>Local de entrega</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">L</span><input name="localEntrega" type="text" placeholder="Cidade, UF e endere&ccedil;o de entrega" required></div></label>
           <label class="field span-2"><span>Descri&ccedil;&atilde;o t&eacute;cnica</span><textarea name="descricao" rows="5" placeholder="Detalhe medidas, toler&acirc;ncias, acabamento, normas e observa&ccedil;&otilde;es relevantes." required></textarea></label>
           <label class="upload span-2"><input name="arquivo" type="file" accept=".pdf,.dwg,.png,.jpg,.jpeg" required><span>UP</span><strong>Upload de arquivo t&eacute;cnico</strong><small>PDF, DWG ou imagem t&eacute;cnica (obrigat&oacute;rio, m&aacute;x. 5&nbsp;MB)</small><small class="upload-filename"></small></label>
-          <div class="form-actions span-2"><a class="btn btn-ghost" href="solicitacoes.html">Cancelar</a><button class="btn btn-primary" type="submit">Publicar solicita&ccedil;&atilde;o</button></div>
+          <div class="form-actions span-2"><a class="btn btn-ghost" href="pedidos-sob-medida.html">Cancelar</a><button class="btn btn-primary" type="submit">Publicar solicita&ccedil;&atilde;o</button></div>
         </form>
       </section>
     </main>
@@ -55,7 +55,7 @@
   <script src="assets/js/api.js"></script>
   <script src="assets/js/auth-guard.js"></script>
   <script src="assets/js/role-nav.js"></script>
-  <script src="assets/js/solicitacoes.js"></script>
+  <script src="assets/js/pedidos-sob-medida.js"></script>
   <script src="script.js"></script>
   <script src="assets/js/a11y.js" defer></script>
 </body>

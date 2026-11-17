@@ -37,7 +37,7 @@
     // ---- o que precisa de atencao ----
     const acoes = [];
     compras.forEach((c) => {
-      const link = `compra-pessoa-fisica.html?id=${c.idSolicitacaoComercial}`;
+      const link = `compra.html?id=${c.idSolicitacaoComercial}`;
       if (c.status === "aceita") acoes.push([`A usina aceitou <strong>${esc(c.peca)}</strong>. Pague para ela começar a separar.`, link, "Pagar"]);
       if (c.status === "enviada") acoes.push([`<strong>${esc(c.peca)}</strong> foi enviada. Confirme quando receber.`, link, "Confirmar entrega"]);
       if (c.status === "entregue" && !c.avaliacao) acoes.push([`Como foi a compra de <strong>${esc(c.peca)}</strong>? Avalie a usina.`, `avaliacoes-pessoa-fisica.html?compra=${c.idSolicitacaoComercial}`, "Avaliar"]);
@@ -55,12 +55,12 @@
     const lista = document.querySelector("[data-acoes]");
     lista.innerHTML = acoes.length
       ? acoes.map(([texto, href, botao]) => `<div class="pf-action-item"><span>${texto}</span><a class="btn btn-small btn-primary" href="${esc(href)}">${esc(botao)}</a></div>`).join("")
-      : emptyState("Tudo em dia", "Nenhuma pendência no momento. Que tal explorar as peças comerciais?", { href: "catalogo-pessoa-fisica.html", rotulo: "Ver o catálogo" });
+      : emptyState("Tudo em dia", "Nenhuma pendência no momento. Que tal explorar as peças comerciais?", { href: "pecas-comerciais-pessoa-fisica.html", rotulo: "Ver o catálogo" });
 
     // ---- ultimas compras ----
     const tabela = document.querySelector("[data-ultimas-compras]");
     tabela.innerHTML = compras.length
-      ? compras.slice(0, 5).map((c) => `<tr><td><a class="text-link" href="compra-pessoa-fisica.html?id=${esc(c.idSolicitacaoComercial)}">${esc(c.peca)}</a></td><td>${esc(c.usina?.nome || c.fornecedor || "-")}</td><td>${esc(c.quantidade ?? 1)}</td><td>${esc(c.total != null ? money(c.total) : "Sob consulta")}</td><td>${statusBadge(c.status)}</td><td>${esc(date(c.criadoEm))}</td><td>${["registrada", "aceita"].includes(c.status) ? `<a class="btn btn-ghost btn-small" href="compra-pessoa-fisica.html?id=${esc(c.idSolicitacaoComercial)}">Editar</a>` : "-"}</td></tr>`).join("")
+      ? compras.slice(0, 5).map((c) => `<tr><td><a class="text-link" href="compra.html?id=${esc(c.idSolicitacaoComercial)}">${esc(c.peca)}</a></td><td>${esc(c.usina?.nome || c.fornecedor || "-")}</td><td>${esc(c.quantidade ?? 1)}</td><td>${esc(c.total != null ? money(c.total) : "Sob consulta")}</td><td>${statusBadge(c.status)}</td><td>${esc(date(c.criadoEm))}</td><td>${["registrada", "aceita"].includes(c.status) ? `<a class="btn btn-ghost btn-small" href="compra.html?id=${esc(c.idSolicitacaoComercial)}">Editar</a>` : "-"}</td></tr>`).join("")
       : '<tr><td colspan="7" class="td-empty">Você ainda não fez nenhuma compra. Veja as peças comerciais!</td></tr>';
   }
 

@@ -117,9 +117,9 @@
         <div><span>Estoque</span><strong>${esc(estoque)}</strong></div>
         <div><span>Prazo</span><strong>${esc(formatPrazo(peca.prazoEntregaDias))}</strong></div>
         <div><span>Valor unitário</span><strong>${esc(money(peca.valorUnitario))}</strong></div>
-        <div><span>Fornecedor</span><strong><a class="text-link" href="usina-pessoa-fisica.html?id=${esc(peca.idUsina)}">${esc(fornecedor)}</a></strong></div>
+        <div><span>Fornecedor</span><strong><a class="text-link" href="usina.html?id=${esc(peca.idUsina)}">${esc(fornecedor)}</a></strong></div>
       </div>
-      <div class="card-actions"><a class="btn btn-primary" href="peca-pessoa-fisica.html?id=${esc(peca.idPecaComercial)}">Ver detalhes e comprar</a></div>
+      <div class="card-actions"><a class="btn btn-primary" href="peca.html?id=${esc(peca.idPecaComercial)}">Ver detalhes e comprar</a></div>
     </article>`;
   }
 
@@ -137,7 +137,7 @@
         <div><span>Peças no catálogo</span><strong>${esc(usina.quantidadePecas)}</strong></div>
         <div><span>Prazo médio</span><strong>${esc(usina.prazoMedio || "A combinar")}</strong></div>
       </div>
-      <div class="card-actions"><a class="btn btn-primary" href="usina-pessoa-fisica.html?id=${esc(usina.idUsina)}">Ver usina</a></div>
+      <div class="card-actions"><a class="btn btn-primary" href="usina.html?id=${esc(usina.idUsina)}">Ver usina</a></div>
     </article>`;
   }
 

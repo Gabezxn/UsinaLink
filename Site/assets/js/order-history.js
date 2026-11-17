@@ -62,7 +62,7 @@
     const stat = document.querySelector("[data-stat-aguardando-pagamento]");
     if (stat) stat.textContent = orders.filter(order => order.statusPedido === "proposta_aceita" && order.statusPagamento !== "Pago").length;
     if (!orders.length) {
-      container.innerHTML = '<div class="empty-state"><strong>Nenhum pedido encontrado</strong><span>Assim que houver propostas aceitas, os pedidos aparecem aqui.</span><a class="btn btn-small" href="' + (service.currentSession().tipo === "pessoa_fisica" ? "catalogo-pessoa-fisica.html" : "solicitacoes.html") + '">' + (service.currentSession().tipo === "pessoa_fisica" ? "Ver o catálogo" : "Ver solicitações") + '</a></div>';
+      container.innerHTML = '<div class="empty-state"><strong>Nenhum pedido encontrado</strong><span>Assim que houver propostas aceitas, os pedidos aparecem aqui.</span><a class="btn btn-small" href="' + (service.currentSession().tipo === "pessoa_fisica" ? "pecas-comerciais-pessoa-fisica.html" : "pedidos-sob-medida.html") + '">' + (service.currentSession().tipo === "pessoa_fisica" ? "Ver o catálogo" : "Ver solicitações") + '</a></div>';
       return;
     }
     container.innerHTML = orders.map(order => `
@@ -357,7 +357,7 @@
     }
     if (avaliar) {
       avaliar.hidden = isUsina || order.statusPedido !== "concluido";
-      avaliar.href = service.currentSession().tipo === "pessoa_fisica" ? "avaliacoes-pessoa-fisica.html" : "avaliacoes.html";
+      avaliar.href = service.currentSession().tipo === "pessoa_fisica" ? "avaliacoes-pessoa-fisica.html" : "avaliacoes-empresa.html";
     }
     const confirmButton = document.querySelector("[data-detail-confirm-delivery]");
     if (confirmButton) {

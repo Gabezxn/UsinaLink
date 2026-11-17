@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Usinas | Usinalink</title>
-  <meta name="description" content="Usinas na Usinalink, marketplace B2B de peças industriais que conecta empresas, usinas e compradores.">
+  <title>Usina | Usinalink</title>
+  <meta name="description" content="Usina na Usinalink, marketplace B2B de peças industriais que conecta empresas, usinas e compradores.">
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="assets/css/a11y.css">
@@ -18,22 +18,17 @@
     </aside>
     <main class="app-main">
       <div class="page-header">
-        <div><span class="eyebrow">Fornecedores</span><h1>Usinas</h1><p>Conhe&ccedil;a as usinas, veja avalia&ccedil;&otilde;es de outros compradores e as pe&ccedil;as de cada uma.</p></div>
+        <div><span class="eyebrow">Usina</span><h1 data-usina-titulo>Carregando...</h1><p data-usina-subtitulo></p></div>
+        <div class="card-actions"><a class="btn btn-ghost" href="usinas.html">Voltar &agrave;s usinas</a><span data-usina-fav></span></div>
       </div>
-      <section class="card table-card" data-search-scope>
-        <div class="table-toolbar">
-          <label class="search-box wide-search"><span>Buscar</span><input class="js-table-search" type="search" placeholder="Nome, especialidade ou cidade"></label>
-          <label class="search-box"><span>Ordenar por</span><select data-ordem><option value="nome">Nome</option><option value="nota">Melhor avaliadas</option><option value="pecas">Mais pe&ccedil;as</option></select></label>
-        </div>
-        <div class="order-card-grid" data-usinas><div class="loading-state" aria-busy="true">Carregando usinas...</div></div>
-      </section>
+      <div data-usina-conteudo><div class="loading-state" aria-busy="true">Carregando...</div></div>
     </main>
   </div>
   <script src="assets/js/api.js"></script>
   <script src="assets/js/auth-guard.js"></script>
   <script src="assets/js/pf-common.js"></script>
   <script src="assets/js/role-nav.js"></script>
-  <script src="assets/js/usinas-pessoa-fisica.js"></script>
+  <script src="assets/js/usina.js"></script>
   <script src="script.js"></script>
   <script src="assets/js/a11y.js" defer></script>
 </body>

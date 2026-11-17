@@ -397,3 +397,19 @@ Publicado só na branch `revisao-final`. O site principal só muda depois da sua
 | Teste | `qa/security/sec-senha.mjs` novo; teste de fundo do login ajustado para cor chapada | `qa/` |
 
 **Não alterado, decisão do dono do projeto:** o frete aparece no total da proposta mas o pagamento cobra só o valor; o convite de funcionário não funciona de ponta a ponta; contas demo são criadas também em produção; compra de peça do catálogo é marcada como paga sem Stripe; cerca de 150 textos ainda sem acento; `pagamentos.html` e `perfil.html` sem link no menu. Quem já está logado continua logado por até 8 horas depois de trocar a senha.
+
+## Pedido 38 (17/11): nomes das páginas padronizados — VERSÃO DE TESTE
+
+Publicado só na branch `revisao-final` (junto com o Pedido 37). O site principal só muda depois da sua aprovação.
+
+| Antes | Depois |
+|---|---|
+| `dashboard-pessoa-juridica` (peças comerciais da empresa) | `pecas-comerciais-empresa` |
+| `catalogo-pessoa-fisica` | `pecas-comerciais-pessoa-fisica` (a usina já era `pecas-comerciais-usina`) |
+| `usinas-pessoa-fisica`, `usina-pessoa-fisica` | `usinas`, `usina` (servem empresa e pessoa física) |
+| `favoritos-pessoa-fisica`, `peca-pessoa-fisica`, `compra-pessoa-fisica` | `favoritos`, `peca`, `compra` |
+| `solicitacoes`, `nova-solicitacao` | `pedidos-sob-medida`, `novo-pedido-sob-medida` |
+| `solicitacoes-bloqueio-usina` | `usinas-bloqueadas` |
+| `avaliacoes`, `funcionarios`, `pagamentos` (só da empresa) | `avaliacoes-empresa`, `funcionarios-empresa`, `pagamentos-empresa` |
+
+Os arquivos de script em `Site/assets/js` seguiram os mesmos nomes. Links, menus (`role-nav.js`), avisos do servidor e testes foram atualizados (142 referências). Os endereços antigos continuam funcionando por redirecionamento (`Site/_redirects`). Títulos alinhados ao menu: "Peças comerciais" (empresa) e "Usinas bloqueadas". As rotas internas da API (`/api/solicitacoes`) não mudaram.

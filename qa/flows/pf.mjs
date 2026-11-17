@@ -25,7 +25,7 @@ const us = await browser.newContext(); const pUs = await us.newPage();
 try {
   await loginAs(pPf, 'pessoa_fisica'); await loginAs(pUs, 'usina');
   // 1) catálogo → peça
-  await pPf.goto(`${SITE}/catalogo-pessoa-fisica.html`); clicks++;
+  await pPf.goto(`${SITE}/pecas-comerciais-pessoa-fisica.html`); clicks++;
   await pPf.fill('.js-table-search', nome);
   const card = pPf.locator('article.order-opportunity', { hasText: nome });
   t.ok(await card.count() === 1, 'a peça nova deveria aparecer no catálogo');

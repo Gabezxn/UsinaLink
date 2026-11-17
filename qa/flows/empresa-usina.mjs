@@ -24,7 +24,7 @@ const erros = []; for (const p of [pE, pU]) p.on('pageerror', (e) => erros.push(
 try {
   await loginAs(pE, 'empresa'); await loginAs(pU, 'usina');
   // 1) Empresa publica a solicitação
-  await pE.goto(`${SITE}/nova-solicitacao.html`); clicks++;
+  await pE.goto(`${SITE}/novo-pedido-sob-medida.html`); clicks++;
   await pE.fill('input[name="peca"]', peca); await pE.selectOption('select[name="categoria"]', { index: 1 });
   await pE.fill('input[name="material"]', 'Aço 1045'); await pE.fill('input[name="quantidade"]', '10');
   await pE.fill('input[name="prazoDesejado"]', '2026-12-30'); await pE.selectOption('select[name="urgencia"]', { index: 1 });
@@ -88,8 +88,8 @@ try {
   await pE.waitForTimeout(1200);
   await pE.goto(`${SITE}/historico-pedidos.html`); clicks++; await pE.waitForTimeout(1200);
   t.ok(/conclu/i.test(await pE.locator('tr', { hasText: peca }).first().innerText()), 'histórico deveria mostrar o pedido concluído');
-  // 8) FLX-3: pagamentos.html só oferece pagar pedidos aguardando pagamento
-  await pE.goto(`${SITE}/pagamentos.html`); await pE.waitForTimeout(1200);
+  // 8) FLX-3: pagamentos-empresa.html só oferece pagar pedidos aguardando pagamento
+  await pE.goto(`${SITE}/pagamentos-empresa.html`); await pE.waitForTimeout(1200);
   const pagarLinks = await pE.getByRole('link', { name: /pagar pedido/i }).count();
   const abertoVisivel = await pE.locator('article.payment-list-card', { hasText: 'Sem pagar' }).getByRole('link', { name: /pagar pedido/i }).count();
   t.ok(abertoVisivel === 0, `FLX-3 pedido sem proposta aceita aparece com "Pagar pedido" (${abertoVisivel}; total de botões ${pagarLinks})`);
@@ -98,7 +98,7 @@ try {
 {
   const html = await (await fetch(`${SITE}/pagamento-pedido.html`)).text();
   const href = (html.match(/<a[^>]*href="([^"]+)"[^>]*>\s*Voltar\s*<\/a>/) || [])[1];
-  t.ok(href && href !== 'pagamentos.html', `FLX-5 Voltar de pagamento-pedido.html aponta para "${href}" (página só da empresa)`);
+  t.ok(href && href !== 'pagamentos-empresa.html', `FLX-5 Voltar de pagamento-pedido.html aponta para "${href}" (página só da empresa)`);
 }
 t.ok(erros.length === 0, `erros de JavaScript na página: ${erros.slice(0, 2).join(' | ')}`);
 await browser.close();

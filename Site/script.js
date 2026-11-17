@@ -984,7 +984,7 @@ async function loadProposalsFromApi() {
       const melhorValor = Math.min(...proposals.filter(p => !propostaEstaTravada(p.status)).map(p => Number(p.valor) || Infinity));
       empresaGrid.innerHTML = proposals.length
         ? proposals.map((item) => proposalCardMarkup(item, Number(item.valor) === melhorValor)).join("")
-        : '<div class="empty-state"><strong>Nenhuma proposta recebida</strong><span>As propostas enviadas pelas usinas aparecem aqui. Publique uma solicitação para começar a receber.</span><a class="btn btn-small" href="nova-solicitacao.html">Nova solicitação</a></div>';
+        : '<div class="empty-state"><strong>Nenhuma proposta recebida</strong><span>As propostas enviadas pelas usinas aparecem aqui. Publique uma solicitação para começar a receber.</span><a class="btn btn-small" href="novo-pedido-sob-medida.html">Nova solicitação</a></div>';
     } catch (error) {
       empresaGrid.innerHTML = `<article class="card proposal-card"><h2>Falha ao carregar propostas</h2><p>${escapeHtml(error.message)}</p></article>`;
     }

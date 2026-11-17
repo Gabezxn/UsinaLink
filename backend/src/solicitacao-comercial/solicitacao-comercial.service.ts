@@ -206,7 +206,7 @@ export class SolicitacaoComercialService {
     const rotulo = ROTULO[status] || status;
     if (usinaAgiu) {
       const idUsuario = await this.ctx.idUsuarioDoComprador({ idEmpresa: row.idEmpresa, idPessoaFisica: row.idPessoaFisica });
-      const link = row.idPessoaFisica ? `compra-pessoa-fisica.html?id=${row.idSolicitacaoComercial}` : undefined;
+      const link = row.idPessoaFisica ? `compra.html?id=${row.idSolicitacaoComercial}` : undefined;
       await this.notificacoes.criar(idUsuario, 'Atualização da sua compra', `${row.peca}: ${rotulo}.`, link);
     } else {
       const idUsuario = await this.ctx.idUsuarioDaUsina(row.idUsina);

@@ -22,11 +22,11 @@ await call('PATCH', `/api/solicitacoes-comerciais/${idSol}/acao`, usi, { acao: '
 const ctx = await browser.newContext(); const page = await ctx.newPage();
 try {
   await loginAs(page, 'empresa');
-  await page.goto(`${SITE}/dashboard-pessoa-juridica.html`); await page.waitForTimeout(1500);
+  await page.goto(`${SITE}/pecas-comerciais-empresa.html`); await page.waitForTimeout(1500);
   const linha = page.locator('tr', { hasText: nome });
   const txt = await linha.first().innerText().catch(() => '');
   t.ok(/aceita/i.test(txt) && !/registrada/i.test(txt), `FLX-1 a tabela deveria mostrar o status real "Aceita" (mostra: ${txt.replace(/\s+/g, ' ').slice(0, 80)})`);
-  const link = linha.locator('a[href*="compra-pessoa-fisica.html"]').first();
+  const link = linha.locator('a[href*="compra.html"]').first();
   t.ok(await link.count() > 0, 'FLX-1 deveria haver link para acompanhar/pagar a compra');
   await link.click({ timeout: 5000 });
   await page.waitForSelector('[data-acao="pagar"]', { timeout: 8000 }).catch(() => t.ok(false, 'FLX-1 a empresa deveria ver "Pagar agora" na compra aceita'));

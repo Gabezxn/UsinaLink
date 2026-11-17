@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Usina | Usinalink</title>
-  <meta name="description" content="Usina na Usinalink, marketplace B2B de peças industriais que conecta empresas, usinas e compradores.">
+  <title>Peças Comerciais | Usinalink</title>
+  <meta name="description" content="Peças Comerciais na Usinalink, marketplace B2B de peças industriais que conecta empresas, usinas e compradores.">
   <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="assets/css/a11y.css">
   <script src="assets/js/safe-html.js"></script>
 </head>
-<body data-user-role="empresa,pessoa_fisica">
+<body data-user-role="pessoa_fisica">
   <div class="app-layout">
     <aside class="sidebar">
       <a class="brand" href="index.html"><span class="brand-icon"><svg class="brand-mark" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 2.5l8 4.5v10l-8 4.5-8-4.5V7z"/><circle cx="12" cy="12" r="3.2"/></svg></span><span>Usinalink</span></a>
@@ -18,17 +18,20 @@
     </aside>
     <main class="app-main">
       <div class="page-header">
-        <div><span class="eyebrow">Usina</span><h1 data-usina-titulo>Carregando...</h1><p data-usina-subtitulo></p></div>
-        <div class="card-actions"><a class="btn btn-ghost" href="usinas-pessoa-fisica.html">Voltar &agrave;s usinas</a><span data-usina-fav></span></div>
+        <div><span class="eyebrow">Cat&aacute;logo</span><h1>Pe&ccedil;as comerciais</h1><p>Pe&ccedil;as prontas das usinas parceiras. Escolha uma e solicite a compra.</p></div>
       </div>
-      <div data-usina-conteudo><div class="loading-state" aria-busy="true">Carregando...</div></div>
+      <section class="card table-card" data-search-scope>
+        <div class="table-toolbar"><label class="search-box wide-search"><span>Buscar</span><input class="js-table-search" type="search" placeholder="Pe&ccedil;a, material ou fornecedor"></label></div>
+        <div class="quick-filters" data-categorias></div>
+        <div class="order-card-grid" data-catalogo><div class="loading-state" aria-busy="true">Carregando cat&aacute;logo...</div></div>
+      </section>
     </main>
   </div>
   <script src="assets/js/api.js"></script>
   <script src="assets/js/auth-guard.js"></script>
   <script src="assets/js/pf-common.js"></script>
   <script src="assets/js/role-nav.js"></script>
-  <script src="assets/js/usina-pessoa-fisica.js"></script>
+  <script src="assets/js/pecas-comerciais-pessoa-fisica.js"></script>
   <script src="script.js"></script>
   <script src="assets/js/a11y.js" defer></script>
 </body>

@@ -61,7 +61,7 @@
             <td>${esc(row.quantidade ?? 1)}</td>
             <td><span class="badge ${statusClasse(row.status)}">${esc(statusRotulo(row.status))}</span></td>
             <td>${row.criadoEm ? new Date(row.criadoEm).toLocaleDateString('pt-BR') : '-'}</td>
-            <td><a class="table-action" href="compra-pessoa-fisica.html?id=${esc(row.idSolicitacaoComercial)}">${esc(acaoRotulo(row.status))}</a></td>
+            <td><a class="table-action" href="compra.html?id=${esc(row.idSolicitacaoComercial)}">${esc(acaoRotulo(row.status))}</a></td>
           </tr>`).join('')
         : '<tr><td colspan="7" class="td-empty">Nenhuma solicitação comercial ainda.</td></tr>';
       return rows;

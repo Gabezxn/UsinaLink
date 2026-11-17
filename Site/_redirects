@@ -1,0 +1,27 @@
+# Endereços antigos continuam funcionando (favoritos salvos, links antigos).
+/usinas-pessoa-fisica.html /usinas.html 301
+/usinas-pessoa-fisica /usinas 301
+/usina-pessoa-fisica.html /usina.html 301
+/usina-pessoa-fisica /usina 301
+/peca-pessoa-fisica.html /peca.html 301
+/peca-pessoa-fisica /peca 301
+/favoritos-pessoa-fisica.html /favoritos.html 301
+/favoritos-pessoa-fisica /favoritos 301
+/compra-pessoa-fisica.html /compra.html 301
+/compra-pessoa-fisica /compra 301
+/solicitacoes.html /pedidos-sob-medida.html 301
+/solicitacoes /pedidos-sob-medida 301
+/nova-solicitacao.html /novo-pedido-sob-medida.html 301
+/nova-solicitacao /novo-pedido-sob-medida 301
+/dashboard-pessoa-juridica.html /pecas-comerciais-empresa.html 301
+/dashboard-pessoa-juridica /pecas-comerciais-empresa 301
+/catalogo-pessoa-fisica.html /pecas-comerciais-pessoa-fisica.html 301
+/catalogo-pessoa-fisica /pecas-comerciais-pessoa-fisica 301
+/solicitacoes-bloqueio-usina.html /usinas-bloqueadas.html 301
+/solicitacoes-bloqueio-usina /usinas-bloqueadas 301
+/avaliacoes.html /avaliacoes-empresa.html 301
+/avaliacoes /avaliacoes-empresa 301
+/funcionarios.html /funcionarios-empresa.html 301
+/funcionarios /funcionarios-empresa 301
+/pagamentos.html /pagamentos-empresa.html 301
+/pagamentos /pagamentos-empresa 301
