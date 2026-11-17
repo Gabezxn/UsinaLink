@@ -3852,3 +3852,11 @@ form[hidden] { display: none !important; }
 .two-factor .input-icon input { border: 0; box-shadow: none; }
 
 .payment-methods[hidden], .method-panel[hidden] { display: none !important; }
+
+/* Barrinha da pagina atual no menu lateral: cor do tipo de conta (empresa azul, pessoa fisica verde-azulado, usina laranja) */
+.side-nav a.active::after { background: var(--blue); }
+body.pf-mode .side-nav a.active::after,
+body[data-user-role="pessoa_fisica"] .side-nav a.active::after { background: #0f766e; }
+.orange-mode .side-nav a.active::after,
+body[data-user-role="usina"] .side-nav a.active::after,
+.orange-nav a.active::after { background: var(--orange); }

@@ -351,3 +351,9 @@ Publicado só na branch `teste-stripe`. Sem `STRIPE_SECRET_KEY` no servidor, nad
 **Para desligar:** apagar `STRIPE_SECRET_KEY` (volta o pagamento simulado).
 
 **Limites desta versão:** o dinheiro não é repassado à usina (isso pede Stripe Connect); Pix e boleto dependem do que a conta Stripe liberar.
+
+## Pedido 34 (16/11): barrinha do menu lateral na cor de cada conta
+
+| Mudança | Onde |
+|---|---|
+| A barrinha da página atual no menu lateral era sempre laranja. Agora segue o tipo de conta: empresa azul, pessoa física verde-azulado, usina laranja | `Site/style.css` |
