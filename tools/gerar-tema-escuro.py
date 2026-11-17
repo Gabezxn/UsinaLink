@@ -110,6 +110,9 @@ def trocar_cores(valor, papel):
     return RE_COR.sub(uma, valor)
 
 
+ABREVIACOES = {'border', 'border-top', 'border-right', 'border-bottom', 'border-left', 'background', 'outline'}
+
+
 def papel_da_propriedade(p):
     p = p.lower()
     if p.startswith('--'):
@@ -205,7 +208,13 @@ def regras(css, nivel=0):
         decls = []
         for nome, valor in declaracoes(corpo):
             papel = papel_da_propriedade(nome)
-            if not papel or not RE_COR.search(valor):
+            if not papel:
+                continue
+            if not RE_COR.search(valor):
+                # "border: 0", "background: transparent" etc. precisam ser copiados: senão a versão escura de outra regra
+                # (com cor) ganharia deles e a caixa voltaria a ter borda/fundo.
+                if nome.lower() in ABREVIACOES:
+                    decls.append(f'  {nome}: {valor};')
                 continue
             novo = trocar_cores(valor, papel)
             if novo != valor:
@@ -251,6 +260,13 @@ html.a11y-dark select option { background: #111f40; color: #e8eefc; }
 RODAPE = '''/* Logo: no escuro a marca vira o quadrado branco com o símbolo azul-marinho (como na imagem de compartilhamento) */
 html.a11y-dark .brand-icon { background: #ffffff !important; box-shadow: none; }
 html.a11y-dark .brand-icon .brand-mark { content: url("../img/logo-mark.svg"); }
+
+/* Avisos (toast): no tema claro usavam a cor do texto como fundo; no escuro essa cor é clara e o texto branco sumia */
+html.a11y-dark .toast { background: #1d3270; color: #ffffff; border: 1px solid #3a5199; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); }
+
+/* Faixa azul "Tem uma peça para cotar?": os botões continuam claros sobre o azul */
+html.a11y-dark .lp-cta .lp-btn-light { background: #ffffff; color: #1e3a8a; border-color: #ffffff; }
+html.a11y-dark .lp-cta .lp-btn-outline { background: transparent; color: #ffffff; border: 2px solid rgba(255, 255, 255, 0.75); }
 '''
 
 
