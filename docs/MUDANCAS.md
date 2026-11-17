@@ -414,9 +414,9 @@ Publicado no site principal com a aprovação do dono do projeto.
 
 Os arquivos de script em `Site/assets/js` seguiram os mesmos nomes. Links, menus (`role-nav.js`), avisos do servidor e testes foram atualizados (142 referências). Os endereços antigos continuam funcionando por redirecionamento (`Site/_redirects`). Títulos alinhados ao menu: "Peças comerciais" (empresa) e "Usinas bloqueadas". As rotas internas da API (`/api/solicitacoes`) não mudaram.
 
-## Pedido 39 (17/11): logo nova — VERSÃO DE TESTE
+## Pedido 39 (17/11): logo nova
 
-Publicado só na branch `teste-logo`. O site principal só muda depois da sua aprovação.
+Publicado no site principal com a aprovação do dono do projeto.
 
 | Mudança | Onde |
 |---|---|
