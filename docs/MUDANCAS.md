@@ -433,7 +433,7 @@ Publicado direto na main a pedido do dono do projeto.
 |---|---|
 | Trocada a marca pela nova versão (`usinalink-logo.svg`, dois elos hexagonais), que não tem os defeitos da anterior. Mesma estrutura: branca no quadrado colorido, azul para fundo claro, favicon com a marca branca no quadrado azul. As páginas não mudaram, só os três arquivos de imagem | `Site/assets/img/logo-mark-branco.svg`, `logo-mark.svg`, `favicon.svg` |
 
-A imagem de compartilhamento (`preview.png`) continua com o desenho antigo.
+A imagem de compartilhamento em redes sociais (`Site/assets/img/preview.png`, 1200×630) foi refeita com a logo nova, no mesmo texto de antes e com fundo azul liso.
 
 ## Pedido 30 (15/11): revisão de design (juntado na main em 17/11; as partes de estilo foram superadas pela revisão do Pedido 37)
 
