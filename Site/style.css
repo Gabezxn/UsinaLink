@@ -3860,3 +3860,11 @@ body[data-user-role="pessoa_fisica"] .side-nav a.active::after { background: #0f
 .orange-mode .side-nav a.active::after,
 body[data-user-role="usina"] .side-nav a.active::after,
 .orange-nav a.active::after { background: var(--orange); }
+
+/* Foto do projeto em janela por cima da pagina */
+.photo-lightbox { position: fixed; inset: 0; z-index: 1200; display: grid; place-items: center; padding: 20px; background: rgba(15, 23, 42, 0.78); }
+.photo-lightbox-box { position: relative; display: grid; gap: 10px; max-width: min(92vw, 1000px); max-height: 92vh; padding: 14px; border-radius: 16px; background: #fff; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4); }
+.photo-lightbox-box img { max-width: 100%; max-height: 76vh; margin: 0 auto; border-radius: 10px; object-fit: contain; }
+.photo-lightbox-box p { margin: 0; text-align: center; color: var(--muted, #475569); font-size: 0.9rem; overflow-wrap: anywhere; }
+.photo-lightbox-close { position: absolute; top: -14px; right: -14px; width: 36px; height: 36px; border: 0; border-radius: 50%; background: var(--blue); color: #fff; font-size: 1.4rem; line-height: 1; cursor: pointer; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); }
+@media (max-width: 600px) { .photo-lightbox-close { top: 6px; right: 6px; } }

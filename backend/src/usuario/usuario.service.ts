@@ -4,13 +4,24 @@ import { DataSource, Repository } from 'typeorm';
 import { PasswordService } from '../auth/password.service';
 import { TokenService } from '../auth/token.service';
 import { TwoFactorService } from '../auth/two-factor.service';
-import { Usuario, Empresa, Usina, PessoaFisica, Funcionario, BloqueioUsina } from '../common/entities/core.entities';
+import { Usuario, Empresa, Usina, PessoaFisica, Funcionario, BloqueioUsina, EnderecoEmpresa, EnderecoUsina } from '../common/entities/core.entities';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { LoginDto } from './dto/login.dto';
 import { UpdatePerfilPessoaFisicaDto } from './dto/update-perfil-pessoa-fisica.dto';
 
 const digits = (v: any) => String(v || '').replace(/\D/g, '');
 const mail = (v: any) => String(v || '').trim().toLowerCase();
+const UFS = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
+/** CEP, cidade e estado: obrigatorios no cadastro (o frete e a entrega dependem do local). */
+function enderecoDoCadastro(dto: any) {
+  const cep = digits(dto.cep);
+  const cidade = String(dto.cidade || '').trim();
+  const estado = String(dto.estado || '').trim().toUpperCase();
+  if (cep.length !== 8) throw new BadRequestException('Informe um CEP valido com 8 numeros.');
+  if (cidade.length < 2) throw new BadRequestException('Informe a cidade.');
+  if (!UFS.includes(estado)) throw new BadRequestException('Informe o estado com a sigla (ex.: SP).');
+  return { cep, cidade, estado };
+}
 type TipoLogin = 'empresa' | 'usina' | 'pessoa_fisica';
 
 @Injectable()
@@ -80,6 +91,7 @@ export class UsuarioService {
       throw new BadRequestException('CNPJ invalido.');
     }
 
+    const endereco = enderecoDoCadastro(dto);
     if (await this.usuarios.findOne({ where: { email } })) throw new ConflictException('E-mail já cadastrado.');
     if (tipoUsuario === 'empresa' && await this.empresas.findOne({ where: { cnpj } })) throw new ConflictException('CNPJ já cadastrado.');
     if (tipoUsuario === 'usina' && await this.usinas.findOne({ where: { cnpj } })) throw new ConflictException('CNPJ já cadastrado.');
@@ -98,7 +110,7 @@ export class UsuarioService {
 
       if (tipoUsuario === 'pessoa_fisica') {
         await manager.save(PessoaFisica, manager.create(PessoaFisica, {
-          idUsuario: novoUsuario.idUsuario, nome: novoUsuario.nome, cpf, email, telefone,
+          idUsuario: novoUsuario.idUsuario, nome: novoUsuario.nome, cpf, email, telefone, ...endereco,
         }));
       } else {
         const base = {
@@ -109,10 +121,12 @@ export class UsuarioService {
           statusValidacao: 'pendente',
         };
         if (tipoUsuario === 'empresa') {
-          await manager.save(Empresa, manager.create(Empresa, { ...base, cargoResponsavel: (dto as any).cargo }));
+          const empresa = await manager.save(Empresa, manager.create(Empresa, { ...base, cargoResponsavel: (dto as any).cargo }));
+          await manager.save(EnderecoEmpresa, manager.create(EnderecoEmpresa, { idEmpresa: empresa.idEmpresa, ...endereco, pais: 'Brasil' }));
         }
         if (tipoUsuario === 'usina') {
-          await manager.save(Usina, manager.create(Usina, { ...base, especialidade: (dto as any).especialidade }));
+          const usina = await manager.save(Usina, manager.create(Usina, { ...base, especialidade: (dto as any).especialidade }));
+          await manager.save(EnderecoUsina, manager.create(EnderecoUsina, { idUsina: usina.idUsina, ...endereco, pais: 'Brasil' }));
         }
       }
       return novoUsuario;
@@ -204,6 +218,19 @@ export class UsuarioService {
     const dados: Partial<PessoaFisica> = {};
     if (dto.nome !== undefined) dados.nome = dto.nome.trim();
     if (dto.telefone !== undefined) dados.telefone = digits(dto.telefone);
+    if (dto.cep !== undefined) {
+      const cep = digits(dto.cep);
+      if (cep && cep.length !== 8) throw new BadRequestException('Informe um CEP valido com 8 numeros.');
+      dados.cep = cep;
+    }
+    if (dto.estado !== undefined) {
+      const estado = String(dto.estado).trim().toUpperCase();
+      if (estado && !UFS.includes(estado)) throw new BadRequestException('Informe o estado com a sigla (ex.: SP).');
+      dados.estado = estado;
+    }
+    for (const campo of ['rua', 'numero', 'complemento', 'bairro', 'cidade'] as const) {
+      if (dto[campo] !== undefined) dados[campo] = String(dto[campo]).trim();
+    }
     if (dto.email !== undefined) {
       const email = mail(dto.email);
       const existente = await this.usuarios.findOne({ where: { email } });

@@ -32,31 +32,31 @@ function showToast(message) {
 
 const signupConfig = {
   empresa: {
-    labels: ["Nome da empresa", "CNPJ", "E-mail corporativo", "Nome do responsavel", "Cargo", "Senha", "Confirmar senha"],
-    placeholders: ["Metal Forte Ltda.", "00.000.000/0001-00", "compras@empresa.com", "Nome e sobrenome", "Gerente de compras", "Crie uma senha", "Digite a senha novamente"],
-    icons: ["N", "#", "@", "R", "C", "*", "*"],
-    types: ["text", "text", "email", "text", "text", "password", "password"],
-    keys: ["nome", "cnpj", "email", "responsavel", "cargo", "senha", "confirmarSenha"],
+    labels: ["Nome da empresa", "CNPJ", "E-mail corporativo", "Nome do responsavel", "Cargo", "CEP", "Cidade", "Estado (UF)", "Senha", "Confirmar senha"],
+    placeholders: ["Metal Forte Ltda.", "00.000.000/0001-00", "compras@empresa.com", "Nome e sobrenome", "Gerente de compras", "00000-000", "Sao Paulo", "SP", "Crie uma senha", "Digite a senha novamente"],
+    icons: ["N", "#", "@", "R", "C", "#", "L", "UF", "*", "*"],
+    types: ["text", "text", "email", "text", "text", "text", "text", "text", "password", "password"],
+    keys: ["nome", "cnpj", "email", "responsavel", "cargo", "cep", "cidade", "estado", "senha", "confirmarSenha"],
     button: "Cadastrar empresa",
     redirect: "login-empresa.html",
     orange: false
   },
   pessoa: {
-    labels: ["Nome completo", "CPF", "E-mail", "Telefone", "Senha", "Confirmar senha"],
-    placeholders: ["Nome e sobrenome", "000.000.000-00", "voce@email.com", "(00) 00000-0000", "Crie uma senha", "Digite a senha novamente"],
-    icons: ["N", "#", "@", "T", "*", "*"],
-    types: ["text", "text", "email", "tel", "password", "password"],
-    keys: ["nome", "cpf", "email", "telefone", "senha", "confirmarSenha"],
+    labels: ["Nome completo", "CPF", "E-mail", "Telefone", "CEP", "Cidade", "Estado (UF)", "Senha", "Confirmar senha"],
+    placeholders: ["Nome e sobrenome", "000.000.000-00", "voce@email.com", "(00) 00000-0000", "00000-000", "Sao Paulo", "SP", "Crie uma senha", "Digite a senha novamente"],
+    icons: ["N", "#", "@", "T", "#", "L", "UF", "*", "*"],
+    types: ["text", "text", "email", "tel", "text", "text", "text", "password", "password"],
+    keys: ["nome", "cpf", "email", "telefone", "cep", "cidade", "estado", "senha", "confirmarSenha"],
     button: "Cadastrar pessoa fisica",
     redirect: "login-pessoa-fisica.html",
     orange: false
   },
   usina: {
-    labels: ["Nome da usina", "CNPJ", "E-mail industrial", "Respons\u00e1vel t\u00e9cnico", "Especialidade principal", "Senha", "Confirmar senha"],
-    placeholders: ["Atlas Metais", "00.000.000/0001-00", "contato@atlasmetais.com", "Nome do responsavel", "Usinagem de precisao", "Crie uma senha", "Digite a senha novamente"],
-    icons: ["N", "#", "@", "R", "E", "*", "*"],
-    types: ["text", "text", "email", "text", "text", "password", "password"],
-    keys: ["nome", "cnpj", "email", "responsavel", "especialidade", "senha", "confirmarSenha"],
+    labels: ["Nome da usina", "CNPJ", "E-mail industrial", "Respons\u00e1vel t\u00e9cnico", "Especialidade principal", "CEP", "Cidade", "Estado (UF)", "Senha", "Confirmar senha"],
+    placeholders: ["Atlas Metais", "00.000.000/0001-00", "contato@atlasmetais.com", "Nome do responsavel", "Usinagem de precisao", "00000-000", "Sao Paulo", "SP", "Crie uma senha", "Digite a senha novamente"],
+    icons: ["N", "#", "@", "R", "E", "#", "L", "UF", "*", "*"],
+    types: ["text", "text", "email", "text", "text", "text", "text", "text", "password", "password"],
+    keys: ["nome", "cnpj", "email", "responsavel", "especialidade", "cep", "cidade", "estado", "senha", "confirmarSenha"],
     button: "Cadastrar usina",
     redirect: "login-usina.html",
     orange: true
@@ -92,6 +92,7 @@ function applyMaskByKey(input) {
   if (key === "cnpj") input.value = maskCnpj(input.value);
   if (key === "telefone") input.value = maskPhone(input.value);
   if (key === "cep") input.value = maskCep(input.value);
+  if (key === "estado") input.value = input.value.replace(/[^a-zA-Z]/g, "").toUpperCase().slice(0, 2);
 }
 
 function isValidEmail(value) {
@@ -145,6 +146,8 @@ function setFieldState(input, message) {
   messageElement.textContent = message || "";
 }
 
+const SIGNUP_UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
+
 function validateSignupInput(input, accounts) {
   const key = input.dataset.fieldKey;
   const value = input.value.trim();
@@ -155,6 +158,9 @@ function validateSignupInput(input, accounts) {
     if (!isValidEmail(value)) return "Informe um e-mail valido.";
     if (accounts.some((account) => account.email === normalized)) return "Este e-mail ja esta cadastrado.";
   }
+  if (key === "cep" && onlyDigits(value).length !== 8) return "Informe o CEP com 8 numeros.";
+  if (key === "cidade" && value.length < 2) return "Informe a cidade.";
+  if (key === "estado" && !SIGNUP_UFS.includes(value.toUpperCase())) return "Informe a sigla do estado (ex.: SP).";
   if (key === "senha" && value.length < 6) return "A senha deve ter no minimo 6 caracteres.";
   if (key === "confirmarSenha") {
     const password = input.form?.querySelector('[data-field-key="senha"]')?.value || "";
@@ -180,7 +186,8 @@ function collectSignupPayload(form, type) {
     const key = input.dataset.fieldKey;
     if (key === "confirmarSenha") return;
     payload[key] = key === "email" ? input.value.trim().toLowerCase() : input.value.trim();
-    if (key === "cpf" || key === "cnpj" || key === "telefone") payload[key] = onlyDigits(input.value);
+    if (key === "cpf" || key === "cnpj" || key === "telefone" || key === "cep") payload[key] = onlyDigits(input.value);
+    if (key === "estado") payload[key] = input.value.trim().toUpperCase();
   });
   payload.tipo = type === "pessoa" ? "pessoa_fisica" : type;
   return payload;
@@ -192,7 +199,7 @@ function updateSignupForm(type) {
   const button = document.querySelector("#signup-submit");
   if (!config || !form || !button) return;
 
-  for (let index = 0; index < 7; index += 1) {
+  for (let index = 0; index < 10; index += 1) {
     const label = document.querySelector(`#field-label-${index + 1}`);
     const input = document.querySelector(`#signup-field-${index + 1}`);
     const symbol = input?.closest(".input-wrap")?.querySelector(".input-symbol");
@@ -211,13 +218,13 @@ function updateSignupForm(type) {
     input.value = "";
     input.required = true;
     input.dataset.fieldKey = config.keys[index];
-    input.autocomplete = config.keys[index] === "senha" ? "new-password" : "on";
+    input.autocomplete = { senha: "new-password", confirmarSenha: "new-password", cep: "postal-code", cidade: "address-level2", estado: "address-level1" }[config.keys[index]] || "on";
     setFieldState(input, "");
     if (symbol) symbol.textContent = config.icons[index];
   }
 
   // O cadastro reaproveita os mesmos campos para cada tipo de conta: o botao "Mostrar" acompanha quem virou senha.
-  for (let index = 0; index < 7; index += 1) {
+  for (let index = 0; index < 10; index += 1) {
     const input = document.querySelector(`#signup-field-${index + 1}`);
     if (!input) continue;
     if (index < config.labels.length && config.types[index] === "password") { input.dataset.toggleReady = "1"; addPasswordToggle(input); }
@@ -599,6 +606,7 @@ const profileData = {
     sections: {
       gerais: { title: "Informações gerais", subtitle: "Seus dados pessoais. O CPF não pode ser alterado.", fields: [["Nome completo", "text", "", null, "nome"]] },
       contato: { title: "Contato", subtitle: "E-mail de acesso e telefone para contato.", fields: [["E-mail", "email", "", null, "email"], ["Telefone", "tel", "", null, "telefone"]] },
+      endereco: { title: "Endereço de entrega", subtitle: "Usado para calcular o frete e para as usinas saberem onde entregar seus pedidos.", fields: [["CEP", "text", "", null, "cep"], ["Rua", "text", "", null, "rua"], ["Número", "text", "", null, "numero"], ["Bairro", "text", "", null, "bairro"], ["Cidade", "text", "", null, "cidade"], ["Estado", "select", "", SIGNUP_UFS, "estado"], ["Complemento", "text", "", null, "complemento"]] },
       seguranca: { title: "Segurança", subtitle: "Proteja o acesso à sua conta.", fields: [["Senha atual", "password", "", null, "senhaAtual"], ["Nova senha", "password", "", null, "novaSenha"], ["Confirmar nova senha", "password", "", null, "confirmarSenha"]] }
     }
   },
@@ -963,7 +971,7 @@ function proposalCardMarkup(item, best) {
     ${best && !travada ? '<span class="best-label">Melhor proposta</span>' : ""}
     <h2>${escapeHtml(nomeUsinaProposta(item.usina))}</h2>
     <strong class="price">${escapeHtml(formatMoneyBR(item.valor))}</strong>
-    <dl><div><dt>Prazo de fabricação</dt><dd>${escapeHtml(formatPrazo(item.prazo))}</dd></div><div><dt>Frete</dt><dd>${escapeHtml(item.frete ? formatMoneyBR(item.frete) : "A combinar")}</dd></div><div><dt>Status</dt><dd>${escapeHtml(statusPropostaLabel(status))}</dd></div></dl>
+    <dl><div><dt>Prazo de fabricação</dt><dd>${escapeHtml(formatPrazo(item.prazo))}</dd></div><div><dt>Frete</dt><dd>${escapeHtml(item.frete ? formatMoneyBR(item.frete) : "A combinar")}</dd></div><div><dt>Entrega em</dt><dd>${escapeHtml(item.pedido?.localEntrega || "Não informado")}</dd></div><div><dt>Status</dt><dd>${escapeHtml(statusPropostaLabel(status))}</dd></div></dl>
     <p>${escapeHtml(item.observacao || "Sem observações adicionais.")}</p>
     <div class="card-actions"><button class="btn btn-ghost js-alert" type="button">Ver detalhes</button>${decisaoBtn}</div>
   </article>`;
@@ -990,6 +998,7 @@ function renderSentProposalDetails(item) {
       <div><span>Material</span><strong>${escapeHtml(itemPedido.material || "-")}</strong></div>
       <div><span>Quantidade</span><strong>${escapeHtml(quantidade)}</strong></div>
       <div><span>Pedido</span><strong>${escapeHtml(pedido.numeroPedido || "-")}</strong></div>
+      <div class="span-2"><span>Local de entrega</span><strong>${escapeHtml(pedido.localEntrega || "Não informado")}</strong></div>
     </div>
     <div class="detail-list"><div><span>Observações da proposta</span><strong>${escapeHtml(item.observacao || "Sem observações adicionais.")}</strong></div></div>
     <div class="form-actions"><button class="btn btn-ghost js-action-modal-close" type="button">Fechar</button></div>`;
@@ -1008,6 +1017,7 @@ function renderReceivedProposalDetails(item) {
       <div><span>Frete</span><strong>${escapeHtml(item.frete ? formatMoneyBR(item.frete) : "A combinar")}</strong></div>
       <div><span>Status</span><strong>${escapeHtml(statusPropostaLabel(status))}</strong></div>
       <div><span>Pedido</span><strong>${escapeHtml(item.pedido?.numeroPedido || "-")}</strong></div>
+      <div class="span-2"><span>Local de entrega</span><strong>${escapeHtml(item.pedido?.localEntrega || "Não informado")}</strong></div>
     </div>
     <div class="detail-list"><div><span>Observações</span><strong>${escapeHtml(item.observacao || "Sem observações adicionais.")}</strong></div></div>
     <div class="form-actions">

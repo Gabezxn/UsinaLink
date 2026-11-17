@@ -16,7 +16,7 @@ const digits = (n) => Array.from({ length: n }, () => Math.floor(Math.random() *
 /** Cria conta nova e devolve { token, email }. extra permite sobrescrever nome etc. */
 export async function registrar(tipo, extra = {}) {
   const email = `qa-${tipo}-${uid()}@teste.com`;
-  const body = { tipo, nome: `QA ${tipo} ${uid()}`, email, senha: 'Demo@123', confirmarSenha: 'Demo@123', cnpj: digits(14), cpf: digits(11), telefone: '11999990000', responsavel: 'QA', ...extra };
+  const body = { tipo, nome: `QA ${tipo} ${uid()}`, email, senha: 'Demo@123', confirmarSenha: 'Demo@123', cnpj: digits(14), cpf: digits(11), telefone: '11999990000', responsavel: 'QA', cep: '01310100', cidade: 'Sao Paulo', estado: 'SP', ...extra };
   const r = await call('POST', `/api/cadastro/${tipo}`, null, body);
   if (r.status >= 300) throw new Error(`cadastro ${tipo}: ${r.status} ${JSON.stringify(r.json)}`);
   const full = await login(tipo, email, 'Demo@123', true);

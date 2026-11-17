@@ -23,6 +23,41 @@
     });
   }
 
+  // Janela por cima da pagina para ver a foto do projeto (fecha com X, Esc ou clique fora).
+  function abrirFoto(src, nome, aoFechar, origem) {
+    const fundo = document.createElement("div");
+    fundo.className = "photo-lightbox";
+    fundo.setAttribute("role", "dialog");
+    fundo.setAttribute("aria-modal", "true");
+    fundo.setAttribute("aria-label", "Foto do projeto");
+    const caixa = document.createElement("div");
+    caixa.className = "photo-lightbox-box";
+    const imagem = document.createElement("img");
+    imagem.src = src;
+    imagem.alt = nome || "Foto do projeto";
+    const legenda = document.createElement("p");
+    legenda.textContent = nome || "";
+    const fechar = document.createElement("button");
+    fechar.type = "button";
+    fechar.className = "photo-lightbox-close";
+    fechar.setAttribute("aria-label", "Fechar foto");
+    fechar.textContent = "×";
+    caixa.append(fechar, imagem, legenda);
+    fundo.append(caixa);
+    document.body.append(fundo);
+    const sair = () => {
+      document.removeEventListener("keydown", tecla);
+      fundo.remove();
+      aoFechar();
+      origem?.focus?.();
+    };
+    const tecla = (e) => { if (e.key === "Escape") sair(); };
+    document.addEventListener("keydown", tecla);
+    fundo.addEventListener("click", (e) => { if (e.target === fundo) sair(); });
+    fechar.addEventListener("click", sair);
+    fechar.focus();
+  }
+
   document.addEventListener("click", (event) => {
     const botao = event.target.closest("[data-arquivo-acao]");
     if (!botao) return;
@@ -42,6 +77,10 @@
       document.body.appendChild(link);
       link.click();
       link.remove();
+    } else if (blob && /^image\//.test(blob.type)) {
+      // Foto do projeto: abre numa janela por cima da propria pagina, sem trocar de aba.
+      abrirFoto(href, arquivo.nome, () => URL.revokeObjectURL(href), botao);
+      return;
     } else {
       window.open(href, "_blank", "noopener");
     }

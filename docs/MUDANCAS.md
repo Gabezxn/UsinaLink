@@ -363,3 +363,20 @@ Publicado só na branch `teste-stripe`. Sem `STRIPE_SECRET_KEY` no servidor, nad
 | Mudança | Onde |
 |---|---|
 | Saiu a etiqueta solta ("Pessoa física", "Empresa", "Usina") no fim do cabeçalho do perfil, que aparecia como um retângulo desalinhado. O tipo da conta continua visível no menu lateral | `Site/perfil-pessoa-fisica.html`, `perfil-empresa.html`, `perfil-usina.html` |
+
+## Pedido 36 (17/11): correções da equipe (Observações.docx) — VERSÃO DE TESTE
+
+Publicado só na branch `teste-correcoes`. O site principal só muda depois da sua aprovação.
+
+| Observação da equipe | O que foi feito | Onde |
+|---|---|---|
+| 1. "Pedido sob medida" na pessoa física e "Solicitações" na empresa | Os dois usam agora o mesmo nome, "Pedido sob medida" (menu, títulos das páginas, painel da empresa) | `Site/assets/js/role-nav.js`, `solicitacoes.html`, `nova-solicitacao.html`, `dashboard-empresa.html` e menus fixos das páginas |
+| 3 e 4. Aba "Usinas" e outras opções só na pessoa física | A empresa ganhou **Usinas** (conhecer usinas, avaliações e peças de cada uma) e **Favoritos**. A pessoa física ganhou **Propostas recebidas** no menu (antes só se chegava por link) | `role-nav.js` e permissão das páginas de usinas, peça e favoritos |
+| 5. Foto do projeto abre página nova | "Visualizar" abre a foto numa janela por cima da página (fecha com ×, Esc ou clique fora). PDF continua abrindo em aba | `Site/assets/js/pedidos-usina.js`, `Site/style.css` |
+| 7. Recusar proposta | O botão "Recusar proposta" já existia no cartão (com confirmação), nada a mudar. Ele aparece junto de "Aceitar proposta" | — |
+| 6. CEP/região opcional no cadastro, frete incoerente | **CEP, cidade e estado agora são obrigatórios** no cadastro de empresa, usina e pessoa física (validados na tela e no servidor) e salvos como endereço da conta. O frete usa o estado da usina, que agora sempre existe | `Site/script.js`, `cadastro*.html`, `backend/src/usuario/usuario.service.ts` |
+| 6. Proposta sem local de entrega | O cartão da proposta recebida mostra "Entrega em" e os detalhes mostram o local de entrega; a usina também vê nos detalhes da proposta enviada | `Site/script.js` |
+| 2. Pessoa física sem endereço | Nova aba **Endereço de entrega** no perfil (CEP, rua, número, bairro, cidade, estado, complemento). O local de entrega do pedido sob medida já vem preenchido com esse endereço (dá para trocar) | `Site/perfil-pessoa-fisica.html`, `perfil-pessoa-fisica.js`, `solicitacoes.js`, backend (`PessoaFisica` ganhou colunas de endereço) |
+| Teste | Cadastro sem CEP é recusado; endereço salvo para as três contas; menus; foto sem abrir aba; entrega na proposta. Testes de cadastro e "mostrar senha" ajustados aos campos novos | `qa/flows/correcoes.mjs`, `qa/flows/ui-p24.mjs`, `qa/security/_lib.mjs` |
+
+**Atenção:** contas antigas sem CEP continuam entrando normalmente; só o cadastro novo exige. Na pessoa física demo do site no ar o endereço está vazio: preencha pela nova aba do perfil.

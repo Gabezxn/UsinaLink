@@ -82,6 +82,7 @@ export class SeedService implements OnModuleInit {
 
     await this.garantir(this.pessoasFisicas, { idUsuario: pessoaUsuario.idUsuario }, {
       idUsuario: pessoaUsuario.idUsuario, nome: pessoaUsuario.nome, cpf: '12345678909', email: pessoaUsuario.email, telefone: '31999990000',
+      cep: '30130-010', rua: 'Avenida Afonso Pena', numero: '1500', bairro: 'Centro', cidade: 'Belo Horizonte', estado: 'MG',
     });
 
     await this.garantir(this.enderecosEmpresa, { idEmpresa: empresa.idEmpresa }, {

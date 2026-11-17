@@ -35,7 +35,7 @@ const fundoBotao = (page, sel) => page.locator(sel).first().evaluate((el) => get
 {
   const page = await (await browser.newContext()).newPage();
   await page.goto(`${SITE}/cadastro.html`);
-  for (const [tipo, ids] of [['pessoa', ['signup-field-5', 'signup-field-6']], ['empresa', ['signup-field-6']], ['usina', ['signup-field-6']], ['pessoa', ['signup-field-5', 'signup-field-6']]]) {
+  for (const [tipo, ids] of [['pessoa', ['signup-field-8', 'signup-field-9']], ['empresa', ['signup-field-9', 'signup-field-10']], ['usina', ['signup-field-9', 'signup-field-10']], ['pessoa', ['signup-field-8', 'signup-field-9']]]) {
     await page.click(`[data-choice-card="${tipo}"]`);
     for (const id of ids) {
       const btn = page.locator(`#${id}`).locator('xpath=..').locator('.pass-toggle');

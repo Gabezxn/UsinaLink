@@ -95,6 +95,20 @@
       input.addEventListener('change', () => setFieldState(input, ''));
     });
 
+    // Preenche o local de entrega com o endereco do perfil (a pessoa pode trocar). O estado vai no fim para o calculo de frete achar a sigla.
+    (async function preencherEntrega() {
+      const campo = form.querySelector('[name="localEntrega"]');
+      if (!campo || campo.value.trim()) return;
+      try {
+        const tipo = JSON.parse(sessionStorage.getItem('usinalinkSession') || localStorage.getItem('usinalinkSession') || 'null')?.tipo;
+        const perfil = await window.UsinaLinkApi.get(tipo === 'pessoa_fisica' ? '/pessoas-fisicas/perfil' : '/empresas/perfil');
+        const e = tipo === 'pessoa_fisica' ? perfil : (perfil.endereco || {});
+        const rua = [e.rua, e.numero].filter(Boolean).join(', ');
+        const partes = [[rua, e.bairro].filter(Boolean).join(' - '), e.complemento, e.cep ? String(e.cep).replace(/^(\d{5})(\d{3})$/, '$1-$2') : '', [e.cidade, e.estado].filter(Boolean).join(' - ')].filter(Boolean);
+        if (e.cidade && e.estado && !campo.value.trim()) campo.value = partes.join(', ');
+      } catch { /* sem endereco no perfil: a pessoa digita */ }
+    }());
+
     const arquivoInput = form.querySelector('[name="arquivo"]');
     arquivoInput?.addEventListener('change', () => {
       const label = arquivoInput.closest('.upload');

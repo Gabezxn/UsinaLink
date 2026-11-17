@@ -14,4 +14,7 @@ export class CreateUsuarioDto {
   @IsOptional() @IsString() @MaxLength(200) cargo?: string;
   @IsOptional() @IsString() @MaxLength(200) responsavel?: string;
   @IsOptional() @IsString() especialidade?: string;
+  @IsOptional() @IsString() @MaxLength(12) cep?: string;
+  @IsOptional() @IsString() @MaxLength(120) cidade?: string;
+  @IsOptional() @IsString() @MaxLength(4) estado?: string;
 }

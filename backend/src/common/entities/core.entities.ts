@@ -24,6 +24,14 @@ export class PessoaFisica {
   @Column({ name: 'cpf', unique: true }) cpf: string;
   @Column({ name: 'email', nullable: true }) email?: string;
   @Column({ name: 'telefone', nullable: true }) telefone?: string;
+  // Endereco de entrega da pessoa fisica (empresa e usina guardam o deles em tabelas proprias).
+  @Column({ name: 'cep', nullable: true }) cep?: string;
+  @Column({ name: 'rua', nullable: true }) rua?: string;
+  @Column({ name: 'numero', nullable: true }) numero?: string;
+  @Column({ name: 'complemento', nullable: true }) complemento?: string;
+  @Column({ name: 'bairro', nullable: true }) bairro?: string;
+  @Column({ name: 'cidade', nullable: true }) cidade?: string;
+  @Column({ name: 'estado', nullable: true }) estado?: string;
   @CreateDateColumn({ name: 'data_criacao' }) dataCriacao: Date;
   @UpdateDateColumn({ name: 'data_atualizacao' }) dataAtualizacao: Date;
   @OneToOne(() => Usuario, u => u.pessoaFisica) @JoinColumn({ name: 'id_usuario' }) usuario: Relation<Usuario>;

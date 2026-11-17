@@ -31,6 +31,7 @@
     const telefone = typeof maskPhone === 'function' ? maskPhone(perfil.telefone || '') : perfil.telefone;
     applyValuesToSection('gerais', { nome: perfil.nome, cpf });
     applyValuesToSection('contato', { email: perfil.email, telefone });
+    applyValuesToSection('endereco', { ...perfil, cep: typeof maskCep === 'function' ? maskCep(perfil.cep || '') : perfil.cep });
     const titulo = document.querySelector('.profile-head h1');
     if (titulo && perfil.nome) titulo.textContent = perfil.nome;
     const sub = document.querySelector(".profile-head p");
@@ -74,7 +75,10 @@
       } else {
         if (sectionKey === 'gerais' && !String(values.nome || '').trim()) throw new Error('Informe o nome completo.');
         if (sectionKey === 'contato' && values.email && typeof isValidEmail === 'function' && !isValidEmail(values.email)) throw new Error('Informe um e-mail válido.');
-        const payload = sectionKey === 'gerais' ? { nome: values.nome } : { email: values.email, telefone: values.telefone };
+        const payload = sectionKey === 'gerais' ? { nome: values.nome }
+          : sectionKey === 'endereco' ? { cep: values.cep, rua: values.rua, numero: values.numero, bairro: values.bairro, cidade: values.cidade, estado: values.estado, complemento: values.complemento }
+          : { email: values.email, telefone: values.telefone };
+        if (sectionKey === 'endereco' && values.cep && String(values.cep).replace(/\D/g, '').length !== 8) throw new Error('Informe o CEP com 8 números.');
         applyPerfil(await window.UsinaLinkApi.patch('/pessoas-fisicas/perfil', payload));
         // Mantem o nome exibido nas outras telas em dia.
         try {
