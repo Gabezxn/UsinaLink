@@ -330,7 +330,7 @@ Depois da senha correta, o servidor manda um **código de 6 dígitos para o e-ma
 3. **Por último**: `TWO_FACTOR_ENABLED` = `true`. Para manter as contas de demonstração entrando direto (apresentação), criar também `TWO_FACTOR_SKIP_EMAILS` = `empresa@demo.com,usina@demo.com,pessoa@demo.com`.
 4. Para desligar a qualquer momento: `TWO_FACTOR_ENABLED` = `false`.
 
-## Pedido 33 (16/11): pagamento online com Stripe em modo de teste (VERSÃO DE TESTE)
+## Pedido 33 (16/11): pagamento online com Stripe em modo de teste
 
 Publicado só na branch `teste-stripe`. Sem `STRIPE_SECRET_KEY` no servidor, nada muda: o pagamento simulado continua como hoje.
 
@@ -424,3 +424,25 @@ Publicado no site principal com a aprovação do dono do projeto.
 | Ícone da aba do navegador (favicon) com a marca branca no quadrado azul | `Site/assets/img/favicon.svg` |
 
 A imagem de compartilhamento em redes sociais (`preview.png`) ainda tem o desenho antigo e precisa ser refeita à parte.
+
+## Pedido 30 (15/11): revisão de design (juntado na main em 17/11; as partes de estilo foram superadas pela revisão do Pedido 37)
+
+Fiz capturas de tela de 14 páginas (página inicial, login, cadastro, painéis da empresa, usina e pessoa física, propostas, catálogo) no computador e no celular, avaliei e corrigi o que destoava.
+
+**Veredito:** a base já é profissional: paleta azul consistente, boa hierarquia de títulos, cartões limpos, menu lateral com ícones, cor própria por tipo de conta, textos claros. O que tirava o ar profissional eram detalhes de acabamento, listados abaixo.
+
+| Problema encontrado | Correção | Onde |
+|---|---|---|
+| Fundos e degradês com **roxo** (login, cadastro, faixa "Pronto para receber propostas", banner de perfil) que não faz parte da marca | Trocados por tons de azul da marca | `Site/style.css` |
+| Tela "Entrar numa conta": cartão estreito, "Acompanha-mento" quebrado no meio da palavra | Cartão mais largo, sem quebrar palavra | `Site/style.css` |
+| Títulos grandes quebravam com uma palavra sozinha na linha de baixo | Quebra equilibrada nos títulos | `Site/style.css` |
+| **Dois botões "Sair"** na mesma tela (cabeçalho e menu lateral) | Fica só o do menu | `Site/style.css` |
+| Cartões de proposta com 3 botões empilhados | "Aceitar proposta" em destaque (largura toda) e "Ver detalhes" + "Recusar" lado a lado | `Site/style.css` |
+| Campo de busca cortava o texto ("…ou statu") e o botão "Ver todos" caía de linha | Busca mais larga; no celular ocupa a linha inteira | `Site/style.css` |
+| Urgência aparecia como "media" (minúscula e sem acento) | Passa a mostrar "Média", "Alta" etc. | `Site/assets/js/safe-html.js`, `pedidos-usina.js`, `enviar-proposta.js`, `solicitacoes.js` |
+| Menu da usina: "Solicitações de peças" e "Histórico relacionado" quebravam em 2 linhas | Nomes mais curtos ("Solicitações", "Histórico") | `Site/assets/js/role-nav.js` |
+| Botões flutuantes escondiam o fim das páginas | Espaço extra no fim das páginas; botão do chat menor no celular | `Site/style.css` |
+| Rodapé da página inicial com faixa vazia embaixo | Ajustado | `Site/style.css` |
+| Celular: selo "Conta Empresa" encavalado no logo do cabeçalho | Escondido em tela pequena | `Site/style.css` |
+
+**Ainda dá para melhorar (não fiz, precisa de decisão ou de conteúdo):** os números da faixa "3 / 4 / 1" na página inicial dizem pouco (trocar por frases de benefício); falta uma imagem ou foto real de peças/usina na página inicial; os textos dos dados de teste (peças com nomes de teste) vão sumir quando houver dados reais.
