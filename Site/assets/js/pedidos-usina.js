@@ -89,7 +89,7 @@
 
   const UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
   function ufDe(local) {
-    const achados = (String(local || "").toUpperCase().match(/[A-Z]{2}/g) || []).filter((uf) => UFS.includes(uf));
+    const achados = (String(local || "").toUpperCase().match(/\b[A-Z]{2}\b/g) || []).filter((uf) => UFS.includes(uf));
     return achados.length ? achados[achados.length - 1] : "";
   }
 

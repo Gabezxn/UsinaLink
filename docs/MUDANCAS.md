@@ -435,6 +435,24 @@ Publicado direto na main a pedido do dono do projeto.
 
 A imagem de compartilhamento em redes sociais (`Site/assets/img/preview.png`, 1200×630) foi refeita com a logo nova, no mesmo texto de antes e com fundo azul liso.
 
+## Pedido 41 (17/11): correções da revisão do TCC
+
+Feito na branch `correcoes-revisao` a partir do relatório `docs/REVISAO-TCC.md`. Os códigos (ALT-01, CRI-01…) são os do relatório.
+
+| Item | O que foi feito | Onde |
+|---|---|---|
+| ALT-01 | Filtro por estado e frete por região voltaram a funcionar (as duas expressões tinham um caractere invisível no lugar de ``) | `Site/assets/js/pedidos-usina.js`, `enviar-proposta.js` |
+| CRI-01 | "Propostas recebidas" agora separa as propostas por pedido, mostra a peça e o número do pedido, e só marca "Melhor proposta" dentro do mesmo pedido (e só quando há mais de uma aberta) | `Site/script.js`, `Site/style.css` |
+| ALT-02 | Pagamento duplicado barrado no servidor: o pedido é "reservado" por um UPDATE condicional, então só uma chamada simultânea passa | `backend/src/pagamento/pagamento.service.ts` |
+| ALT-03 | Servidor recusa (400) quantidade negativa ou decimal, data inválida ou passada, urgência inventada, valor/frete/estoque negativos, prazo gigante, status de funcionário inventado, CPF/CNPJ com todos os dígitos iguais | `backend/src/common/numeros.ts` e os DTOs de solicitação, proposta, peça, funcionário e `usuario.service.ts` |
+| ALT-04 | Compra de catálogo exige peça cadastrada; fornecedor e preço vêm do catálogo, nunca do navegador | `solicitacao-comercial.service.ts` |
+| ALT-07 | Saiu o que a tela prometia e não existia: "Reenviar convite", avisos por e-mail/resumo semanal/mensagens, e o contato por e-mail `atendimento@usinalink.test` (o chat ficou só com as dúvidas rápidas). A landing não diz mais "solicitações compatíveis" | `Site/script.js`, `Site/assets/js/chat-contato.js`, `Site/confirmacao-pedido.html`, `Site/index.html` |
+| ALT-09 | Cancelar um pedido cancela as propostas vivas (inclusive a aceita) e avisa as usinas | `backend/src/pedido/pedido.service.ts` |
+| ALT-12 | Dados de demonstração coerentes para bancos novos: acentos, local de entrega, sem avaliação 5★ em pedido não concluído nem pagamento pendente sem pagar, e o "pedido sob medida" demo agora tem pedido ligado (pode receber proposta) | `backend/src/database/seed.service.ts` |
+| Teste | Novo teste `qa/security/sec-revisao.mjs` (pagamento simultâneo, cancelamento, valores absurdos, documentos repetidos, compra forjada) | `qa/` |
+
+**Não feito (precisa de decisão ou de acesso fora do código):** trocar a senha das contas demo na produção (CRI-02) e manter o servidor acordado (ALT-08); página de privacidade e consentimento (LGPD); documento do TCC; dados que já existem no banco de produção (o seed não reescreve linhas antigas).
+
 ## Pedido 30 (15/11): revisão de design (juntado na main em 17/11; as partes de estilo foram superadas pela revisão do Pedido 37)
 
 Fiz capturas de tela de 14 páginas (página inicial, login, cadastro, painéis da empresa, usina e pessoa física, propostas, catálogo) no computador e no celular, avaliei e corrigi o que destoava.

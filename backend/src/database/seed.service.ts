@@ -58,14 +58,14 @@ export class SeedService implements OnModuleInit {
 
     const empresaUsuario = await this.garantirUsuario('Metal Forte Ltda.', 'empresa@demo.com', 'empresa', senhaHash);
     const usinaUsuario = await this.garantirUsuario('Atlas Metais', 'usina@demo.com', 'usina', senhaHash);
-    const pessoaUsuario = await this.garantirUsuario('Joao Demo', 'pessoa@demo.com', 'pessoa_fisica', senhaHash);
+    const pessoaUsuario = await this.garantirUsuario('João Demo', 'pessoa@demo.com', 'pessoa_fisica', senhaHash);
     // Admin demo só existe se SEED_ADMIN_PASSWORD estiver definido; senão qualquer admin demo antigo é desativado.
     await this.garantirAdminDemo(process.env.SEED_ADMIN_PASSWORD);
 
     const empresa = await this.garantir(this.empresas, { idUsuario: empresaUsuario.idUsuario }, {
       idUsuario: empresaUsuario.idUsuario, razaoSocial: 'Metal Forte Ltda.', nomeFantasia: 'Metal Forte', cnpj: '11222333000181',
       email: empresaUsuario.email, telefone: '11999990000', responsavel: 'Maria Compras', cargoResponsavel: 'Gerente',
-      setorAtuacao: 'Industria metalmecanica', porte: 'Medio porte', descricao: 'Empresa demo para testes do UsinaLink.',
+      setorAtuacao: 'Indústria metalmecânica', porte: 'Médio porte', descricao: 'Empresa demo para testes do UsinaLink.',
       statusValidacao: 'aprovado', whatsapp: '11988887777', site: 'https://metalforte.exemplo.com.br',
       inscricaoEstadual: '123.456.789.110', certificacoes: 'ISO 9001, ISO 14001',
       notificacoes: { propostasEmail: true, alertasPrazo: true, mensagensFornecedores: false, resumoSemanal: true },
@@ -74,7 +74,7 @@ export class SeedService implements OnModuleInit {
     const usina = await this.garantir(this.usinas, { idUsuario: usinaUsuario.idUsuario }, {
       idUsuario: usinaUsuario.idUsuario, razaoSocial: 'Atlas Metais Ltda.', nomeFantasia: 'Atlas Metais', cnpj: '22333444000191',
       email: usinaUsuario.email, telefone: '21999990000', responsavel: 'Carlos Tecnico', especialidade: 'Usinagem de precisao',
-      capacidadeProducao: '8.000 pecas/mes', descricao: 'Usina demo para testes do UsinaLink.', statusValidacao: 'aprovado',
+      capacidadeProducao: '8.000 peças/mês', descricao: 'Usina demo para testes do UsinaLink.', statusValidacao: 'aprovado',
       maquinasDisponiveis: 'Tornos CNC, centro de usinagem, corte laser', capacidadeMensal: '8.000 pecas', turnos: '2 turnos', prazoMedio: '15 dias',
       certificacoes: ['ISO 9001', 'CNC'],
       notificacoes: { novosPedidos: true, propostasAceitas: true, alertasPrazo: false, mensagens: true },
@@ -93,27 +93,27 @@ export class SeedService implements OnModuleInit {
     });
 
     await this.garantir(this.funcionarios, { idEmpresa: empresa.idEmpresa }, {
-      idEmpresa: empresa.idEmpresa, nome: 'Funcionario Demo', email: 'funcionario@demo.com', cargo: 'Comprador', tipoAcesso: 'operador', status: 'ativo',
+      idEmpresa: empresa.idEmpresa, nome: 'Funcionário Demo', email: 'funcionario@demo.com', cargo: 'Comprador', tipoAcesso: 'operador', status: 'ativo',
     });
     await this.garantir(this.funcionarios, { idUsina: usina.idUsina }, {
-      idUsina: usina.idUsina, nome: 'Tecnico Demo', email: 'tecnico@demo.com', cargo: 'Tecnico CNC', tipoAcesso: 'operador', status: 'ativo',
+      idUsina: usina.idUsina, nome: 'Técnico Demo', email: 'tecnico@demo.com', cargo: 'Técnico CNC', tipoAcesso: 'operador', status: 'ativo',
     });
 
     const pedidoExistente1 = await this.pedidos.findOne({ where: { numeroPedido: 'PED-DEMO-001' } });
     const pedido1 = pedidoExistente1 || await this.pedidos.save(this.pedidos.create({
       idEmpresaCompradora: empresa.idEmpresa, idUsuarioSolicitante: empresaUsuario.idUsuario, numeroPedido: 'PED-DEMO-001',
-      urgencia: 'media', status: 'em_negociacao', observacoes: 'Eixo em aco carbono para demonstracao', prazoEntregaDias: 12, dataPedido: new Date(),
+      urgencia: 'media', status: 'em_negociacao', observacoes: 'Eixo em aço carbono para demonstração', localEntrega: 'Campinas - SP', prazoEntregaDias: 12, dataPedido: new Date(),
     }));
     if (!pedidoExistente1) {
       await this.itensPedido.save(this.itensPedido.create({
-        idPedido: pedido1.idPedido, nome: 'Eixo estriado', categoria: 'Eixos', material: 'Aco 4140', quantidade: 40,
+        idPedido: pedido1.idPedido, nome: 'Eixo estriado', categoria: 'Eixos', material: 'Aço 4140', quantidade: 40,
       }));
     }
 
     const pedidoExistente2 = await this.pedidos.findOne({ where: { numeroPedido: 'PED-DEMO-002' } });
     const pedido2 = pedidoExistente2 || await this.pedidos.save(this.pedidos.create({
       idEmpresaCompradora: empresa.idEmpresa, idUsuarioSolicitante: empresaUsuario.idUsuario, numeroPedido: 'PED-DEMO-002',
-      urgencia: 'alta', status: 'aberto', observacoes: 'Flange inox para apresentacao', prazoEntregaDias: 8, dataPedido: new Date(),
+      urgencia: 'alta', status: 'aberto', observacoes: 'Flange inox para apresentação', localEntrega: 'São Paulo - SP', prazoEntregaDias: 8, dataPedido: new Date(),
     }));
     if (!pedidoExistente2) {
       await this.itensPedido.save(this.itensPedido.create({
@@ -122,36 +122,40 @@ export class SeedService implements OnModuleInit {
     }
 
     const proposta = await this.garantir(this.propostas, { idPedido: pedido1.idPedido, idUsina: usina.idUsina }, {
-      idPedido: pedido1.idPedido, idUsina: usina.idUsina, idUsuarioResponsavel: usinaUsuario.idUsuario, valor: 2500, prazo: '10 dias', observacao: 'Entrega rapida para demo', status: 'enviada',
+      idPedido: pedido1.idPedido, idUsina: usina.idUsina, idUsuarioResponsavel: usinaUsuario.idUsuario, valor: 2500, prazo: '10 dias', observacao: 'Entrega rápida para demonstração', status: 'enviada',
     });
 
-    await this.garantir(this.avaliacoes, { idPedido: pedido1.idPedido }, {
-      idPedido: pedido1.idPedido, idEmpresaAvaliadora: empresa.idEmpresa, idUsinaAvaliada: usina.idUsina, nota: 5, qualidade: 5, prazo: 4, comunicacao: 5, comentario: 'Excelente atendimento.',
-    });
-    await this.garantir(this.pagamentos, { idPedido: pedido1.idPedido }, {
-      idPedido: pedido1.idPedido, idProposta: proposta.idProposta, idEmpresaPagadora: empresa.idEmpresa, idUsinaRecebedora: usina.idUsina, valor: 2500, status: 'pendente',
-    });
     await this.garantir(this.notificacoes, { idUsuario: empresaUsuario.idUsuario }, {
-      idUsuario: empresaUsuario.idUsuario, titulo: 'Proposta recebida', mensagem: 'Atlas Metais enviou uma proposta.', lida: false,
+      idUsuario: empresaUsuario.idUsuario, titulo: 'Proposta recebida', mensagem: 'A Atlas Metais enviou uma proposta.', lida: false,
     });
 
-    await this.garantir(this.solicitacoes, { idEmpresa: empresa.idEmpresa }, {
-      idEmpresa: empresa.idEmpresa, peca: 'Engrenagem helicoidal', categoria: 'Engrenagens', material: 'Aco cementado', quantidade: 15,
-      urgencia: 'media', localEntrega: 'Sao Paulo, SP', descricao: 'Solicitacao demo para testes.', status: 'aberta',
-    });
+    // Pedido sob medida completo: a solicitação e o pedido ficam ligados, para as usinas poderem enviar propostas.
+    const solicitacaoExistente = await this.solicitacoes.findOne({ where: { idEmpresa: empresa.idEmpresa } });
+    if (!solicitacaoExistente) {
+      const solicitacao = await this.solicitacoes.save(this.solicitacoes.create({
+        idEmpresa: empresa.idEmpresa, peca: 'Engrenagem helicoidal', categoria: 'Engrenagens', material: 'Aço cementado', quantidade: 15,
+        urgencia: 'Normal', localEntrega: 'São Paulo - SP', descricao: 'Pedido de demonstração.', status: 'aberta',
+      }));
+      const pedido3 = await this.pedidos.save(this.pedidos.create({
+        idEmpresaCompradora: empresa.idEmpresa, idUsuarioSolicitante: empresaUsuario.idUsuario, idSolicitacao: solicitacao.idSolicitacao, numeroPedido: 'PED-DEMO-003',
+        urgencia: 'normal', status: 'aberto', observacoes: 'Engrenagem helicoidal em aço cementado', localEntrega: 'São Paulo - SP', prazoEntregaDias: 15, dataPedido: new Date(),
+      }));
+      await this.itensPedido.save(this.itensPedido.create({ idPedido: pedido3.idPedido, nome: 'Engrenagem helicoidal', categoria: 'Engrenagens', material: 'Aço cementado', quantidade: 15 }));
+      await this.solicitacoes.update({ idSolicitacao: solicitacao.idSolicitacao }, { idPedido: pedido3.idPedido });
+    }
 
     await this.garantir(this.solicitacoesComerciais, { idEmpresa: empresa.idEmpresa }, {
       idEmpresa: empresa.idEmpresa, peca: 'Bucha de bronze TM-23', fornecedor: 'Atlas Metais', valorUnitario: 145, quantidade: 2, status: 'registrada',
     });
 
     await this.garantir(this.pecasComerciais, { idUsina: usina.idUsina }, {
-      idUsina: usina.idUsina, nome: 'Flange ANSI 150', material: 'Aco carbono ASTM A105', categoria: 'Flanges',
-      descricao: 'Peca pronta em estoque para entrega rapida.', estoque: 42, unidadeEstoque: 'unidades', valorUnitario: 380, prazoEntregaDias: 3, ativo: true,
+      idUsina: usina.idUsina, nome: 'Flange ANSI 150', material: 'Aço carbono ASTM A105', categoria: 'Flanges',
+      descricao: 'Peça pronta em estoque para entrega rápida.', estoque: 42, unidadeEstoque: 'unidades', valorUnitario: 380, prazoEntregaDias: 3, ativo: true,
     });
 
     await this.garantir(this.solicitacoesBloqueio, { idEmpresa: empresa.idEmpresa }, {
       idEmpresa: empresa.idEmpresa, idUsina: usina.idUsina, motivo: 'Atraso recorrente na entrega',
-      descricao: 'Solicitacao demo para testar o fluxo de bloqueio de usina.', status: 'pendente',
+      descricao: 'Solicitação de demonstração para o fluxo de bloqueio de usina.', status: 'pendente',
     });
   }
 }

@@ -533,7 +533,7 @@ const profileData = {
       endereco: { title: "Endere\u00e7o", subtitle: "Localiza\u00e7\u00e3o fiscal e operacional da organiza\u00e7\u00e3o.", fields: [["CEP", "text", "", null, "cep"], ["Rua", "text", "", null, "rua"], ["N\u00famero", "text", "", null, "numero"], ["Bairro", "text", "", null, "bairro"], ["Cidade", "text", "", null, "cidade"], ["Estado", "select", "", SIGNUP_UFS, "estado"], ["Complemento", "text", "", null, "complemento"]] },
       documentos: { title: "Documentos", subtitle: "Registros e comprovantes usados na valida\u00e7\u00e3o comercial.", fields: [["CNPJ", "text", "", null, "cnpj"], ["Inscri\u00e7\u00e3o Estadual", "text", "", null, "inscricaoEstadual"], ["Contrato Social", "file", "", null, "contratoSocial"], ["Alvar\u00e1", "file", "", null, "alvara"], ["Certifica\u00e7\u00f5es", "text", "", null, "certificacoes"]] },
       seguranca: { title: "Seguran\u00e7a", subtitle: "Proteja o acesso dos usu\u00e1rios vinculados \u00e0 organiza\u00e7\u00e3o.", fields: [["Senha atual", "password", "", null, "senhaAtual"], ["Nova senha", "password", "", null, "novaSenha"], ["Confirmar nova senha", "password", "", null, "confirmarSenha"]] },
-      notificacoes: { title: "Notifica\u00e7\u00f5es", subtitle: "Configure quais avisos devem chegar para a equipe.", fields: [["Receber propostas por e-mail", "checkbox", false, null, "propostasEmail"], ["Receber alertas de prazo", "checkbox", false, null, "alertasPrazo"], ["Receber mensagens de fornecedores", "checkbox", false, null, "mensagensFornecedores"], ["Receber resumo semanal", "checkbox", false, null, "resumoSemanal"]] }
+      notificacoes: { title: "Notifica\u00e7\u00f5es", subtitle: "Configure quais avisos devem chegar para a equipe.", fields: [["Receber alertas de prazo", "checkbox", false, null, "alertasPrazo"]] }
     }
   },
   pessoa_fisica: {
@@ -556,7 +556,7 @@ const profileData = {
       producao: { title: "Produ\u00e7\u00e3o", subtitle: "Capacidade operacional para avaliar pedidos.", fields: [["M\u00e1quinas dispon\u00edveis", "textarea", "", null, "maquinasDisponiveis"], ["Capacidade mensal", "text", "", null, "capacidadeMensal"], ["Turnos", "select", "", ["1 turno", "2 turnos", "3 turnos"], "turnos"], ["Prazo m\u00e9dio", "text", "", null, "prazoMedio"]] },
       certificacoes: { title: "Certifica\u00e7\u00f5es", subtitle: "Compet\u00eancias e certificados produtivos.", fields: [["ISO 9001", "checkbox", false, null, "iso9001"], ["CNC", "checkbox", false, null, "cnc"], ["Corte laser", "checkbox", false, null, "corteLaser"], ["Fundi\u00e7\u00e3o", "checkbox", false, null, "fundicao"], ["Soldagem", "checkbox", false, null, "soldagem"]] },
       seguranca: { title: "Seguran\u00e7a", subtitle: "Proteja o acesso da equipe da usina.", fields: [["Senha atual", "password", "", null, "senhaAtual"], ["Nova senha", "password", "", null, "novaSenha"], ["Confirmar senha", "password", "", null, "confirmarSenha"]] },
-      notificacoes: { title: "Notifica\u00e7\u00f5es", subtitle: "Configure os avisos comerciais da usina.", fields: [["Novos pedidos", "checkbox", false, null, "novosPedidos"], ["Propostas aceitas", "checkbox", false, null, "propostasAceitas"], ["Alertas de prazo", "checkbox", false, null, "alertasPrazo"], ["Mensagens", "checkbox", false, null, "mensagens"]] }
+      notificacoes: { title: "Notifica\u00e7\u00f5es", subtitle: "Configure os avisos comerciais da usina.", fields: [["Novos pedidos", "checkbox", false, null, "novosPedidos"], ["Propostas aceitas", "checkbox", false, null, "propostasAceitas"], ["Alertas de prazo", "checkbox", false, null, "alertasPrazo"]] }
     }
   }
 };
@@ -753,7 +753,7 @@ function renderEmployeeRowActions(row) {
   const actionsCell = row.children[row.children.length - 1];
   const status = employeeStatus(row);
   const actionsByStatus = {
-    Pendente: ["Editar", "Reenviar convite", "Cancelar convite"],
+    Pendente: ["Editar", "Cancelar convite"],
     Ativo: ["Editar", "Excluir"],
     Inativo: ["Ativar", "Excluir definitivamente"]
   };
@@ -964,6 +964,24 @@ function renderReceivedProposalDetails(item) {
     </div>`;
 }
 
+function proposalGroupsMarkup(proposals) {
+  // As propostas são comparadas só dentro do mesmo pedido: preço de peças diferentes não se compara.
+  const grupos = new Map();
+  proposals.forEach((item) => {
+    if (!grupos.has(item.idPedido)) grupos.set(item.idPedido, []);
+    grupos.get(item.idPedido).push(item);
+  });
+  return [...grupos.entries()].sort((a, b) => Number(b[0]) - Number(a[0])).map(([, lista]) => {
+    const pedido = lista[0].pedido || {};
+    const peca = pedido.itens?.[0]?.nome || "Peça industrial";
+    const abertas = lista.filter((p) => !propostaEstaTravada(p.status));
+    const melhorValor = abertas.length > 1 ? Math.min(...abertas.map((p) => Number(p.valor) || Infinity)) : null;
+    const total = lista.length === 1 ? "1 proposta" : `${lista.length} propostas`;
+    return `<header class="proposal-group-head" data-search-group><h2>${escapeHtml(peca)}</h2><span>${escapeHtml(pedido.numeroPedido || "")} · ${total}</span></header>`
+      + lista.map((item) => proposalCardMarkup(item, melhorValor !== null && Number(item.valor) === melhorValor)).join("");
+  }).join("");
+}
+
 async function loadProposalsFromApi() {
   if (!window.UsinaLinkApi) return;
   const usinaTable = document.querySelector("body[data-user-role='usina'] tbody");
@@ -981,9 +999,8 @@ async function loadProposalsFromApi() {
     try {
       const proposals = await window.UsinaLinkApi.get(`/propostas/recebidas`);
       ultimasPropostasRecebidas = proposals;
-      const melhorValor = Math.min(...proposals.filter(p => !propostaEstaTravada(p.status)).map(p => Number(p.valor) || Infinity));
       empresaGrid.innerHTML = proposals.length
-        ? proposals.map((item) => proposalCardMarkup(item, Number(item.valor) === melhorValor)).join("")
+        ? proposalGroupsMarkup(proposals)
         : '<div class="empty-state"><strong>Nenhuma proposta recebida</strong><span>As propostas enviadas pelas usinas aparecem aqui. Publique uma solicitação para começar a receber.</span><a class="btn btn-small" href="novo-pedido-sob-medida.html">Nova solicitação</a></div>';
     } catch (error) {
       empresaGrid.innerHTML = `<article class="card proposal-card"><h2>Falha ao carregar propostas</h2><p>${escapeHtml(error.message)}</p></article>`;
@@ -1176,14 +1193,6 @@ document.addEventListener("click", (event) => {
   }
   if (row && action === "Editar") {
     openEmployeeEdit(row);
-    return;
-  }
-  if (row && action === "Reenviar convite") {
-    openSimpleConfirm({ title: "Reenviar convite", message: "Enviar um novo convite para este funcionario?", confirmText: "Reenviar convite", onConfirm: () => {
-      if (window.UsinaLinkApi && row.dataset.employeeId) {
-        window.UsinaLinkApi.post(`/funcionarios/${row.dataset.employeeId}/reenviar-convite`, {}).then(() => showToast("Convite reenviado com sucesso")).catch((error) => showToast(error.message));
-      } else showToast("Convite reenviado com sucesso");
-    } });
     return;
   }
   if (row && action === "Cancelar convite") {

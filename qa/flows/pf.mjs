@@ -28,6 +28,7 @@ try {
   await pPf.goto(`${SITE}/pecas-comerciais-pessoa-fisica.html`); clicks++;
   await pPf.fill('.js-table-search', nome);
   const card = pPf.locator('article.order-opportunity', { hasText: nome });
+  await card.first().waitFor({ timeout: 10000 }).catch(() => {});
   t.ok(await card.count() === 1, 'a peça nova deveria aparecer no catálogo');
   await clique(pPf, card.locator('a.btn-primary'), 'Ver detalhes e comprar');
   // 2) solicitar compra

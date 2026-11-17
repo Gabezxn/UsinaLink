@@ -1,4 +1,5 @@
-import { IsNotEmpty, IsNumberString, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, MaxLength } from 'class-validator';
+import { IsNaoNegativoTexto, IsPositivoTexto } from '../../common/numeros';
 import { IsImagem } from '../../common/anexo';
 
 export class CreatePecaComercialDto {
@@ -7,8 +8,8 @@ export class CreatePecaComercialDto {
   @IsOptional() @IsString() @MaxLength(200) categoria?: string;
   @IsOptional() @IsString() @MaxLength(2000) descricao?: string;
   @IsOptional() @IsString() @IsImagem() imagem?: string;
-  @IsOptional() @IsNumberString({}, { message: 'Estoque deve ser numérico.' }) estoque?: string;
-  @IsOptional() @IsString() unidadeEstoque?: string;
-  @IsNotEmpty({ message: 'Informe o valor unitário da peça.' }) @IsNumberString({}, { message: 'Valor unitário deve ser numérico.' }) valorUnitario: string;
-  @IsOptional() @IsNumberString({}, { message: 'Prazo de entrega deve ser numérico.' }) prazoEntregaDias?: string;
+  @IsOptional() @IsNaoNegativoTexto('Estoque deve ser um número de zero em diante.') estoque?: string;
+  @IsOptional() @IsString() @MaxLength(30) unidadeEstoque?: string;
+  @IsNotEmpty({ message: 'Informe o valor unitário da peça.' }) @IsPositivoTexto('O valor unitário deve ser maior que zero.') valorUnitario: string;
+  @IsOptional() @IsNaoNegativoTexto('Prazo de entrega deve ser um número de dias.') prazoEntregaDias?: string;
 }

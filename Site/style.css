@@ -3162,9 +3162,6 @@ body.pf-mode .check-chip input { accent-color: #0f766e; }
 .chat-bot { background: #f1f5f9; align-self: flex-start; }
 .chat-user { background: #dbeafe; align-self: flex-end; }
 .chat-atalhos { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 12px 12px; }
-.chat-form { display: grid; gap: 8px; padding: 0 12px 12px; }
-.chat-form[hidden] { display: none; }
-.chat-form input, .chat-form textarea { width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font: inherit; box-sizing: border-box; }
 
 /* ===== Página inicial profissional (lp-*) ===== */
 html { scroll-behavior: smooth; }
@@ -3550,3 +3547,9 @@ dd,
 
 /* Logo nova (marca em SVG, branca sobre o quadrado azul) */
 .brand-icon .brand-mark { width: 72%; height: auto; }
+
+/* Propostas agrupadas por pedido */
+.proposal-group-head { grid-column: 1 / -1; display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 14px; margin-top: 10px; padding-bottom: 8px; border-bottom: 1px solid var(--line, #dbe3f0); }
+.proposal-group-head:first-child { margin-top: 0; }
+.proposal-group-head h2 { margin: 0; font-size: 1.1rem; }
+.proposal-group-head span { color: var(--muted, #5b6b86); font-size: 0.9rem; }

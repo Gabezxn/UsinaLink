@@ -40,7 +40,8 @@ export class SolicitacaoComercialService {
     const comprador = await this.ctx.obterComprador(user.sub);
     // Com o id da peca, a usina vem do catalogo (nao do texto enviado pelo navegador).
     const peca = dto.pecaId ? await this.pecas.findOne({ where: { idPecaComercial: Number(dto.pecaId), ativo: true } }) : null;
-    if (peca && (peca.valorUnitario === null || peca.valorUnitario === undefined)) throw new BadRequestException('Esta peça está sob consulta e ainda não tem valor definido. Peça a cotação diretamente com a usina.');
+    if (!peca) throw new BadRequestException('Escolha uma peça do catálogo para comprar.');
+    if (peca.valorUnitario === null || peca.valorUnitario === undefined) throw new BadRequestException('Esta peça está sob consulta e ainda não tem valor definido. Peça a cotação diretamente com a usina.');
     const usina = peca ? await this.usinas.findOne({ where: { idUsina: peca.idUsina } }) : null;
     const quantidade = dto.quantidade ? Number(dto.quantidade) : 1;
     if (!Number.isInteger(quantidade) || quantidade < 1) throw new BadRequestException('Quantidade deve ser um número inteiro maior que zero.');
@@ -48,11 +49,11 @@ export class SolicitacaoComercialService {
     const salva = await this.solicitacoes.save(this.solicitacoes.create({
       idEmpresa: comprador.idEmpresa,
       idPessoaFisica: comprador.idPessoaFisica,
-      idUsina: peca?.idUsina,
-      idPecaComercial: peca?.idPecaComercial,
-      peca: peca?.nome || dto.peca,
-      fornecedor: usina ? (usina.nomeFantasia || usina.razaoSocial) : dto.fornecedor,
-      valorUnitario: peca?.valorUnitario ?? (dto.valorUnitario ? Number(dto.valorUnitario) : undefined),
+      idUsina: peca.idUsina,
+      idPecaComercial: peca.idPecaComercial,
+      peca: peca.nome,
+      fornecedor: usina ? (usina.nomeFantasia || usina.razaoSocial) : undefined,
+      valorUnitario: peca.valorUnitario,
       quantidade,
       status: 'registrada',
       historico: [{ status: 'registrada', em: new Date().toISOString() }],

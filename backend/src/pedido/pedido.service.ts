@@ -175,6 +175,14 @@ export class PedidoService {
     const pedido = await this.exigirDono(id, user);
     if (![...STATUS_ABERTOS, 'proposta_aceita'].includes(pedido.status)) throw new BadRequestException('Este pedido não pode mais ser cancelado.');
     await this.pedidos.update({ idPedido: Number(id) }, { status: 'cancelado' });
+    // As propostas ainda vivas (inclusive a aceita) deixam de valer, e as usinas sao avisadas.
+    const vivas = await this.propostas.find({ where: { idPedido: Number(id), status: In(['enviada', 'em_analise', 'aceita']) } });
+    if (vivas.length) {
+      await this.propostas.update({ idProposta: In(vivas.map(p => p.idProposta)) }, { status: 'cancelada' });
+      for (const p of vivas) {
+        this.notificacoes.criar(await this.ctx.idUsuarioDaUsina(p.idUsina), 'Pedido cancelado', `O pedido ${pedido.numeroPedido || '#' + pedido.idPedido} foi cancelado pelo comprador e a sua proposta deixou de valer.`, 'propostas-usina.html');
+      }
+    }
     if (pedido.idSolicitacao) {
       await this.solicitacoes.update({ idSolicitacao: pedido.idSolicitacao }, { status: 'cancelada' });
     }

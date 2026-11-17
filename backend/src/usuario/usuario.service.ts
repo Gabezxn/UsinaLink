@@ -86,8 +86,8 @@ export class UsuarioService {
     if (confirmar && senha !== confirmar) throw new BadRequestException('Senha e confirmacao devem ser iguais.');
     if (tipoUsuario === 'pessoa_fisica') {
       if (!String((dto as any).nome || '').trim()) throw new BadRequestException('Nome e obrigatorio.');
-      if (cpf.length !== 11) throw new BadRequestException('CPF invalido.');
-    } else if (cnpj.length !== 14) {
+      if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) throw new BadRequestException('CPF invalido.');
+    } else if (cnpj.length !== 14 || /^(\d)\1+$/.test(cnpj)) {
       throw new BadRequestException('CNPJ invalido.');
     }
 

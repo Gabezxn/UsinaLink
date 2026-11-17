@@ -135,7 +135,7 @@
   // Frete estimado: mesmo estado, mesma regiao ou outra regiao, mais um adicional por quantidade.
   const REGIAO = { AC: "N", AP: "N", AM: "N", PA: "N", RO: "N", RR: "N", TO: "N", AL: "NE", BA: "NE", CE: "NE", MA: "NE", PB: "NE", PE: "NE", PI: "NE", RN: "NE", SE: "NE", DF: "CO", GO: "CO", MT: "CO", MS: "CO", ES: "SE", MG: "SE", RJ: "SE", SP: "SE", PR: "S", RS: "S", SC: "S" };
   function ufDe(texto) {
-    const achados = (String(texto || "").toUpperCase().match(/[A-Z]{2}/g) || []).filter((uf) => REGIAO[uf]);
+    const achados = (String(texto || "").toUpperCase().match(/\b[A-Z]{2}\b/g) || []).filter((uf) => REGIAO[uf]);
     return achados.length ? achados[achados.length - 1] : "";
   }
   function calcularFrete(ufOrigem, ufDestino, quantidade) {

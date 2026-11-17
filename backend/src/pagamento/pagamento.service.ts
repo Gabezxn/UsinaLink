@@ -66,11 +66,19 @@ export class PagamentoService {
       dataPagamento: new Date(),
     };
 
-    const pagamento = existente
-      ? await (async () => { await this.pagamentos.update({ idPagamento: existente.idPagamento }, dados); return this.pagamentos.findOne({ where: { idPagamento: existente.idPagamento } }); })()
-      : await this.pagamentos.save(this.pagamentos.create(dados));
+    // "Reserva" o pedido com um UPDATE condicional: so uma das chamadas simultaneas passa daqui (evita pagamento duplicado).
+    const reserva = await this.pedidos.update({ idPedido: pedido.idPedido, status: 'proposta_aceita' }, { status: 'em_producao' });
+    if (!reserva.affected) throw new BadRequestException('Pedido ja foi pago.');
 
-    await this.pedidos.update({ idPedido: pedido.idPedido }, { status: 'em_producao' });
+    let pagamento;
+    try {
+      pagamento = existente
+        ? await (async () => { await this.pagamentos.update({ idPagamento: existente.idPagamento }, dados); return this.pagamentos.findOne({ where: { idPagamento: existente.idPagamento } }); })()
+        : await this.pagamentos.save(this.pagamentos.create(dados));
+    } catch (erro) {
+      await this.pedidos.update({ idPedido: pedido.idPedido }, { status: 'proposta_aceita' });
+      throw erro;
+    }
     this.notificacoes.criar(await this.ctx.idUsuarioDaUsina(proposta.idUsina), 'Pagamento recebido', `O pedido ${pedido.numeroPedido || '#' + pedido.idPedido} foi pago e entrou em producao.`, 'historico-pedidos.html');
     return pagamento;
   }
