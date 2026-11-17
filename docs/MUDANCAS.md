@@ -425,6 +425,16 @@ Publicado no site principal com a aprovação do dono do projeto.
 
 A imagem de compartilhamento em redes sociais (`preview.png`) ainda tem o desenho antigo e precisa ser refeita à parte.
 
+## Pedido 40 (17/11): logo nova, segunda versão
+
+Publicado direto na main a pedido do dono do projeto.
+
+| Mudança | Onde |
+|---|---|
+| Trocada a marca pela nova versão (`usinalink-logo.svg`, dois elos hexagonais), que não tem os defeitos da anterior. Mesma estrutura: branca no quadrado colorido, azul para fundo claro, favicon com a marca branca no quadrado azul. As páginas não mudaram, só os três arquivos de imagem | `Site/assets/img/logo-mark-branco.svg`, `logo-mark.svg`, `favicon.svg` |
+
+A imagem de compartilhamento (`preview.png`) continua com o desenho antigo.
+
 ## Pedido 30 (15/11): revisão de design (juntado na main em 17/11; as partes de estilo foram superadas pela revisão do Pedido 37)
 
 Fiz capturas de tela de 14 páginas (página inicial, login, cadastro, painéis da empresa, usina e pessoa física, propostas, catálogo) no computador e no celular, avaliei e corrigi o que destoava.
