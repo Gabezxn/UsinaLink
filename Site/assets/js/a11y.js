@@ -32,7 +32,6 @@
     root.classList.toggle("a11y-reduce-motion", prefs.reduceMotion);
     root.classList.toggle("a11y-links", prefs.highlightLinks);
     syncPanel();
-    vlibrasEscuro();
   }
   if (mq && mq.addEventListener) mq.addEventListener("change", function () { if (prefs.theme === "auto") apply(); });
 
@@ -142,39 +141,6 @@
   }
 
   /* ---------- VLibras ---------- */
-  // O VLibras novo desenha o painel/avatar (#vlibras-app-root) e o botão com a dica "Acessível com VLibras"
-  // (#vlibras-access-wrapper) dentro de shadow DOM, fora do [vw]. No modo escuro a página inteira é invertida
-  // por filtro, então cada peça desses dois precisa de uma segunda inversão (no host não serve: ele prenderia
-  // o painel ao fim da página).
-  var VLIBRAS_HOSTS = ["vlibras-app-root", "vlibras-access-wrapper"];
-  function vlibrasEscuro() {
-    var escuro = root.classList.contains("a11y-dark");
-    VLIBRAS_HOSTS.forEach(function (id) {
-      var host = document.getElementById(id);
-      var sr = host && host.shadowRoot;
-      if (!sr) return;
-      Array.prototype.forEach.call(sr.children, function (c) {
-        if (c.tagName === "STYLE") return;
-        c.style.filter = escuro ? "invert(1) hue-rotate(180deg)" : "";
-      });
-    });
-  }
-  function vigiarVlibras() {
-    var vigiados = [];
-    // O painel só aparece quando a pessoa abre o Libras, então a checagem continua enquanto a página estiver aberta.
-    window.setInterval(function () {
-      VLIBRAS_HOSTS.forEach(function (id) {
-        var host = document.getElementById(id);
-        var sr = host && host.shadowRoot;
-        if (sr && vigiados.indexOf(id) < 0 && window.MutationObserver) {
-          vigiados.push(id);
-          new MutationObserver(vlibrasEscuro).observe(sr, { childList: true });
-        }
-      });
-      vlibrasEscuro();
-    }, 1000);
-  }
-
   function vlibras() {
     if (document.querySelector("[vw]")) return;
     var vw = el("div", { vw: "", "class": "enabled" });
@@ -186,7 +152,7 @@
     var s = document.createElement("script");
     s.src = "https://vlibras.gov.br/app/vlibras-plugin.js";
     s.async = true;
-    s.onload = function () { try { new window.VLibras.Widget("https://vlibras.gov.br/app"); vigiarVlibras(); } catch (e) { /* VLibras indisponível */ } };
+    s.onload = function () { try { new window.VLibras.Widget("https://vlibras.gov.br/app"); } catch (e) { /* VLibras indisponível */ } };
     s.onerror = function () { /* sem rede: a página segue funcionando */ };
     document.head.appendChild(s);
   }

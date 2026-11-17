@@ -435,6 +435,16 @@ Publicado direto na main a pedido do dono do projeto.
 
 A imagem de compartilhamento em redes sociais (`Site/assets/img/preview.png`, 1200×630) foi refeita com a logo nova, no mesmo texto de antes e com fundo azul liso.
 
+## Pedido 44 (17/11): modo escuro novo (VERSÃO DE TESTE, só na branch `teste-modo-escuro`)
+
+| Mudança | Onde |
+|---|---|
+| O modo escuro deixa de ser a inversão de cores da página (que trocava as cores da marca e exigia consertos para o Libras) e passa a ser um tema de verdade, em azul-marinho, no clima da imagem de compartilhamento. A logo vira o quadrado branco com o símbolo azul-marinho. As cores de cada tipo de conta (laranja da usina, verde-água da pessoa física) continuam | `Site/assets/css/tema-escuro.css` (novo, em todas as páginas), `Site/assets/css/a11y.css` (sem a inversão) |
+| O `tema-escuro.css` é gerado a partir do `style.css` por um script (cada regra com cor ganha uma versão escura). Se o `style.css` mudar, rodar `python tools/gerar-tema-escuro.py` de novo | `tools/gerar-tema-escuro.py` |
+| Sem a inversão, o painel e a dica do Libras já saem com as cores certas, então o código que consertava isso foi removido nesta branch | `Site/assets/js/a11y.js` |
+
+Não está na main. Para decidir: comparar com o site atual (que ainda usa a inversão).
+
 ## Pedido 43 (17/11): fork e repositório principal
 
 | Mudança | Onde |
