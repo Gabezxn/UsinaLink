@@ -435,6 +435,13 @@ Publicado direto na main a pedido do dono do projeto.
 
 A imagem de compartilhamento em redes sociais (`Site/assets/img/preview.png`, 1200×630) foi refeita com a logo nova, no mesmo texto de antes e com fundo azul liso.
 
+## Pedido 49 (17/11): pagamento por PIX que não atualizava e limpeza de registros de teste de segurança
+
+| Problema | Correção | Onde |
+|---|---|---|
+| Na Stripe aparecia "pagamento concluído" (principalmente por PIX), mas o pedido no site não atualizava | (1) O site só atualizava se a pessoa voltasse da Stripe para a página do pedido. Agora o servidor guarda o checkout aberto de cada pedido e, quando a pessoa abre o histórico, os pagamentos ou o pedido, confere na Stripe se já foi pago e atualiza sozinho (`POST /api/pagamentos/conferir`). (2) Quando volta da Stripe antes da confirmação chegar, a tela espera e pergunta de novo por até 2 minutos ("Aguardando a confirmação do pagamento... O PIX pode levar alguns instantes") em vez de mostrar erro. (3) A forma de pagamento deixou de ser gravada como "Cartão (Stripe)" | `backend/src/pagamento/pagamento.service.ts` e `.controller.ts`, `core.entities.ts` (coluna `stripe_session_id` no pedido), `Site/assets/js/order-history.js`, `payment-service.js`, `qa/security/sec-stripe.mjs` |
+| Testes de segurança de um amigo deixaram scripts/HTML salvos nos registros (não executam, mas apareceriam na apresentação) | Rotina temporária que roda uma vez no Render, apaga registros com HTML/script/injeção no texto (pedidos, propostas, peças, solicitações...) e troca o texto suspeito de nomes de conta por "Conta de teste" (a conta continua entrando). O código dela sai logo depois de confirmada | `backend/src/database/limpeza-teste.service.ts` (temporário) |
+
 ## Pedido 48 (17/11): pedidos de exemplo nas contas vazias (rodou uma vez e o código foi removido)
 
 | O que foi feito | Resultado |

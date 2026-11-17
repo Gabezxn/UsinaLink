@@ -92,7 +92,16 @@
       .map(({ proposta, pedido }) => enrichOrder(pedido, proposta, payments));
   }
 
+  // Pergunta ao servidor, uma vez por página, se algum pagamento aberto na Stripe (PIX, por exemplo) já foi pago, mesmo que a pessoa
+  // tenha pago e fechado a página da Stripe sem voltar ao site.
+  let conferencia = null;
+  function conferirPagamentos() {
+    if (!conferencia) conferencia = currentSession().tipo === "usina" ? Promise.resolve() : apiPost("/pagamentos/conferir", {}).catch(() => null);
+    return conferencia;
+  }
+
   async function getOrders() {
+    await conferirPagamentos();
     const payments = await apiGet("/pagamentos").catch(() => []);
     const isUsina = currentSession().tipo === "usina";
     const orders = isUsina ? await getOrdersUsina(payments) : await getOrdersEmpresa(payments);

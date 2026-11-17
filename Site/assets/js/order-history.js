@@ -118,13 +118,25 @@
     const stripeVolta = params.get("stripe");
     if (stripeVolta === "ok" && params.get("session_id")) {
       root.innerHTML = '<div class="empty-state" role="status"><strong>Confirmando seu pagamento...</strong><span>Só um instante.</span></div>';
-      try {
-        await service.confirmarStripe(params.get("session_id"));
-        window.location.replace(`confirmacao-pedido.html?pedidoId=${encodeURIComponent(params.get("pedidoId") || "")}`);
-      } catch (error) {
-        root.innerHTML = `<div class="empty-state" role="alert"><strong>Não foi possível confirmar o pagamento</strong><span>${ui.escapeHtml ? ui.escapeHtml(error.message) : "Tente novamente em instantes."}</span><a class="btn btn-small" href="pagamento-pedido.html?pedidoId=${encodeURIComponent(params.get("pedidoId") || "")}">Voltar ao pagamento</a></div>`;
+      const espera = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+      // PIX (e boleto) podem levar alguns instantes para a Stripe marcar como pago: a tela espera e pergunta de novo, até 2 minutos.
+      for (let tentativa = 0; ; tentativa += 1) {
+        try {
+          await service.confirmarStripe(params.get("session_id"));
+          window.location.replace(`confirmacao-pedido.html?pedidoId=${encodeURIComponent(params.get("pedidoId") || "")}`);
+          return;
+        } catch (error) {
+          const aindaNao = /ainda nao foi confirmado/i.test(String(error.message));
+          if (aindaNao && tentativa < 30) {
+            root.innerHTML = '<div class="empty-state" role="status"><strong>Aguardando a confirmação do pagamento...</strong><span>O PIX pode levar alguns instantes. Não feche esta página.</span></div>';
+            await espera(4000);
+            continue;
+          }
+          const texto = aindaNao ? "A Stripe ainda não confirmou o pagamento. Se você já pagou, aguarde um minuto e confira de novo: o pedido se atualiza sozinho assim que a confirmação chegar." : (ui.escapeHtml ? ui.escapeHtml(error.message) : "Tente novamente em instantes.");
+          root.innerHTML = `<div class="empty-state" role="alert"><strong>${aindaNao ? "Pagamento ainda não confirmado" : "Não foi possível confirmar o pagamento"}</strong><span>${texto}</span><a class="btn btn-small" href="${window.location.href.replace(/&/g, "&amp;")}">Conferir de novo</a> <a class="btn btn-small btn-ghost" href="historico-pedidos.html">Ver histórico de pedidos</a></div>`;
+          return;
+        }
       }
-      return;
     }
     const order = await service.getOrder(params.get("pedidoId"));
     if (!order) {

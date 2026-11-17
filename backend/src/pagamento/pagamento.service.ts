@@ -1,5 +1,5 @@
 import { origemPermitida } from '../common/origem';
-import { BadRequestException, ForbiddenException, Injectable, ServiceUnavailableException } from '@nestjs/common';
+import { BadRequestException, ConflictException, ForbiddenException, Injectable, Logger, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
@@ -7,10 +7,11 @@ import { ContextoUsuarioService } from '../contexto-usuario/contexto-usuario.ser
 import { NotificacaoService } from '../notificacao/notificacao.service';
 import { Pagamento, Pedido, Proposta } from '../common/entities/core.entities';
 import { CheckoutDto, CreatePagamentoDto } from './dto/create-pagamento.dto';
-import { StripeService } from './stripe.service';
+import { SessaoStripe, StripeService } from './stripe.service';
 
 @Injectable()
 export class PagamentoService {
+  private readonly log = new Logger('PagamentoService');
   constructor(
     @InjectRepository(Pagamento) private readonly pagamentos: Repository<Pagamento>,
     @InjectRepository(Pedido) private readonly pedidos: Repository<Pedido>,
@@ -110,6 +111,7 @@ export class PagamentoService {
       metadata: { pedidoId: String(base.pedido.idPedido), idUsuario: String(user.sub) },
     });
     if (!sessao.url) throw new ServiceUnavailableException('O servico de pagamento nao devolveu o endereco de pagamento.');
+    await this.pedidos.update({ idPedido: base.pedido.idPedido }, { stripeSessionId: sessao.id });
     return { url: sessao.url };
   }
 
@@ -123,10 +125,40 @@ export class PagamentoService {
     // Ja confirmado antes (ex.: pagina recarregada): devolve o pagamento existente.
     const anterior = await this.pagamentos.findOne({ where: { idPedido: pedidoId, status: 'pago' } });
     if (anterior) return anterior;
-    if (sessao.payment_status !== 'paid') throw new BadRequestException('O pagamento ainda nao foi confirmado.');
+    // PIX e boleto podem levar alguns instantes para a Stripe marcar como pago: a tela espera e pergunta de novo.
+    if (sessao.payment_status !== 'paid') throw new ConflictException('O pagamento ainda nao foi confirmado.');
+    return this.pagarComSessao(sessao, pedidoId, user);
+  }
+
+  private async pagarComSessao(sessao: SessaoStripe, pedidoId: number, user: any) {
     const base = await this.prepararPagamento(pedidoId, user);
     const esperado = Math.round(Number(base.proposta.valor) * 100);
     if (sessao.amount_total !== esperado || String(sessao.currency).toLowerCase() !== 'brl') throw new BadRequestException('O valor pago nao confere com o pedido.');
-    return this.registrarPago(base, 'Cartao (Stripe)');
+    return this.registrarPago(base, 'Stripe');
+  }
+
+  /**
+   * Confere, na Stripe, os pedidos desta conta que estao aguardando pagamento e ja tem um checkout aberto.
+   * Cobre quem paga (principalmente por PIX) e fecha a pagina da Stripe sem voltar ao site: ao abrir o site de novo o pedido se atualiza.
+   */
+  async conferirPendentes(user: any) {
+    if (!this.stripe.ligado()) return { confirmados: 0 };
+    const comprador = await this.ctx.obterComprador(user.sub);
+    const where = comprador.idPessoaFisica
+      ? { idPessoaFisicaCompradora: comprador.idPessoaFisica, status: 'proposta_aceita' }
+      : { idEmpresaCompradora: comprador.idEmpresa, status: 'proposta_aceita' };
+    const pedidos = (await this.pedidos.find({ where: where as any, order: { idPedido: 'DESC' }, take: 10 })).filter(p => !!p.stripeSessionId);
+    let confirmados = 0;
+    for (const pedido of pedidos) {
+      try {
+        const sessao = await this.stripe.buscarSessao(pedido.stripeSessionId as string);
+        if (sessao.payment_status !== 'paid' || String(sessao.metadata?.pedidoId) !== String(pedido.idPedido) || String(sessao.metadata?.idUsuario) !== String(user.sub)) continue;
+        await this.pagarComSessao(sessao, pedido.idPedido, user);
+        confirmados += 1;
+      } catch (erro) {
+        this.log.warn(`Conferencia do pedido ${pedido.idPedido} nao concluida: ${(erro as Error).message}`);
+      }
+    }
+    return { confirmados };
   }
 }

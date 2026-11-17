@@ -162,6 +162,8 @@ export class Pedido {
   @Column({ name: 'data_prevista_entrega', type: 'timestamp', nullable: true }) dataPrevistaEntrega?: Date;
   @Column({ name: 'data_entrega_real', type: 'timestamp', nullable: true }) dataEntregaReal?: Date;
   @Column({ name: 'valor_total', type: 'numeric', nullable: true }) valorTotal?: number;
+  // Último pagamento online aberto na Stripe: serve para conferir o pagamento mesmo se a pessoa não voltar ao site depois de pagar.
+  @Column({ name: 'stripe_session_id', nullable: true }) stripeSessionId?: string;
   @ManyToOne(() => Empresa, e => e.pedidos) @JoinColumn({ name: 'id_empresa_compradora' }) empresaCompradora: Relation<Empresa>;
   @OneToMany(() => ItemPedido, i => i.pedido) itens: Relation<ItemPedido[]>;
   @OneToMany(() => ArquivoPedido, a => a.pedido) arquivos: Relation<ArquivoPedido[]>;

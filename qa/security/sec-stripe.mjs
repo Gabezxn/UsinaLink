@@ -126,6 +126,25 @@ try {
   // pedido pago nao abre novo checkout
   r = await call('POST', '/api/pagamentos/checkout', emp, { pedidoId: String(p.idPedido) });
   t.ok(is4xx(r), `pedido pago nao pode abrir novo checkout (status ${r.status})`);
+
+  // PIX: a pessoa paga na Stripe e fecha a pagina sem voltar ao site. Ao abrir o site de novo, o pedido se atualiza sozinho (conferir).
+  const p2 = await pedidoParaPagar(emp, usina, '800');
+  r = await call('POST', '/api/pagamentos/checkout', emp, { pedidoId: String(p2.idPedido) });
+  const sessaoPix = [...sessoes.values()].pop();
+  r = await call('POST', '/api/pagamentos/checkout/confirmar', emp, { sessionId: sessaoPix.id });
+  t.ok(r.status === 409, `sessao ainda nao paga deveria dar 409 (a tela espera e tenta de novo) (deu ${r.status})`);
+  r = await call('POST', '/api/pagamentos/conferir', emp);
+  t.ok(r.status < 300 && r.json?.confirmados === 0, `conferir sem pagamento nao deveria confirmar nada (${r.status} ${r.texto})`);
+  t.ok((await call('GET', '/api/pedidos/meus', emp)).json.find((x) => x.idPedido === p2.idPedido)?.status === 'proposta_aceita', 'pedido nao deveria mudar sem pagamento (conferir)');
+  sessaoPix.payment_status = 'paid'; sessaoPix.status = 'complete';
+  r = await call('POST', '/api/pagamentos/conferir', usina);
+  t.ok(is4xx(r) || r.json?.confirmados === 0, `a usina nao pode conferir pagamento de comprador (${r.status} ${r.texto})`);
+  r = await call('POST', '/api/pagamentos/conferir', emp);
+  t.ok(r.status < 300 && r.json?.confirmados === 1, `conferir com a sessao paga deveria confirmar 1 pedido (${r.status} ${r.texto})`);
+  t.ok((await call('GET', '/api/pedidos/meus', emp)).json.find((x) => x.idPedido === p2.idPedido)?.status === 'em_producao', 'pedido deveria ir para producao depois de conferir');
+  r = await call('POST', '/api/pagamentos/conferir', emp);
+  t.ok(r.status < 300 && r.json?.confirmados === 0, `conferir de novo nao deveria pagar outra vez (${r.status} ${r.texto})`);
+  t.ok((await call('GET', '/api/pagamentos', emp)).json.filter((x) => x.idPedido === p2.idPedido).length === 1, 'deveria existir 1 pagamento do pedido PIX');
 } finally {
   if (be) parar(be);
   stripe.close();

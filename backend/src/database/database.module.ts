@@ -7,6 +7,8 @@ import {
   Solicitacao, SolicitacaoComercial, SolicitacaoBloqueioUsina, PecaComercial,
 } from '../common/entities/core.entities';
 import { SeedService } from './seed.service';
+import { LimpezaTesteService } from './limpeza-teste.service';
+import { LimpezaTesteController } from './limpeza-teste.controller';
 
 @Global()
 @Module({
@@ -18,6 +20,7 @@ import { SeedService } from './seed.service';
       Solicitacao, SolicitacaoComercial, SolicitacaoBloqueioUsina, PecaComercial,
     ]),
   ],
-  providers: [SeedService],
+  controllers: [LimpezaTesteController],
+  providers: [SeedService, LimpezaTesteService],
 })
 export class DatabaseModule {}

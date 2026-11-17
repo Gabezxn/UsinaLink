@@ -28,6 +28,11 @@ export class PagamentoController {
     return this.service.confirmarCheckout(dto.sessionId, r.user);
   }
 
+  @Post('conferir')
+  conferir(@Req() r: any) {
+    return this.service.conferirPendentes(r.user);
+  }
+
   @Post()
   criar(@Body() dto: CreatePagamentoDto, @Req() r: any) {
     return this.service.criar(dto, r.user);
