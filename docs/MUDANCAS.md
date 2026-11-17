@@ -381,9 +381,9 @@ Publicado no site principal com a aprovação do dono do projeto.
 
 **Atenção:** contas antigas sem CEP continuam entrando normalmente; só o cadastro novo exige. Na pessoa física demo do site no ar o endereço está vazio: preencha pela nova aba do perfil.
 
-## Pedido 37 (17/11): esqueci minha senha, Libras no modo escuro e revisão geral — VERSÃO DE TESTE
+## Pedido 37 (17/11): esqueci minha senha, Libras no modo escuro e revisão geral
 
-Publicado só na branch `revisao-final`. O site principal só muda depois da sua aprovação.
+Publicado no site principal junto com o Pedido 38, com a aprovação do dono do projeto.
 
 | Mudança | Onde |
 |---|---|
@@ -398,9 +398,9 @@ Publicado só na branch `revisao-final`. O site principal só muda depois da sua
 
 **Não alterado, decisão do dono do projeto:** o frete aparece no total da proposta mas o pagamento cobra só o valor; o convite de funcionário não funciona de ponta a ponta; contas demo são criadas também em produção; compra de peça do catálogo é marcada como paga sem Stripe; cerca de 150 textos ainda sem acento; `pagamentos.html` e `perfil.html` sem link no menu. Quem já está logado continua logado por até 8 horas depois de trocar a senha.
 
-## Pedido 38 (17/11): nomes das páginas padronizados — VERSÃO DE TESTE
+## Pedido 38 (17/11): nomes das páginas padronizados
 
-Publicado só na branch `revisao-final` (junto com o Pedido 37). O site principal só muda depois da sua aprovação.
+Publicado no site principal com a aprovação do dono do projeto.
 
 | Antes | Depois |
 |---|---|
