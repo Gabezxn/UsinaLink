@@ -435,6 +435,12 @@ Publicado direto na main a pedido do dono do projeto.
 
 A imagem de compartilhamento em redes sociais (`Site/assets/img/preview.png`, 1200×630) foi refeita com a logo nova, no mesmo texto de antes e com fundo azul liso.
 
+## Pedido 42 (17/11): Libras com cores certas no modo escuro
+
+| Problema | Correção | Onde |
+|---|---|---|
+| No modo escuro o painel e o avatar do VLibras ficavam com as cores invertidas (cabelo branco, pele escura). A versão nova do VLibras (7.12) desenha tudo num elemento próprio (`#vlibras-app-root`, com shadow DOM), fora do `[vw]` que a correção anterior tratava | O script de acessibilidade aplica a segunda inversão em cada peça do painel quando o modo escuro está ligado, e tira quando desliga. Conferido no navegador com o Libras aberto | `Site/assets/js/a11y.js` |
+
 ## Pedido 41 (17/11): correções da revisão do TCC
 
 Feito na branch `correcoes-revisao` a partir do relatório `docs/REVISAO-TCC.md`. Os códigos (ALT-01, CRI-01…) são os do relatório.

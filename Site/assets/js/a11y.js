@@ -32,6 +32,7 @@
     root.classList.toggle("a11y-reduce-motion", prefs.reduceMotion);
     root.classList.toggle("a11y-links", prefs.highlightLinks);
     syncPanel();
+    vlibrasEscuro();
   }
   if (mq && mq.addEventListener) mq.addEventListener("change", function () { if (prefs.theme === "auto") apply(); });
 
@@ -141,6 +142,32 @@
   }
 
   /* ---------- VLibras ---------- */
+  // O VLibras novo desenha o painel e o avatar dentro de um shadow DOM (#vlibras-app-root), fora do [vw].
+  // No modo escuro a página inteira é invertida por filtro, então o painel precisa de uma segunda inversão
+  // (aplicada em cada filho do shadow DOM; no host não serve, porque ele prende o painel ao fim da página).
+  function vlibrasEscuro() {
+    var host = document.getElementById("vlibras-app-root");
+    var sr = host && host.shadowRoot;
+    if (!sr) return;
+    var escuro = root.classList.contains("a11y-dark");
+    Array.prototype.forEach.call(sr.children, function (c) {
+      if (c.tagName === "STYLE") return;
+      c.style.filter = escuro ? "invert(1) hue-rotate(180deg)" : "";
+    });
+  }
+  function vigiarVlibras() {
+    var tentativas = 0;
+    var timer = window.setInterval(function () {
+      var host = document.getElementById("vlibras-app-root");
+      var sr = host && host.shadowRoot;
+      if (sr && window.MutationObserver) {
+        window.clearInterval(timer);
+        new MutationObserver(vlibrasEscuro).observe(sr, { childList: true });
+        vlibrasEscuro();
+      } else if (++tentativas > 120) window.clearInterval(timer);
+    }, 500);
+  }
+
   function vlibras() {
     if (document.querySelector("[vw]")) return;
     var vw = el("div", { vw: "", "class": "enabled" });
@@ -152,7 +179,7 @@
     var s = document.createElement("script");
     s.src = "https://vlibras.gov.br/app/vlibras-plugin.js";
     s.async = true;
-    s.onload = function () { try { new window.VLibras.Widget("https://vlibras.gov.br/app"); } catch (e) { /* VLibras indisponível */ } };
+    s.onload = function () { try { new window.VLibras.Widget("https://vlibras.gov.br/app"); vigiarVlibras(); } catch (e) { /* VLibras indisponível */ } };
     s.onerror = function () { /* sem rede: a página segue funcionando */ };
     document.head.appendChild(s);
   }
