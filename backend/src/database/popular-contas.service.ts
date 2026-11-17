@@ -56,8 +56,9 @@ export class PopularContasService implements OnApplicationBootstrap {
     const modo = (process.env.SEED_POPULAR_CONTAS || '').toLowerCase();
     try {
       if (modo === 'remover') {
-        this.log.log(`Removido: ${JSON.stringify(await this.remover())}`);
-        await this.marcarComoRodado();
+        const removido = await this.remover();
+        this.log.log(`Removido: ${JSON.stringify(removido)}`);
+        await this.marcarComoRodado({ removido });
         return;
       }
       const forcado = modo === 'true';
@@ -65,14 +66,14 @@ export class PopularContasService implements OnApplicationBootstrap {
       if (!forcado && !automatico) return;
       const resumo = await this.popular();
       this.log.log(`Criado${automatico && !forcado ? ' (automático, uma vez)' : ''}: ${JSON.stringify(resumo)}`);
-      await this.marcarComoRodado();
+      await this.marcarComoRodado({ criado: resumo });
     } catch (erro) {
       this.log.error(`Falhou: ${(erro as Error).message}`);
     }
   }
 
-  private async marcarComoRodado() {
-    await this.configuracao.save(this.configuracao.create({ chave: CHAVE_JA_RODOU, valor: new Date().toISOString() }));
+  private async marcarComoRodado(resumo?: unknown) {
+    await this.configuracao.save(this.configuracao.create({ chave: CHAVE_JA_RODOU, valor: JSON.stringify({ em: new Date().toISOString(), ...(resumo as object) }) }));
   }
 
   private async localDe(comprador: { empresa?: Empresa; pessoa?: PessoaFisica }) {

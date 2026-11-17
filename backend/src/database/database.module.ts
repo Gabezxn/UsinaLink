@@ -8,6 +8,7 @@ import {
 } from '../common/entities/core.entities';
 import { SeedService } from './seed.service';
 import { PopularContasService } from './popular-contas.service';
+import { PopularContasController } from './popular-contas.controller';
 
 @Global()
 @Module({
@@ -19,6 +20,7 @@ import { PopularContasService } from './popular-contas.service';
       Solicitacao, SolicitacaoComercial, SolicitacaoBloqueioUsina, PecaComercial, HistoricoStatusPedido, ConfiguracaoSistema,
     ]),
   ],
+  controllers: [PopularContasController],
   providers: [SeedService, PopularContasService],
 })
 export class DatabaseModule {}
