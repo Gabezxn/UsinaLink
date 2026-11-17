@@ -214,7 +214,7 @@
         <div><span>Categoria</span><strong>${esc(item.categoria || '-')}</strong></div>
         <div><span>Material</span><strong>${esc(item.material || '-')}</strong></div>
         <div><span>Quantidade</span><strong>${esc(item.quantidade ?? '-')}</strong></div>
-        <div><span>Urgência</span><strong>${esc(item.urgencia || '-')}</strong></div>
+        <div><span>Urgência</span><strong>${esc(formatUrgencia(item.urgencia, '-'))}</strong></div>
         <div><span>Status</span><strong>${esc(STATUS_LABEL[item.status] || item.status || '-')}</strong></div>
         <div><span>Prazo desejado</span><strong>${item.prazoDesejado ? new Date(item.prazoDesejado).toLocaleDateString('pt-BR') : '-'}</strong></div>
         <div><span>Local de entrega</span><strong>${esc(item.localEntrega || '-')}</strong></div>

@@ -24,4 +24,11 @@
   }
   window.SafeHtml = { escape: escape, url: url, prazo: prazo };
   window.formatPrazo = prazo;
+  /** Urgência para exibir: "media" -> "Média", "alta" -> "Alta". */
+  var URG = { baixa: "Baixa", normal: "Normal", media: "Média", "média": "Média", alta: "Alta", urgente: "Urgente", critica: "Crítica", "crítica": "Crítica" };
+  window.formatUrgencia = function (value, vazio) {
+    var t = String(value === null || value === undefined ? "" : value).trim();
+    if (!t) return vazio === undefined ? "Normal" : vazio;
+    return URG[t.toLowerCase()] || t.charAt(0).toUpperCase() + t.slice(1);
+  };
 })();
