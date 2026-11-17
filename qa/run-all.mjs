@@ -17,7 +17,6 @@ const passos = [
   ['security/sec-2fa', 'node', ['qa/security/sec-2fa.mjs']],
   ['security/sec-senha', 'node', ['qa/security/sec-senha.mjs']],
   ['security/sec-revisao', 'node', ['qa/security/sec-revisao.mjs']],
-  ['security/sec-popular', 'node', ['qa/security/sec-popular.mjs']],
   ['security/sec-stripe', 'node', ['qa/security/sec-stripe.mjs']],
   ['security/xss-sweep', 'node', ['qa/security/xss-sweep.mjs']],
   ['flows/a11y-base', 'node', ['qa/flows/a11y-base.mjs']],

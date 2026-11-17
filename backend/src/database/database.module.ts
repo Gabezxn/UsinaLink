@@ -4,11 +4,9 @@ import { AuthModule } from '../auth/auth.module';
 import {
   Usuario, PessoaFisica, Empresa, Usina, Funcionario, EnderecoEmpresa, EnderecoUsina,
   Pedido, ItemPedido, Proposta, AvaliacaoEntrega, Pagamento, Notificacao,
-  Solicitacao, SolicitacaoComercial, SolicitacaoBloqueioUsina, PecaComercial, HistoricoStatusPedido, ConfiguracaoSistema,
+  Solicitacao, SolicitacaoComercial, SolicitacaoBloqueioUsina, PecaComercial,
 } from '../common/entities/core.entities';
 import { SeedService } from './seed.service';
-import { PopularContasService } from './popular-contas.service';
-import { PopularContasController } from './popular-contas.controller';
 
 @Global()
 @Module({
@@ -17,10 +15,9 @@ import { PopularContasController } from './popular-contas.controller';
     TypeOrmModule.forFeature([
       Usuario, PessoaFisica, Empresa, Usina, Funcionario, EnderecoEmpresa, EnderecoUsina,
       Pedido, ItemPedido, Proposta, AvaliacaoEntrega, Pagamento, Notificacao,
-      Solicitacao, SolicitacaoComercial, SolicitacaoBloqueioUsina, PecaComercial, HistoricoStatusPedido, ConfiguracaoSistema,
+      Solicitacao, SolicitacaoComercial, SolicitacaoBloqueioUsina, PecaComercial,
     ]),
   ],
-  controllers: [PopularContasController],
-  providers: [SeedService, PopularContasService],
+  providers: [SeedService],
 })
 export class DatabaseModule {}
