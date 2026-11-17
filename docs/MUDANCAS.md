@@ -444,6 +444,7 @@ A imagem de compartilhamento em redes sociais (`Site/assets/img/preview.png`, 12
 | Sem a inversão, o painel e a dica do Libras já saem com as cores certas, então o código que consertava isso foi removido nesta branch | `Site/assets/js/a11y.js` |
 
 Ajustes depois da primeira versão: avisos (toast) com fundo escuro e texto legível; cabeçalho do "Histórico de pedidos" e blocos do "Como funciona" sem caixa/borda a mais (o gerador agora copia também `border: 0` e `background: transparent`); botões da faixa azul "Tem uma peça para cotar?" claros sobre o azul.
+Depois: a logo das áreas de empresa, usina e pessoa física mantém a cor do tipo de conta no modo escuro (azul, laranja, verde-água); o quadrado branco só aparece nas páginas sem tipo de conta (início, logins de empresa e de pessoa física, cadastros).
 
 ## Pedido 43 (17/11): fork e repositório principal
 

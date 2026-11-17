@@ -1416,8 +1416,9 @@ html.a11y-dark .proposal-group-head span {
 }
 
 /* Logo: no escuro a marca vira o quadrado branco com o símbolo azul-marinho (como na imagem de compartilhamento) */
-html.a11y-dark .brand-icon { background: #ffffff !important; box-shadow: none; }
-html.a11y-dark .brand-icon .brand-mark { content: url("../img/logo-mark.svg"); }
+/* (só nas páginas sem tipo de conta: nas áreas de empresa, usina e pessoa física a logo mantém a cor da conta) */
+html.a11y-dark body:not([data-user-role]):not(.pf-mode):not(.orange-mode):not(.usina-auth) .brand-icon { background: #ffffff !important; box-shadow: none; }
+html.a11y-dark body:not([data-user-role]):not(.pf-mode):not(.orange-mode):not(.usina-auth) .brand-icon .brand-mark { content: url("../img/logo-mark.svg"); }
 
 /* Avisos (toast): no tema claro usavam a cor do texto como fundo; no escuro essa cor é clara e o texto branco sumia */
 html.a11y-dark .toast { background: #1d3270; color: #ffffff; border: 1px solid #3a5199; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45); }
