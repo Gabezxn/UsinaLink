@@ -937,6 +937,7 @@ function renderSentProposalDetails(item) {
       <div><span>Quantidade</span><strong>${escapeHtml(quantidade)}</strong></div>
       <div><span>Pedido</span><strong>${escapeHtml(pedido.numeroPedido || "-")}</strong></div>
       <div class="span-2"><span>Local de entrega</span><strong>${escapeHtml(pedido.localEntrega || "Não informado")}</strong></div>
+      <div class="span-2"><span>Arquivo técnico do pedido</span><div class="card-actions"><button class="btn btn-ghost btn-small" type="button" data-arquivo-acao="visualizar" data-pedido-id="${escapeHtml(item.idPedido)}">Visualizar</button><button class="btn btn-orange btn-small" type="button" data-arquivo-acao="baixar" data-pedido-id="${escapeHtml(item.idPedido)}">Baixar</button></div></div>
     </div>
     <div class="detail-list"><div><span>Observações da proposta</span><strong>${escapeHtml(item.observacao || "Sem observações adicionais.")}</strong></div></div>
     <div class="form-actions"><button class="btn btn-ghost js-action-modal-close" type="button">Fechar</button></div>`;

@@ -435,6 +435,12 @@ Publicado direto na main a pedido do dono do projeto.
 
 A imagem de compartilhamento em redes sociais (`Site/assets/img/preview.png`, 1200×630) foi refeita com a logo nova, no mesmo texto de antes e com fundo azul liso.
 
+## Pedido 45 (17/11): usina vê e baixa o arquivo técnico antes da proposta ser aceita
+
+| Problema | Correção | Onde |
+|---|---|---|
+| A usina só conseguia ver/baixar o arquivo técnico do pedido na janela de "Pedidos disponíveis". Na tela "Enviar proposta" e nos detalhes de "Propostas enviadas" não havia como abrir o arquivo | Botões "Visualizar" e "Baixar" nas duas telas. Foto abre numa janela por cima da página; PDF abre em nova aba; outros tipos são baixados. Se o arquivo ainda não foi carregado, é buscado no servidor na hora. A lógica ficou num arquivo só, usado pelas quatro telas | `Site/assets/js/arquivo-pedido.js` (novo), `pedidos-usina.js`, `enviar-proposta.js`, `Site/script.js`, `enviar-proposta.html`, `propostas-usina.html`, `pedidos-disponiveis.html`, `dashboard-usina.html` |
+
 ## Pedido 44 (17/11): modo escuro novo (publicado na main com a aprovação do dono do projeto)
 
 | Mudança | Onde |

@@ -54,6 +54,8 @@
         if (sendButton) sendButton.disabled = true;
       }
       const item = (pedido.itens && pedido.itens[0]) || {};
+      const arquivo = (pedido.arquivos || []).find((a) => a.urlArquivo);
+      if (arquivo) (window.UsinaLinkArquivosPedido = window.UsinaLinkArquivosPedido || {})[pedido.idPedido] = { nome: arquivo.nomeArquivo || "arquivo-tecnico", url: arquivo.urlArquivo };
       card.querySelector("h2").textContent = item.nome || "Pedido industrial";
       card.querySelector(".quote-facts").innerHTML = `
         <div><span>Peça</span><strong>${esc(item.nome || "Não informado")}</strong></div>
@@ -62,7 +64,8 @@
         <div><span>Prazo desejado</span><strong>${esc(pedido.prazoEntregaDias ? formatPrazo(pedido.prazoEntregaDias) : "A combinar")}</strong></div>
         <div><span>Empresa</span><strong>${esc(pedido.empresaCompradora?.nomeFantasia || pedido.empresaCompradora?.razaoSocial || "-")}</strong></div>
         <div><span>Categoria</span><strong>${esc(item.categoria || "Não informado")}</strong></div>
-        <div><span>Urgência</span><strong>${esc(formatUrgencia(pedido.urgencia))}</strong></div>`;
+        <div><span>Urgência</span><strong>${esc(formatUrgencia(pedido.urgencia))}</strong></div>
+        <div class="span-2"><span>Arquivo técnico</span><strong>${esc(arquivo?.nomeArquivo || "Sem arquivo anexado")}</strong>${arquivo ? `<div class="card-actions"><button class="btn btn-ghost btn-small" type="button" data-arquivo-acao="visualizar" data-pedido-id="${esc(pedido.idPedido)}">Visualizar</button><button class="btn btn-orange btn-small" type="button" data-arquivo-acao="baixar" data-pedido-id="${esc(pedido.idPedido)}">Baixar</button></div>` : ""}</div>`;
       return pedido;
     } catch (error) {
       card.innerHTML = `<p>Não foi possível carregar este pedido: ${esc(error.message)}</p>`;
