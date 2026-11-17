@@ -1,0 +1,9 @@
+import { IsNotEmpty, IsNumberString, IsOptional, IsString, MaxLength } from 'class-validator';
+
+export class CreateSolicitacaoComercialDto {
+  @IsNotEmpty({ message: 'Informe a peça.' }) @IsString() @MaxLength(200) peca: string;
+  @IsOptional() @IsString() fornecedor?: string;
+  @IsOptional() @IsNumberString({}, { message: 'Peça comercial inválida.' }) pecaId?: string;
+  @IsOptional() @IsNumberString({}, { message: 'Valor unitário deve ser numérico.' }) valorUnitario?: string;
+  @IsOptional() @IsNumberString({}, { message: 'Quantidade deve ser numérica.' }) quantidade?: string;
+}

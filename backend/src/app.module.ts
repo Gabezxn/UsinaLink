@@ -2,7 +2,9 @@ import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { HealthModule } from './health/health.module';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { AppThrottlerGuard } from './common/login-throttler.guard';
 import { AppController } from './app.controller';
 import { DatabaseModule } from './database/database.module';
 import { ENTITIES } from './common/entities/core.entities';
@@ -12,17 +14,21 @@ import { PedidoModule } from './pedido/pedido.module';
 import { PropostaModule } from './proposta/proposta.module';
 import { AvaliacaoModule } from './avaliacao/avaliacao.module';
 import { SolicitacaoBloqueioUsinaModule } from './solicitacao-bloqueio-usina/solicitacao-bloqueio-usina.module';
+import { SolicitacaoModule } from './solicitacao/solicitacao.module';
+import { SolicitacaoComercialModule } from './solicitacao-comercial/solicitacao-comercial.module';
+import { PecaComercialModule } from './peca-comercial/peca-comercial.module';
 import { UsuarioModule } from './usuario/usuario.module';
 import { AuthModule } from './auth/auth.module';
 import { ContextoUsuarioModule } from './contexto-usuario/contexto-usuario.module';
 import { UsinaModule } from './usina/usina.module';
 import { NotificacaoModule } from './notificacao/notificacao.module';
 import { PagamentoModule } from './pagamento/pagamento.module';
+import { FavoritoModule } from './favorito/favorito.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    ThrottlerModule.forRoot([{ ttl: 60000, limit: 60 }]),
+    ThrottlerModule.forRoot([{ ttl: 60000, limit: Number(process.env.THROTTLE_LIMIT) || 300 }]),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -54,10 +60,15 @@ import { PagamentoModule } from './pagamento/pagamento.module';
     PropostaModule,
     AvaliacaoModule,
     SolicitacaoBloqueioUsinaModule,
+    SolicitacaoModule,
+    SolicitacaoComercialModule,
+    PecaComercialModule,
     NotificacaoModule,
-    PagamentoModule
+    PagamentoModule,
+    FavoritoModule,
+    HealthModule
   ],
   controllers: [AppController],
-  providers: [{ provide: APP_GUARD, useClass: ThrottlerGuard }]
+  providers: [{ provide: APP_GUARD, useClass: AppThrottlerGuard }]
 })
 export class AppModule {}

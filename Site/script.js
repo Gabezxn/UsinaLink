@@ -1,5 +1,8 @@
 const toast = document.createElement("div");
 toast.className = "toast";
+toast.setAttribute("role", "status");
+toast.setAttribute("aria-live", "polite");
+toast.setAttribute("aria-atomic", "true");
 document.body.appendChild(toast);
 
 document.querySelectorAll(".sidebar").forEach((sidebar) => {
@@ -10,6 +13,9 @@ document.querySelectorAll(".sidebar").forEach((sidebar) => {
   toggle.className = "sidebar-toggle";
   toggle.type = "button";
   toggle.setAttribute("aria-label", "Abrir ou fechar menu");
+  toggle.setAttribute("aria-expanded", "false");
+  if (!nav.id) nav.id = "menu-lateral";
+  toggle.setAttribute("aria-controls", nav.id);
   toggle.textContent = "Menu";
   brand.insertAdjacentElement("afterend", toggle);
   toggle.addEventListener("click", () => {
@@ -21,43 +27,41 @@ document.querySelectorAll(".sidebar").forEach((sidebar) => {
 function showToast(message) {
   toast.textContent = message;
   toast.classList.add("show");
-  window.setTimeout(() => toast.classList.remove("show"), 2600);
+  window.setTimeout(() => toast.classList.remove("show"), 7000);
 }
 
 const signupConfig = {
   empresa: {
-    labels: ["Nome da empresa", "CNPJ", "E-mail corporativo", "Nome do responsavel", "Cargo", "Senha", "Confirmar senha"],
-    placeholders: ["Metal Forte Ltda.", "00.000.000/0001-00", "compras@empresa.com", "Nome e sobrenome", "Gerente de compras", "Crie uma senha", "Digite a senha novamente"],
-    icons: ["N", "#", "@", "R", "C", "*", "*"],
-    types: ["text", "text", "email", "text", "text", "password", "password"],
-    keys: ["nome", "cnpj", "email", "responsavel", "cargo", "senha", "confirmarSenha"],
+    labels: ["Nome da empresa", "CNPJ", "E-mail corporativo", "Nome do responsavel", "Cargo", "CEP", "Cidade", "Estado (UF)", "Senha", "Confirmar senha"],
+    placeholders: ["Metal Forte Ltda.", "00.000.000/0001-00", "compras@empresa.com", "Nome e sobrenome", "Gerente de compras", "00000-000", "Sao Paulo", "SP", "Crie uma senha", "Digite a senha novamente"],
+    icons: ["N", "#", "@", "R", "C", "#", "L", "UF", "*", "*"],
+    types: ["text", "text", "email", "text", "text", "text", "text", "text", "password", "password"],
+    keys: ["nome", "cnpj", "email", "responsavel", "cargo", "cep", "cidade", "estado", "senha", "confirmarSenha"],
     button: "Cadastrar empresa",
     redirect: "login-empresa.html",
     orange: false
   },
   pessoa: {
-    labels: ["Nome completo", "CPF", "E-mail", "Telefone", "Senha", "Confirmar senha"],
-    placeholders: ["Nome e sobrenome", "000.000.000-00", "voce@email.com", "(00) 00000-0000", "Crie uma senha", "Digite a senha novamente"],
-    icons: ["N", "#", "@", "T", "*", "*"],
-    types: ["text", "text", "email", "tel", "password", "password"],
-    keys: ["nome", "cpf", "email", "telefone", "senha", "confirmarSenha"],
+    labels: ["Nome completo", "CPF", "E-mail", "Telefone", "CEP", "Cidade", "Estado (UF)", "Senha", "Confirmar senha"],
+    placeholders: ["Nome e sobrenome", "000.000.000-00", "voce@email.com", "(00) 00000-0000", "00000-000", "Sao Paulo", "SP", "Crie uma senha", "Digite a senha novamente"],
+    icons: ["N", "#", "@", "T", "#", "L", "UF", "*", "*"],
+    types: ["text", "text", "email", "tel", "text", "text", "text", "password", "password"],
+    keys: ["nome", "cpf", "email", "telefone", "cep", "cidade", "estado", "senha", "confirmarSenha"],
     button: "Cadastrar pessoa fisica",
     redirect: "login-pessoa-fisica.html",
     orange: false
   },
   usina: {
-    labels: ["Nome da usina", "CNPJ", "E-mail industrial", "Respons\u00e1vel t\u00e9cnico", "Especialidade principal", "Senha", "Confirmar senha"],
-    placeholders: ["Atlas Metais", "00.000.000/0001-00", "contato@atlasmetais.com", "Nome do responsavel", "Usinagem de precisao", "Crie uma senha", "Digite a senha novamente"],
-    icons: ["N", "#", "@", "R", "E", "*", "*"],
-    types: ["text", "text", "email", "text", "text", "password", "password"],
-    keys: ["nome", "cnpj", "email", "responsavel", "especialidade", "senha", "confirmarSenha"],
+    labels: ["Nome da usina", "CNPJ", "E-mail industrial", "Respons\u00e1vel t\u00e9cnico", "Especialidade principal", "CEP", "Cidade", "Estado (UF)", "Senha", "Confirmar senha"],
+    placeholders: ["Atlas Metais", "00.000.000/0001-00", "contato@atlasmetais.com", "Nome do responsavel", "Usinagem de precisao", "00000-000", "Sao Paulo", "SP", "Crie uma senha", "Digite a senha novamente"],
+    icons: ["N", "#", "@", "R", "E", "#", "L", "UF", "*", "*"],
+    types: ["text", "text", "email", "text", "text", "text", "text", "text", "password", "password"],
+    keys: ["nome", "cnpj", "email", "responsavel", "especialidade", "cep", "cidade", "estado", "senha", "confirmarSenha"],
     button: "Cadastrar usina",
     redirect: "login-usina.html",
     orange: true
   }
 };
-
-const signupStorageKey = "usinalinkAccounts";
 
 function onlyDigits(value) {
   return String(value || "").replace(/\D/g, "");
@@ -86,6 +90,7 @@ function applyMaskByKey(input) {
   if (key === "cnpj") input.value = maskCnpj(input.value);
   if (key === "telefone") input.value = maskPhone(input.value);
   if (key === "cep") input.value = maskCep(input.value);
+  if (key === "estado") input.value = input.value.replace(/[^a-zA-Z]/g, "").toUpperCase().slice(0, 2);
 }
 
 function isValidEmail(value) {
@@ -112,15 +117,6 @@ function isValidCnpj(value) {
   return cnpj.length === 14;
 }
 
-function getStoredAccounts() {
-  try {
-    const accounts = JSON.parse(localStorage.getItem(signupStorageKey) || "[]");
-    return Array.isArray(accounts) ? accounts : [];
-  } catch {
-    return [];
-  }
-}
-
 function setFieldState(input, message) {
   const field = input?.closest(".field");
   if (!field) return;
@@ -130,36 +126,38 @@ function setFieldState(input, message) {
     messageElement.className = "field-message";
     field.appendChild(messageElement);
   }
+  if (!messageElement.id) messageElement.id = "field-msg-" + (window.__fieldMsgSeq = (window.__fieldMsgSeq || 0) + 1);
+  messageElement.setAttribute("role", "alert");
+  if (message) input.setAttribute("aria-describedby", messageElement.id); else input.removeAttribute("aria-describedby");
   field.classList.toggle("has-error", Boolean(message));
   field.classList.toggle("has-success", !message && Boolean(input.value.trim()));
   input.setAttribute("aria-invalid", message ? "true" : "false");
   messageElement.textContent = message || "";
 }
 
-function validateSignupInput(input, accounts) {
+const SIGNUP_UFS = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
+
+function validateSignupInput(input) {
   const key = input.dataset.fieldKey;
   const value = input.value.trim();
   if (!input.required || input.closest(".field")?.hidden) return "";
   if (!value) return "Este campo e obrigatorio.";
   if (key === "email") {
-    const normalized = value.toLowerCase();
     if (!isValidEmail(value)) return "Informe um e-mail valido.";
-    if (accounts.some((account) => account.email === normalized)) return "Este e-mail ja esta cadastrado.";
   }
+  if (key === "cep" && onlyDigits(value).length !== 8) return "Informe o CEP com 8 numeros.";
+  if (key === "cidade" && value.length < 2) return "Informe a cidade.";
+  if (key === "estado" && !SIGNUP_UFS.includes(value.toUpperCase())) return "Informe a sigla do estado (ex.: SP).";
   if (key === "senha" && value.length < 6) return "A senha deve ter no minimo 6 caracteres.";
   if (key === "confirmarSenha") {
     const password = input.form?.querySelector('[data-field-key="senha"]')?.value || "";
     if (value !== password) return "Senha e confirmar senha precisam ser iguais.";
   }
   if (key === "cpf") {
-    const cpf = onlyDigits(value);
     if (!isValidCpf(value)) return "Informe um CPF valido no formato 000.000.000-00.";
-    if (accounts.some((account) => account.cpf === cpf)) return "Este CPF ja esta cadastrado.";
   }
   if (key === "cnpj") {
-    const cnpj = onlyDigits(value);
     if (!isValidCnpj(value)) return "Informe um CNPJ valido no formato 00.000.000/0000-00.";
-    if (accounts.some((account) => account.cnpj === cnpj)) return "Este CNPJ ja esta cadastrado.";
   }
   return "";
 }
@@ -171,7 +169,8 @@ function collectSignupPayload(form, type) {
     const key = input.dataset.fieldKey;
     if (key === "confirmarSenha") return;
     payload[key] = key === "email" ? input.value.trim().toLowerCase() : input.value.trim();
-    if (key === "cpf" || key === "cnpj" || key === "telefone") payload[key] = onlyDigits(input.value);
+    if (key === "cpf" || key === "cnpj" || key === "telefone" || key === "cep") payload[key] = onlyDigits(input.value);
+    if (key === "estado") payload[key] = input.value.trim().toUpperCase();
   });
   payload.tipo = type === "pessoa" ? "pessoa_fisica" : type;
   return payload;
@@ -183,7 +182,7 @@ function updateSignupForm(type) {
   const button = document.querySelector("#signup-submit");
   if (!config || !form || !button) return;
 
-  for (let index = 0; index < 7; index += 1) {
+  for (let index = 0; index < 10; index += 1) {
     const label = document.querySelector(`#field-label-${index + 1}`);
     const input = document.querySelector(`#signup-field-${index + 1}`);
     const symbol = input?.closest(".input-wrap")?.querySelector(".input-symbol");
@@ -202,10 +201,21 @@ function updateSignupForm(type) {
     input.value = "";
     input.required = true;
     input.dataset.fieldKey = config.keys[index];
-    input.autocomplete = config.keys[index] === "senha" ? "new-password" : "on";
+    input.autocomplete = { senha: "new-password", confirmarSenha: "new-password", cep: "postal-code", cidade: "address-level2", estado: "address-level1" }[config.keys[index]] || "on";
     setFieldState(input, "");
     if (symbol) symbol.textContent = config.icons[index];
   }
+
+  // O cadastro reaproveita os mesmos campos para cada tipo de conta: o botao "Mostrar" acompanha quem virou senha.
+  for (let index = 0; index < 10; index += 1) {
+    const input = document.querySelector(`#signup-field-${index + 1}`);
+    if (!input) continue;
+    if (index < config.labels.length && config.types[index] === "password") { input.dataset.toggleReady = "1"; addPasswordToggle(input); }
+    else { delete input.dataset.toggleReady; removePasswordToggle(input); }
+  }
+  document.body.classList.toggle("pf-mode", type === "pessoa");
+  document.body.classList.toggle("signup-usina", type === "usina");
+  document.querySelector(".brand .brand-icon")?.classList.toggle("orange-icon", type === "usina");
 
   button.textContent = config.button;
   button.classList.toggle("btn-orange", config.orange);
@@ -226,25 +236,43 @@ function getSignupTypeFromUrl() {
   return "";
 }
 
+// Campos do cadastro entram escalonados quando o tipo de conta muda.
+function refreshSignupFields() {
+  const form = document.querySelector(".signup-dynamic-form");
+  if (!form || (window.UsinaMotion && window.UsinaMotion.reduzido())) return;
+  form.querySelectorAll(".field:not([hidden])").forEach((field, i) => field.style.setProperty("--i", String(i)));
+  form.classList.remove("refresh");
+  void form.offsetWidth;
+  form.classList.add("refresh");
+}
+
 document.querySelectorAll(".choice-card").forEach((card) => {
   card.addEventListener("click", () => {
     const radio = card.querySelector('input[type="radio"]');
     if (!radio) return;
+    // O clique no rotulo dispara um segundo clique no campo: ignora se este tipo ja esta selecionado.
+    if (document.querySelector(".signup-dynamic-form")?.dataset.accountType === radio.value) return;
     document.querySelectorAll(".choice-card").forEach((item) => item.classList.remove("active"));
     document.querySelectorAll('.choice-card input[type="radio"]').forEach((item) => {
       item.checked = false;
     });
     radio.checked = true;
     card.classList.add("active");
-    updateSignupForm(radio.value);
+    const trocar = () => updateSignupForm(radio.value);
+    if (window.UsinaMotion) {
+      window.UsinaMotion.pintar(card, trocar);
+      refreshSignupFields();
+    } else trocar();
   });
 });
 
 document.querySelectorAll('a[href="index.html"]').forEach((link) => {
   if (link.textContent.trim().toLowerCase() === "sair") {
     link.addEventListener("click", () => {
-      sessionStorage.removeItem("usinalinkSession");
-      localStorage.removeItem("usinalinkSession");
+      ["usinalinkSession", "accessToken", "tipoUsuario", "nome"].forEach((key) => {
+        sessionStorage.removeItem(key);
+        localStorage.removeItem(key);
+      });
     });
   }
 });
@@ -266,65 +294,21 @@ if (urlSignupType) {
 document.querySelectorAll(".signup-dynamic-form input").forEach((input) => {
   input.addEventListener("input", () => {
     applyMaskByKey(input);
-    setFieldState(input, validateSignupInput(input, getStoredAccounts()));
+    setFieldState(input, validateSignupInput(input));
   });
-  input.addEventListener("blur", () => setFieldState(input, validateSignupInput(input, getStoredAccounts())));
+  input.addEventListener("blur", () => setFieldState(input, validateSignupInput(input)));
 });
 
 const signupForm = document.querySelector(".signup-dynamic-form");
 if (signupForm) {
-  let signupLookupTimer;
-  const lookupSignupOrganization = async () => {
-    const type = signupForm.dataset.accountType;
-    if (!["empresa", "usina"].includes(type) || !window.UsinaLinkApi) return;
-    const nameInput = signupForm.querySelector('[data-field-key="nome"]');
-    const name = nameInput?.value.trim();
-    if (!name || name.length < 3) return;
-    const path = type === "usina" ? `/usinas/buscar?nome=${encodeURIComponent(name)}` : `/empresas/buscar?nome=${encodeURIComponent(name)}`;
-    try {
-      const data = await window.UsinaLinkApi.get(path);
-      const fieldMap = {
-        cnpj: data.cnpj,
-        email: data.email,
-        responsavel: data.responsavel,
-        cargo: type === "empresa" ? data.cargo : data.especialidade,
-        especialidade: data.especialidade,
-        telefone: data.telefone
-      };
-      Object.entries(fieldMap).forEach(([key, value]) => {
-        const input = signupForm.querySelector(`[data-field-key="${key}"]`);
-        if (input && value) {
-          input.value = value;
-          applyMaskByKey(input);
-          setFieldState(input, "");
-        }
-      });
-      showToast(`${type === "usina" ? "Usina" : "Empresa"} encontrada. Dados preenchidos automaticamente.`);
-    } catch (error) {
-      showToast(type === "usina" ? "Usina nao encontrada. Preencha os dados manualmente." : "Empresa nao encontrada. Preencha os dados manualmente.");
-    }
-  };
-
-  signupForm.addEventListener("input", (event) => {
-    const input = event.target.closest('[data-field-key="nome"]');
-    if (!input) return;
-    window.clearTimeout(signupLookupTimer);
-    signupLookupTimer = window.setTimeout(lookupSignupOrganization, 600);
-  });
-
-  signupForm.addEventListener("blur", (event) => {
-    if (event.target.matches('[data-field-key="nome"]')) lookupSignupOrganization();
-  }, true);
-
   signupForm.addEventListener("submit", async (event) => {
     event.preventDefault();
     const submitButton = signupForm.querySelector('[type="submit"]');
     const originalButtonText = submitButton?.textContent || "Cadastrar";
-    const accounts = getStoredAccounts();
     const inputs = [...signupForm.querySelectorAll("input[data-field-key]")].filter((input) => !input.closest(".field")?.hidden);
     const errors = inputs.map((input) => {
       applyMaskByKey(input);
-      const error = validateSignupInput(input, accounts);
+      const error = validateSignupInput(input);
       setFieldState(input, error);
       return error;
     }).filter(Boolean);
@@ -337,7 +321,7 @@ if (signupForm) {
 
     const type = signupForm.dataset.accountType || document.querySelector('.choice-card input[type="radio"]:checked')?.value || "empresa";
     if (!window.UsinaLinkApi?.post) {
-      showToast("Nao foi possivel carregar o cliente da API.");
+      showToast("Não foi possível carregar o cliente da API.");
       return;
     }
 
@@ -350,10 +334,21 @@ if (signupForm) {
       }
       await window.UsinaLinkApi.post(`/cadastro/${type === "pessoa" ? "pessoa_fisica" : type}`, payload);
       showToast("Cadastro realizado com sucesso");
-      window.setTimeout(() => { window.location.href = signupForm.dataset.redirect; }, 800);
+      // Entra direto na conta recem-criada; se o login automatico falhar, cai na tela de entrar.
+      let destino = signupForm.dataset.redirect;
+      try {
+        const login = await window.UsinaLinkApi.post("/auth/login/" + payload.tipo, { email: payload.email, senha: payload.senha });
+        ["usinalinkSession", "accessToken", "tipoUsuario", "nome"].forEach((key) => localStorage.removeItem(key));
+        sessionStorage.setItem("accessToken", login.accessToken || login.access_token);
+        sessionStorage.setItem("tipoUsuario", login.tipoUsuario);
+        sessionStorage.setItem("nome", login.nome || "");
+        sessionStorage.setItem("usinalinkSession", JSON.stringify({ tipo: login.tipoUsuario, nome: login.nome || "", empresaId: login.empresa?.idEmpresa, usinaId: login.usina?.idUsina }));
+        destino = { usina: "dashboard-usina.html", empresa: "dashboard-empresa.html", pessoa_fisica: "dashboard-pessoa-fisica.html" }[payload.tipo] || destino;
+      } catch { /* mantem o redirecionamento para o login */ }
+      window.setTimeout(() => { window.location.href = destino; }, 800);
     } catch (error) {
       if (error instanceof TypeError) {
-        showToast("Nao foi possivel conectar ao servidor.");
+        showToast("Não foi possível conectar ao servidor.");
       } else {
         showToast(error.message);
       }
@@ -366,7 +361,112 @@ if (signupForm) {
   });
 }
 
+// Segunda etapa do login (verificação em duas etapas por e-mail): o servidor mandou um código de 6 dígitos.
+function showTwoFactorStep(loginForm, desafioInfo, onSuccess) {
+  let desafio = desafioInfo.desafio;
+  const panel = document.createElement("form");
+  panel.className = "form two-factor";
+  panel.setAttribute("novalidate", "");
+  panel.innerHTML = `
+    <div class="two-factor-intro" role="status">
+      <strong>Confirme seu acesso</strong>
+      <p>Enviamos um código de 6 dígitos para <b data-tf-email></b>. Ele vale por alguns minutos. Confira também a caixa de spam.</p>
+    </div>
+    <label class="field">
+      <span>Código de verificação</span>
+      <div class="input-icon"><span aria-hidden="true">#</span><input name="codigo" type="text" inputmode="numeric" autocomplete="one-time-code" pattern="[0-9]{6}" placeholder="000000" aria-label="Código de 6 dígitos" required></div>
+    </label>
+    <button class="btn full" type="submit">Confirmar e entrar</button>
+    <div class="two-factor-actions">
+      <button class="text-link" type="button" data-tf-reenviar>Reenviar código</button>
+      <button class="text-link" type="button" data-tf-voltar>Voltar</button>
+    </div>`;
+  panel.querySelector("[data-tf-email]").textContent = desafioInfo.email || "seu e-mail";
+  loginForm.hidden = true;
+  loginForm.after(panel);
+  const input = panel.querySelector('input[name="codigo"]');
+  const reenviar = panel.querySelector("[data-tf-reenviar]");
+  const enviar = panel.querySelector('button[type="submit"]');
+  input.focus();
+  input.addEventListener("input", () => { input.value = input.value.replace(/\D/g, "").slice(0, 6); });
+
+  let relogio = null;
+  const contagem = (segundos) => {
+    window.clearInterval(relogio);
+    let restante = Math.max(0, Math.round(segundos));
+    const atualizar = () => {
+      reenviar.disabled = restante > 0;
+      reenviar.textContent = restante > 0 ? `Reenviar código em ${restante}s` : "Reenviar código";
+      if (restante <= 0) window.clearInterval(relogio);
+      restante -= 1;
+    };
+    atualizar();
+    if (restante >= 0) relogio = window.setInterval(atualizar, 1000);
+  };
+  contagem(desafioInfo.reenvioEmSegundos || 60);
+
+  const erroNoCampo = (mensagem) => { setFieldState(input, mensagem); if (mensagem) showToast(mensagem); };
+
+  panel.querySelector("[data-tf-voltar]").addEventListener("click", () => {
+    window.clearInterval(relogio);
+    panel.remove();
+    loginForm.hidden = false;
+    loginForm.querySelector('input[name="senha"], input[id$="-senha"]')?.focus();
+  });
+
+  reenviar.addEventListener("click", async () => {
+    erroNoCampo("");
+    reenviar.disabled = true;
+    try {
+      const novo = await window.UsinaLinkApi.post("/auth/2fa/reenviar", { desafio });
+      desafio = novo.desafio || desafio;
+      showToast("Enviamos um novo código para o seu e-mail.");
+      input.value = "";
+      input.focus();
+      contagem(novo.reenvioEmSegundos || 60);
+    } catch (error) {
+      erroNoCampo(error.message);
+      contagem(15);
+    }
+  });
+
+  panel.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    erroNoCampo("");
+    if (!/^\d{6}$/.test(input.value)) { erroNoCampo("Digite os 6 números do código."); input.focus(); return; }
+    enviar.disabled = true;
+    try {
+      const resultado = await window.UsinaLinkApi.post("/auth/2fa/verificar", { desafio, codigo: input.value });
+      window.clearInterval(relogio);
+      // O servidor devolve a mesma resposta do login normal; reaproveita o fluxo de sessão.
+      desafioInfo.accessToken = resultado.accessToken;
+      Object.assign(desafioInfo, resultado);
+      onSuccess();
+    } catch (error) {
+      enviar.disabled = false;
+      erroNoCampo(error instanceof TypeError ? "Não foi possível conectar ao servidor." : error.message);
+      input.select();
+    }
+  });
+}
+
 document.querySelectorAll(".js-login-form").forEach((form) => {
+  const concluirLogin = (result) => {
+    const redirect = form.dataset.redirect || "index.html";
+    // Sessao por aba (sessionStorage): logar como usina em uma aba nao derruba a empresa logada em outra.
+    ["usinalinkSession", "accessToken", "tipoUsuario", "nome"].forEach((key) => localStorage.removeItem(key));
+    sessionStorage.setItem("accessToken", result.accessToken || result.access_token);
+    sessionStorage.setItem("tipoUsuario", result.tipoUsuario);
+    sessionStorage.setItem("nome", result.nome || "");
+    sessionStorage.setItem("usinalinkSession", JSON.stringify({
+      tipo: result.tipoUsuario,
+      nome: result.nome || "",
+      empresaId: result.empresa?.idEmpresa,
+      usinaId: result.usina?.idUsina
+    }));
+    showToast("Login realizado com sucesso");
+    window.setTimeout(() => { window.location.href = redirect; }, 500);
+  };
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
     const emailInput = form.querySelector('input[name="email"], input[id$="-email"]');
@@ -394,27 +494,17 @@ document.querySelectorAll(".js-login-form").forEach((form) => {
     if (hasError) return;
 
     try {
-      if (!window.UsinaLinkApi) throw new Error("Nao foi possivel conectar ao servidor. Verifique se o backend esta rodando.");
+      if (!window.UsinaLinkApi) throw new Error("Não foi possível conectar ao servidor. Verifique se o backend esta rodando.");
       const result = await window.UsinaLinkApi.post(`/auth/login/${tipo}`, {
         email: emailInput.value.trim().toLowerCase(),
         senha: passwordInput.value
       });
-      localStorage.setItem("accessToken", result.accessToken || result.access_token);
-      localStorage.setItem("tipoUsuario", result.tipoUsuario);
-      localStorage.setItem("nome", result.nome || "");
-      localStorage.setItem("usinalinkSession", JSON.stringify({
-        tipo: result.tipoUsuario,
-        nome: result.nome || "",
-        empresaId: result.empresa?.idEmpresa,
-        usinaId: result.usina?.idUsina
-      }));
-      sessionStorage.removeItem("usinalinkSession");
-      showToast("Login realizado com sucesso");
-      window.setTimeout(() => { window.location.href = redirect; }, 500);
+      if (result.requires2fa) { showTwoFactorStep(form, result, () => concluirLogin(result)); return; }
+      concluirLogin(result);
     } catch (error) {
       if (error instanceof TypeError) {
-        setFieldState(emailInput, "Nao foi possivel conectar ao servidor.");
-        showToast("Nao foi possivel conectar ao servidor.");
+        setFieldState(emailInput, "Não foi possível conectar ao servidor.");
+        showToast("Não foi possível conectar ao servidor.");
       } else {
         setFieldState(emailInput, error.message);
         showToast(error.message);
@@ -432,31 +522,41 @@ const profileData = {
         title: "Informa\u00e7\u00f5es gerais",
         subtitle: "Dados principais exibidos no perfil comercial da organiza\u00e7\u00e3o.",
         fields: [
-          ["Raz\u00e3o Social", "text", "Metal Forte Componentes Industriais Ltda."],
-          ["Nome Fantasia", "text", "Metal Forte"],
-          ["Setor de Atua\u00e7\u00e3o", "select", "Ind\u00fastria metalmec\u00e2nica", ["Ind\u00fastria metalmec\u00e2nica", "Minera\u00e7\u00e3o", "Energia", "Automotivo"]],
-          ["Porte da Empresa", "select", "M\u00e9dio porte", ["Pequeno porte", "M\u00e9dio porte", "Grande porte"]],
-          ["Descri\u00e7\u00e3o / Apresenta\u00e7\u00e3o", "textarea", "Empresa especializada em aquisi\u00e7\u00e3o e manuten\u00e7\u00e3o de componentes industriais para linhas de produ\u00e7\u00e3o."]
+          ["Raz\u00e3o Social", "text", "", null, "razaoSocial"],
+          ["Nome Fantasia", "text", "", null, "nomeFantasia"],
+          ["Setor de Atua\u00e7\u00e3o", "select", "", ["Ind\u00fastria metalmec\u00e2nica", "Minera\u00e7\u00e3o", "Energia", "Automotivo"], "setorAtuacao"],
+          ["Porte da Empresa", "select", "", ["Pequeno porte", "M\u00e9dio porte", "Grande porte"], "porte"],
+          ["Descri\u00e7\u00e3o / Apresenta\u00e7\u00e3o", "textarea", "", null, "descricao"]
         ]
       },
-      contato: { title: "Contato", subtitle: "Canais comerciais e respons\u00e1veis por comunica\u00e7\u00e3o.", fields: [["E-mail comercial", "email", "comercial@metalforte.com"], ["Telefone", "tel", "(11) 3333-4400"], ["WhatsApp", "tel", "(11) 98888-4400"], ["Site", "url", "https://www.metalforte.com"], ["Respons\u00e1vel principal", "text", "Ana Martins"]] },
-      endereco: { title: "Endere\u00e7o", subtitle: "Localiza\u00e7\u00e3o fiscal e operacional da organiza\u00e7\u00e3o.", fields: [["CEP", "text", "04000-000"], ["Rua", "text", "Avenida Industrial"], ["N\u00famero", "text", "1200"], ["Bairro", "text", "Distrito Empresarial"], ["Cidade", "text", "Sao Paulo"], ["Estado", "select", "SP", ["SP", "MG", "RJ", "PR", "SC", "RS"]], ["Complemento", "text", "Galpao 4"]] },
-      documentos: { title: "Documentos", subtitle: "Registros e comprovantes usados na valida\u00e7\u00e3o comercial.", fields: [["CNPJ", "text", "12.345.678/0001-90"], ["Inscri\u00e7\u00e3o Estadual", "text", "123.456.789.110"], ["Contrato Social", "text", "Contrato_social_metalforte.pdf"], ["Alvar\u00e1", "text", "Alvara_2026.pdf"], ["Certifica\u00e7\u00f5es", "text", "ISO 9001, ISO 14001"]] },
-      seguranca: { title: "Seguran\u00e7a", subtitle: "Proteja o acesso dos usu\u00e1rios vinculados \u00e0 organiza\u00e7\u00e3o.", fields: [["Senha atual", "password", ""], ["Nova senha", "password", ""], ["Confirmar nova senha", "password", ""], ["Autentica\u00e7\u00e3o em duas etapas", "checkbox", "Ativar autentica\u00e7\u00e3o em duas etapas"]] },
-      notificacoes: { title: "Notifica\u00e7\u00f5es", subtitle: "Configure quais avisos devem chegar para a equipe.", fields: [["Receber propostas por e-mail", "checkbox", "Receber propostas por e-mail"], ["Receber alertas de prazo", "checkbox", "Receber alertas de prazo"], ["Receber mensagens de fornecedores", "checkbox", "Receber mensagens de fornecedores"], ["Receber resumo semanal", "checkbox", "Receber resumo semanal"]] }
+      contato: { title: "Contato", subtitle: "Canais comerciais e respons\u00e1veis por comunica\u00e7\u00e3o.", fields: [["E-mail comercial", "email", "", null, "email"], ["Telefone", "tel", "", null, "telefone"], ["WhatsApp", "tel", "", null, "whatsapp"], ["Site", "url", "", null, "site"], ["Respons\u00e1vel principal", "text", "", null, "responsavel"]] },
+      endereco: { title: "Endere\u00e7o", subtitle: "Localiza\u00e7\u00e3o fiscal e operacional da organiza\u00e7\u00e3o.", fields: [["CEP", "text", "", null, "cep"], ["Rua", "text", "", null, "rua"], ["N\u00famero", "text", "", null, "numero"], ["Bairro", "text", "", null, "bairro"], ["Cidade", "text", "", null, "cidade"], ["Estado", "select", "", SIGNUP_UFS, "estado"], ["Complemento", "text", "", null, "complemento"]] },
+      documentos: { title: "Documentos", subtitle: "Registros e comprovantes usados na valida\u00e7\u00e3o comercial.", fields: [["CNPJ", "text", "", null, "cnpj"], ["Inscri\u00e7\u00e3o Estadual", "text", "", null, "inscricaoEstadual"], ["Contrato Social", "file", "", null, "contratoSocial"], ["Alvar\u00e1", "file", "", null, "alvara"], ["Certifica\u00e7\u00f5es", "text", "", null, "certificacoes"]] },
+      seguranca: { title: "Seguran\u00e7a", subtitle: "Proteja o acesso dos usu\u00e1rios vinculados \u00e0 organiza\u00e7\u00e3o.", fields: [["Senha atual", "password", "", null, "senhaAtual"], ["Nova senha", "password", "", null, "novaSenha"], ["Confirmar nova senha", "password", "", null, "confirmarSenha"]] },
+      notificacoes: { title: "Notifica\u00e7\u00f5es", subtitle: "Configure quais avisos devem chegar para a equipe.", fields: [["Receber alertas de prazo", "checkbox", false, null, "alertasPrazo"]] }
+    }
+  },
+  pessoa_fisica: {
+    cancel: "dashboard-pessoa-fisica.html",
+    button: "btn-primary",
+    sections: {
+      gerais: { title: "Informações gerais", subtitle: "Seus dados pessoais. O CPF não pode ser alterado.", fields: [["Nome completo", "text", "", null, "nome"]] },
+      contato: { title: "Contato", subtitle: "E-mail de acesso e telefone para contato.", fields: [["E-mail", "email", "", null, "email"], ["Telefone", "tel", "", null, "telefone"]] },
+      endereco: { title: "Endereço de entrega", subtitle: "Usado para calcular o frete e para as usinas saberem onde entregar seus pedidos.", fields: [["CEP", "text", "", null, "cep"], ["Rua", "text", "", null, "rua"], ["Número", "text", "", null, "numero"], ["Bairro", "text", "", null, "bairro"], ["Cidade", "text", "", null, "cidade"], ["Estado", "select", "", SIGNUP_UFS, "estado"], ["Complemento", "text", "", null, "complemento"]] },
+      seguranca: { title: "Segurança", subtitle: "Proteja o acesso à sua conta.", fields: [["Senha atual", "password", "", null, "senhaAtual"], ["Nova senha", "password", "", null, "novaSenha"], ["Confirmar nova senha", "password", "", null, "confirmarSenha"]] }
     }
   },
   usina: {
     cancel: "dashboard-usina.html",
     button: "btn-orange",
     sections: {
-      gerais: { title: "Informa\u00e7\u00f5es gerais", subtitle: "Dados industriais exibidos para empresas compradoras.", fields: [["Nome da usina", "text", "Usina Atlas Metais"], ["Nome fantasia", "text", "Atlas Metais"], ["Especialidade principal", "text", "Usinagem de precis\u00e3o"], ["Capacidade produtiva", "text", "12.000 pe\u00e7as/m\u00eas"], ["Descri\u00e7\u00e3o industrial", "textarea", "Usina especializada em usinagem CNC, corte, dobra e componentes industriais sob demanda."]] },
-      contato: { title: "Contato", subtitle: "Canais da equipe comercial da usina.", fields: [["E-mail industrial", "email", "comercial@atlasmetais.com"], ["Telefone", "tel", "(31) 3333-4400"], ["WhatsApp", "tel", "(31) 98888-4400"], ["Respons\u00e1vel comercial", "text", "Carlos Mendes"]] },
-      endereco: { title: "Endere\u00e7o", subtitle: "Localiza\u00e7\u00e3o operacional e regi\u00e3o de atendimento.", fields: [["CEP", "text", "32000-000"], ["Rua", "text", "Rodovia Industrial"], ["Cidade", "text", "Contagem"], ["Estado", "select", "MG", ["MG", "SP", "RJ", "PR", "SC", "RS"]], ["Regi\u00e3o de atendimento", "text", "Sudeste, Sul e Nordeste"]] },
-      producao: { title: "Produ\u00e7\u00e3o", subtitle: "Capacidade operacional para avaliar pedidos.", fields: [["M\u00e1quinas dispon\u00edveis", "textarea", "Tornos CNC, centros de usinagem, corte laser, dobra CNC"], ["Capacidade mensal", "text", "12.000 pe\u00e7as"], ["Turnos", "select", "2 turnos", ["1 turno", "2 turnos", "3 turnos"]], ["Prazo m\u00e9dio", "text", "18 dias"]] },
-      certificacoes: { title: "Certifica\u00e7\u00f5es", subtitle: "Compet\u00eancias e certificados produtivos.", fields: [["ISO 9001", "checkbox", "ISO 9001"], ["CNC", "checkbox", "CNC"], ["Corte laser", "checkbox", "Corte laser"], ["Fundi\u00e7\u00e3o", "checkbox", "Fundi\u00e7\u00e3o"], ["Soldagem", "checkbox", "Soldagem"]] },
-      seguranca: { title: "Seguran\u00e7a", subtitle: "Proteja o acesso da equipe da usina.", fields: [["Senha atual", "password", ""], ["Nova senha", "password", ""], ["Confirmar senha", "password", ""]] },
-      notificacoes: { title: "Notifica\u00e7\u00f5es", subtitle: "Configure os avisos comerciais da usina.", fields: [["Novos pedidos", "checkbox", "Novos pedidos"], ["Propostas aceitas", "checkbox", "Propostas aceitas"], ["Alertas de prazo", "checkbox", "Alertas de prazo"], ["Mensagens", "checkbox", "Mensagens"]] }
+      gerais: { title: "Informa\u00e7\u00f5es gerais", subtitle: "Dados industriais exibidos para empresas compradoras.", fields: [["Nome da usina", "text", "", null, "nomeFantasia"], ["Especialidade principal", "text", "", null, "especialidade"], ["Capacidade produtiva", "text", "", null, "capacidadeProducao"], ["Descri\u00e7\u00e3o industrial", "textarea", "", null, "descricao"]] },
+      contato: { title: "Contato", subtitle: "Canais da equipe comercial da usina.", fields: [["E-mail industrial", "email", "", null, "email"], ["Telefone", "tel", "", null, "telefone"], ["Respons\u00e1vel comercial", "text", "", null, "responsavel"]] },
+      endereco: { title: "Endere\u00e7o", subtitle: "Localiza\u00e7\u00e3o operacional da usina.", fields: [["CEP", "text", "", null, "cep"], ["Rua", "text", "", null, "rua"], ["N\u00famero", "text", "", null, "numero"], ["Bairro", "text", "", null, "bairro"], ["Cidade", "text", "", null, "cidade"], ["Estado", "select", "", SIGNUP_UFS, "estado"], ["Complemento", "text", "", null, "complemento"]] },
+      producao: { title: "Produ\u00e7\u00e3o", subtitle: "Capacidade operacional para avaliar pedidos.", fields: [["M\u00e1quinas dispon\u00edveis", "textarea", "", null, "maquinasDisponiveis"], ["Capacidade mensal", "text", "", null, "capacidadeMensal"], ["Turnos", "select", "", ["1 turno", "2 turnos", "3 turnos"], "turnos"], ["Prazo m\u00e9dio", "text", "", null, "prazoMedio"]] },
+      certificacoes: { title: "Certifica\u00e7\u00f5es", subtitle: "Compet\u00eancias e certificados produtivos.", fields: [["ISO 9001", "checkbox", false, null, "iso9001"], ["CNC", "checkbox", false, null, "cnc"], ["Corte laser", "checkbox", false, null, "corteLaser"], ["Fundi\u00e7\u00e3o", "checkbox", false, null, "fundicao"], ["Soldagem", "checkbox", false, null, "soldagem"]] },
+      seguranca: { title: "Seguran\u00e7a", subtitle: "Proteja o acesso da equipe da usina.", fields: [["Senha atual", "password", "", null, "senhaAtual"], ["Nova senha", "password", "", null, "novaSenha"], ["Confirmar senha", "password", "", null, "confirmarSenha"]] },
+      notificacoes: { title: "Notifica\u00e7\u00f5es", subtitle: "Configure os avisos comerciais da usina.", fields: [["Novos pedidos", "checkbox", false, null, "novosPedidos"], ["Propostas aceitas", "checkbox", false, null, "propostasAceitas"], ["Alertas de prazo", "checkbox", false, null, "alertasPrazo"]] }
     }
   }
 };
@@ -475,12 +575,38 @@ function inferMaskKey(label, type) {
 }
 
 function fieldMarkup(field) {
-  const [label, type, value, options] = field;
-  if (type === "textarea") return `<label class="field span-2"><span>${label}</span><textarea rows="6">${escapeHtml(value)}</textarea></label>`;
-  if (type === "select") return `<label class="field"><span>${label}</span><div class="input-wrap select-field"><span class="input-symbol">v</span><select>${options.map((option) => `<option${option === value ? " selected" : ""}>${escapeHtml(option)}</option>`).join("")}</select></div></label>`;
-  if (type === "checkbox") return `<label class="toggle-field span-2"><input type="checkbox" checked><span></span><strong>${label || value}</strong></label>`;
+  const [label, type, value, options, key] = field;
+  const nameAttr = key ? ` name="${key}"` : "";
+  if (type === "textarea") return `<label class="field span-2"><span>${label}</span><textarea rows="6"${nameAttr}>${escapeHtml(value)}</textarea></label>`;
+  if (type === "select") return `<label class="field"><span>${label}</span><div class="input-wrap select-field"><span class="input-symbol" aria-hidden="true">v</span><select${nameAttr}>${options.map((option) => `<option${option === value ? " selected" : ""}>${escapeHtml(option)}</option>`).join("")}</select></div></label>`;
+  if (type === "checkbox") return `<label class="toggle-field span-2"><input type="checkbox"${value ? " checked" : ""}${nameAttr}><span></span><strong>${label}</strong></label>`;
+  if (type === "file") return `<label class="field span-2"><span>${label}</span><div class="input-wrap file-field"><input type="file" data-file-key="${key}" accept=".pdf,.jpg,.jpeg,.png"></div><small>${value ? `Arquivo atual: ${escapeHtml(value)}` : "Nenhum arquivo enviado ainda."}</small></label>`;
   const maskKey = inferMaskKey(label, type);
-  return `<label class="field"><span>${label}</span><div class="input-wrap"><span class="input-symbol">${type === "password" ? "*" : "T"}</span><input type="${type}" value="${escapeHtml(value)}"${maskKey ? ` data-mask="${maskKey}"` : ""}></div></label>`;
+  return `<label class="field"><span>${label}</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">${type === "password" ? "*" : "T"}</span><input type="${type}" value="${escapeHtml(value)}"${nameAttr}${maskKey ? ` data-mask="${maskKey}"` : ""}></div></label>`;
+}
+
+function viewFieldMarkup(field) {
+  const [label, type] = field;
+  if (type === "password") return `<div class="field"><span>${label}</span><div class="view-value">N&atilde;o exibido</div></div>`;
+  if (type === "checkbox") return `<div class="field"><span>${label}</span><div class="view-value">${field[2] ? "Ativado" : "Desativado"}</div></div>`;
+  const value = field[2];
+  const span = type === "textarea" || type === "file" ? " span-2" : "";
+  return `<div class="field${span}"><span>${label}</span><div class="view-value">${escapeHtml(value || "-")}</div></div>`;
+}
+
+function currentProfileSectionKey() {
+  return document.querySelector("[data-profile-section].active")?.dataset.profileSection || "gerais";
+}
+
+function renderProfileView(sectionKey) {
+  const kind = document.body.dataset.profileKind || "empresa";
+  const profile = profileData[kind];
+  const section = profile?.sections[sectionKey];
+  const view = document.querySelector("#profile-view-mode");
+  if (!section || !view) return;
+  document.querySelector("#profile-section-title").textContent = section.title;
+  document.querySelector("#profile-section-subtitle").textContent = section.subtitle;
+  view.innerHTML = `<div class="form-grid">${section.fields.map(viewFieldMarkup).join("")}</div>`;
 }
 
 function renderProfileSection(sectionKey) {
@@ -493,84 +619,48 @@ function renderProfileSection(sectionKey) {
   document.querySelector("#profile-section-subtitle").textContent = section.subtitle;
   form.innerHTML = `${section.fields.map(fieldMarkup).join("")}
     <div class="form-actions span-2">
-      <a class="btn btn-ghost" href="${profile.cancel}">Cancelar</a>
+      <button class="btn btn-ghost js-cancel-profile-edit" type="button">Cancelar</button>
       <button class="btn ${profile.button}" type="submit">Salvar altera\u00e7\u00f5es</button>
     </div>`;
 }
 
-if (document.querySelector("#profile-dynamic-form")) renderProfileSection("gerais");
+if (document.querySelector("#profile-dynamic-form")) {
+  renderProfileView("gerais");
+  renderProfileSection("gerais");
+}
 
 document.querySelectorAll("[data-profile-section]").forEach((item) => {
   item.addEventListener("click", (event) => {
     event.preventDefault();
     item.closest(".sidebar-card").querySelectorAll("a").forEach((link) => link.classList.remove("active"));
     item.classList.add("active");
+    renderProfileView(item.dataset.profileSection);
     renderProfileSection(item.dataset.profileSection);
+    // Segurança só tem campos de edição: abre direto o formulário.
+    if (item.dataset.profileSection === "seguranca" && !document.querySelector("#profile-view-mode")?.classList.contains("is-hidden")) toggleProfileEdit(false);
   });
 });
+
+function toggleProfileEdit(forceView) {
+  const viewMode = document.querySelector("#profile-view-mode");
+  const formMode = document.querySelector("#profile-dynamic-form");
+  const editButton = document.querySelector(".js-toggle-profile-edit");
+  if (!viewMode || !formMode) return;
+  const currentlyViewing = !viewMode.classList.contains("is-hidden");
+  const goToViewing = forceView || !currentlyViewing;
+  viewMode.classList.toggle("is-hidden", !goToViewing);
+  formMode.classList.toggle("is-hidden", goToViewing);
+  if (editButton) editButton.textContent = goToViewing ? "Editar perfil" : "Cancelar edi\u00e7\u00e3o";
+  if (goToViewing) renderProfileView(currentProfileSectionKey());
+  else renderProfileSection(currentProfileSectionKey());
+}
 
 document.querySelectorAll(".js-toggle-profile-edit").forEach((button) => {
-  button.addEventListener("click", () => {
-    const viewMode = document.querySelector("#profile-view-mode");
-    const formMode = document.querySelector("#profile-dynamic-form");
-    if (viewMode && formMode) {
-      const isEditing = !viewMode.classList.contains("is-hidden");
-      viewMode.classList.toggle("is-hidden", isEditing);
-      formMode.classList.toggle("is-hidden", !isEditing);
-      button.textContent = isEditing ? "Cancelar edi&ccedil;&atilde;o" : "Editar perfil";
-      if (!isEditing) renderProfileSection("gerais");
-    }
-  });
+  button.addEventListener("click", () => toggleProfileEdit(false));
 });
 
-function parseCurrency(value) {
-  return Number(String(value || "0").replace(/\D/g, "")) / 100;
-}
-
-function formatCurrency(value) {
-  return "R$ " + Number(value || 0).toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-function updateProposalTotal() {
-  const valueInput = document.querySelector("#proposal-value");
-  const freightInput = document.querySelector("#proposal-freight");
-  const totalPreview = document.querySelector("#preview-total");
-  const valuePreview = document.querySelector("#preview-value");
-  const freightPreview = document.querySelector("#preview-freight");
-  
-  if (!valueInput || !freightInput || !totalPreview) return;
-  
-  const valorProposta = parseCurrency(valueInput.value);
-  const valorFrete = parseCurrency(freightInput.value);
-  const valorTotal = valorProposta + valorFrete;
-  
-  totalPreview.textContent = formatCurrency(valorTotal);
-  if (valuePreview) valuePreview.textContent = formatCurrency(valorProposta);
-  if (freightPreview) freightPreview.textContent = formatCurrency(valorFrete);
-}
-
-document.querySelectorAll(".js-proposal-form").forEach((form) => {
-  const valueInput = form.querySelector("#proposal-value");
-  const freightInput = form.querySelector("#proposal-freight");
-  const deadlineInput = form.querySelector("#proposal-deadline");
-  const noteInput = form.querySelector("#proposal-note");
-  
-  if (valueInput) valueInput.addEventListener("input", updateProposalTotal);
-  if (freightInput) freightInput.addEventListener("input", updateProposalTotal);
-  if (deadlineInput) {
-    deadlineInput.addEventListener("input", () => {
-      const preview = document.querySelector("#preview-deadline");
-      if (preview) preview.textContent = deadlineInput.value || "18 dias";
-    });
-  }
-  if (noteInput) {
-    noteInput.addEventListener("input", () => {
-      const preview = document.querySelector("#preview-note");
-      if (preview) preview.textContent = noteInput.value || "Sem observa&ccedil;&otilde;es.";
-    });
-  }
-  
-  updateProposalTotal();
+document.addEventListener("click", (event) => {
+  if (event.target.closest(".js-cancel-profile-edit")) toggleProfileEdit(true);
 });
 
 function ensureHistoryEmptyState() {
@@ -663,14 +753,14 @@ function renderEmployeeRowActions(row) {
   const actionsCell = row.children[row.children.length - 1];
   const status = employeeStatus(row);
   const actionsByStatus = {
-    Pendente: ["Editar", "Reenviar convite", "Cancelar convite"],
+    Pendente: ["Editar", "Cancelar convite"],
     Ativo: ["Editar", "Excluir"],
     Inativo: ["Ativar", "Excluir definitivamente"]
   };
   const actions = actionsByStatus[status] || ["Editar"];
   actionsCell.innerHTML = `
     <div class="actions-menu">
-      <button class="icon-action" type="button" aria-label="Abrir acoes">...</button>
+      <button class="icon-action" type="button" aria-label="${escapeHtml(`Abrir ações de ${row.children[0]?.textContent.trim() || "funcionário"}`)}">...</button>
       <div class="actions-menu-list" role="menu">
         ${actions.map(action => `<button class="table-action js-alert" type="button" role="menuitem">${action}</button>`).join("")}
       </div>
@@ -678,8 +768,10 @@ function renderEmployeeRowActions(row) {
 }
 
 function employeeRowMarkup(item) {
-  const status = item.status || "Pendente";
-  return `<tr data-search-row data-employee-id="${escapeHtml(item.id || "")}"><td>${escapeHtml(item.nome || "")}</td><td>${escapeHtml(item.email || "")}</td><td>${escapeHtml(item.cargo || "")}</td><td>${escapeHtml(item.tipo || "")}</td><td><span class="badge ${statusClass(status)}">${escapeHtml(status)}</span></td><td></td></tr>`;
+  const bruto = String(item.status || "pendente");
+  const status = bruto.charAt(0).toUpperCase() + bruto.slice(1);
+  const tipo = item.tipoAcesso || item.tipo;
+  return `<tr data-search-row data-employee-id="${escapeHtml(item.idFuncionario || item.id || "")}"><td>${escapeHtml(item.nome || "")}</td><td>${escapeHtml(item.email || "")}</td><td>${escapeHtml(item.cargo || "-")}</td><td>${escapeHtml(tipo || "-")}</td><td><span class="badge ${statusClass(status)}">${escapeHtml(status)}</span></td><td></td></tr>`;
 }
 
 async function loadEmployeesFromApi() {
@@ -688,31 +780,12 @@ async function loadEmployeesFromApi() {
     try {
       const context = table.dataset.employeeTable;
       const employees = await window.UsinaLinkApi.get(`/funcionarios?contexto=${encodeURIComponent(context)}`);
-      table.innerHTML = employees.map(employeeRowMarkup).join("");
-      table.querySelectorAll("tr").forEach(renderEmployeeRowActions);
-    } catch {
-      table.querySelectorAll("tr").forEach(renderEmployeeRowActions);
+      table.innerHTML = employees.map(employeeRowMarkup).join("") || '<tr><td colspan="6" class="td-empty">Nenhum funcionário cadastrado ainda. Use "Adicionar funcionário" no topo da página.</td></tr>';
+      table.querySelectorAll("tr[data-employee-id]").forEach(renderEmployeeRowActions);
+    } catch (error) {
+      table.innerHTML = `<tr><td colspan="6" class="td-empty">Falha ao carregar funcionários: ${escapeHtml(error.message)}</td></tr>`;
     }
   });
-}
-
-function proposalDetailFromCard(card) {
-  const facts = [...card.querySelectorAll("dl div")].reduce((acc, item) => {
-    acc[item.querySelector("dt")?.textContent.trim()] = item.querySelector("dd")?.textContent.trim();
-    return acc;
-  }, {});
-  return {
-    usina: card.querySelector("h2")?.textContent.trim(),
-    valor: card.querySelector(".price")?.textContent.trim(),
-    prazo: facts["Prazo de fabricacao"] || facts["Prazo de fabricação"] || "18 dias",
-    frete: facts.Frete || "R$ 950,00",
-    avaliacao: facts["Avaliacao"] || facts["Avaliação"] || "4,8/5",
-    observacao: card.querySelector("p")?.textContent.trim(),
-    peca: "Eixo estriado",
-    material: "Aco 4140 temperado",
-    quantidade: "60 unidades",
-    regiao: "Sudeste"
-  };
 }
 
 function renderProposalDetails(data, includeDecision = false) {
@@ -722,16 +795,16 @@ function renderProposalDetails(data, includeDecision = false) {
       <strong class="modal-price">${escapeHtml(data.valor || data[2] || "R$ 0,00")}</strong>
     </div>
     <div class="action-modal-grid">
-      <div><span>Prazo de fabricacao</span><strong>${escapeHtml(data.prazo || data[3] || "18 dias")}</strong></div>
+      <div><span>Prazo de fabricação</span><strong>${escapeHtml(formatPrazo(data.prazo || data[3], "18 dias"))}</strong></div>
       <div><span>Frete</span><strong>${escapeHtml(data.frete || "R$ 950,00")}</strong></div>
       <div><span>Avaliacao</span><strong>${escapeHtml(data.avaliacao || "4,8/5")}</strong></div>
       <div><span>Regiao</span><strong>${escapeHtml(data.regiao || "Sudeste")}</strong></div>
-      <div><span>Peca/Pedido</span><strong>${escapeHtml(data.peca || data[0] || "Peca industrial")}</strong></div>
+      <div><span>Peça/Pedido</span><strong>${escapeHtml(data.peca || data[0] || "Peça industrial")}</strong></div>
       <div><span>Material</span><strong>${escapeHtml(data.material || "Aco carbono")}</strong></div>
       <div><span>Quantidade</span><strong>${escapeHtml(data.quantidade || "60 unidades")}</strong></div>
       <div><span>Arquivo tecnico</span><strong>${escapeHtml(data.arquivo || "arquivo-tecnico.pdf")}</strong></div>
     </div>
-    <div class="detail-list"><div><span>Observacoes</span><strong>${escapeHtml(data.observacao || "Proposta com condicoes comerciais completas.")}</strong></div></div>
+    <div class="detail-list"><div><span>Observações</span><strong>${escapeHtml(data.observacao || "Proposta com condicoes comerciais completas.")}</strong></div></div>
     <div class="form-actions">
       <button class="btn btn-ghost js-action-modal-close" type="button">Fechar</button>
       ${includeDecision ? '<button class="btn js-modal-accept-proposal" type="button">Aceitar proposta</button><button class="btn btn-ghost js-modal-reject-proposal" type="button">Recusar proposta</button>' : ""}
@@ -752,7 +825,7 @@ function applySessionContext() {
   const role = document.body?.dataset.userRole || document.body?.dataset.profileKind;
   if (!role || session.tipo !== role) return;
 
-  const displayName = session.nome || (role === "usina" ? "Minha usina" : "Minha empresa");
+  const displayName = session.nome || (role === "usina" ? "Minha usina" : role === "pessoa_fisica" ? "Minha conta" : "Minha empresa");
   const headerTitle = document.querySelector(".app-header h1");
   if (headerTitle) headerTitle.textContent = displayName;
 
@@ -760,68 +833,177 @@ function applySessionContext() {
   if (userName) userName.textContent = displayName;
 
   const userRole = document.querySelector(".user-strip span");
-  if (userRole) userRole.textContent = role === "usina" ? "Conta da usina" : "Conta da empresa";
+  if (userRole) userRole.textContent = role === "usina" ? "Conta da usina" : role === "pessoa_fisica" ? "Conta de pessoa fisica" : "Conta da empresa";
 
   const profileTitle = document.querySelector(".profile-head h1");
   if (profileTitle) profileTitle.textContent = displayName;
 
   const profileSubtitle = document.querySelector(".profile-head p");
-  if (profileSubtitle) profileSubtitle.textContent = role === "usina" ? "Perfil industrial da usina logada." : "Perfil comercial da empresa logada.";
+  if (profileSubtitle) profileSubtitle.textContent = role === "usina" ? "Perfil industrial da usina logada." : role === "pessoa_fisica" ? "Atualize seus dados pessoais e de acesso." : "Perfil comercial da empresa logada.";
 }
 
-function proposalActionsMarkup(status) {
-  const locked = ["Aceita", "Cancelada"].includes(status);
-  const actions = locked ? ["Ver detalhes"] : ["Ver detalhes", "Editar proposta", "Cancelar proposta"];
+function proposalActionsMarkup(status, nome = "") {
+  const locked = ["Aceita", "Cancelada", "Recusada"].includes(status);
+  const extras = locked ? [] : ["Cancelar proposta"];
   return `
-    <div class="actions-menu">
-      <button class="icon-action" type="button" aria-label="Abrir acoes da proposta">...</button>
-      <div class="actions-menu-list" role="menu">
-        ${actions.map(action => `<button class="table-action js-alert" type="button" role="menuitem">${action}</button>`).join("")}
-      </div>
+    <div class="row-actions">
+      <button class="table-action js-alert" type="button">Ver detalhes</button>
+      ${extras.length ? `<div class="actions-menu">
+        <button class="icon-action" type="button" aria-label="Mais ações da proposta${nome ? " de " + escapeHtml(nome) : ""}">...</button>
+        <div class="actions-menu-list" role="menu">
+          ${extras.map(action => `<button class="table-action js-alert" type="button" role="menuitem">${action}</button>`).join("")}
+        </div>
+      </div>` : ""}
     </div>`;
 }
 
 function renderProposalRowActions(row) {
   if (!row || row.children.length < 7) return;
   const status = row.querySelector(".badge")?.textContent.trim() || "Enviada";
-  row.children[row.children.length - 1].innerHTML = proposalActionsMarkup(status);
+  row.children[row.children.length - 1].innerHTML = proposalActionsMarkup(status, row.children[0]?.textContent.trim());
 }
 
 function proposalRowMarkup(item) {
-  const status = item.status || "Enviada";
-  return `<tr data-search-row data-proposal-id="${escapeHtml(item.id)}"><td>${escapeHtml(item.peca || "")}</td><td>${escapeHtml(item.cliente || "")}</td><td>${escapeHtml(item.valor || "")}</td><td>${escapeHtml(item.prazo || "")}</td><td><span class="badge ${badgeClass(status)}">${escapeHtml(status)}</span></td><td>${escapeHtml(item.dataEnvio || "")}</td><td>${proposalActionsMarkup(status)}</td></tr>`;
+  const status = statusPropostaLabel(item.status);
+  const peca = item.pedido?.itens?.[0]?.nome || "Peça industrial";
+  const cliente = item.pedido?.empresaCompradora?.nomeFantasia || item.pedido?.empresaCompradora?.razaoSocial || "-";
+  const dataEnvio = item.dataEnvio ? new Date(item.dataEnvio).toLocaleDateString("pt-BR") : "";
+  return `<tr data-search-row data-proposal-id="${escapeHtml(item.idProposta)}"><td>${escapeHtml(peca)}</td><td>${escapeHtml(cliente)}</td><td>${escapeHtml(formatMoneyBR(item.valor))}</td><td>${escapeHtml(formatPrazo(item.prazo))}</td><td><span class="badge ${badgeClass(status)}">${escapeHtml(status)}</span></td><td>${escapeHtml(dataEnvio)}</td><td>${proposalActionsMarkup(status, peca)}</td></tr>`;
+}
+
+let ultimasPropostasRecebidas = [];
+let ultimasPropostasEnviadas = [];
+
+function formatMoneyBR(value) {
+  const n = Number(value);
+  return Number.isFinite(n) ? n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" }) : "A combinar";
+}
+
+function nomeUsinaProposta(usina) {
+  return usina?.nomeFantasia || usina?.razaoSocial || "Usina";
+}
+
+function statusPropostaLabel(status) {
+  const labels = { enviada: "Enviada", em_analise: "Em analise", aceita: "Aceita", recusada: "Recusada", cancelada: "Cancelada" };
+  return labels[status] || status || "Enviada";
+}
+
+function propostaEstaTravada(status) {
+  return !["enviada", "em_analise"].includes(status || "enviada");
 }
 
 function proposalCardMarkup(item, best) {
-  return `<article class="card proposal-card ${best ? "best" : ""}" data-search-row data-proposal-id="${escapeHtml(item.id)}">
-    ${best ? '<span class="best-label">Melhor proposta</span>' : ""}
-    <h2>${escapeHtml(item.usina || "Usina")}</h2>
-    <strong class="price">${escapeHtml(item.valor || "")}</strong>
-    <dl><div><dt>Prazo de fabricacao</dt><dd>${escapeHtml(item.prazo || "")}</dd></div><div><dt>Frete</dt><dd>${escapeHtml(item.frete || "")}</dd></div><div><dt>Avaliacao</dt><dd>${escapeHtml(item.avaliacao || "4,9/5")}</dd></div></dl>
-    <p>${escapeHtml(item.observacao || "")}</p>
-    <div class="card-actions"><button class="btn btn-ghost js-alert" type="button">Ver detalhes</button><button class="btn js-alert" type="button">Aceitar proposta</button></div>
+  const status = item.status || "enviada";
+  const aceita = status === "aceita";
+  const travada = propostaEstaTravada(status);
+  const statusPedido = item.pedido?.status;
+  const rotuloAceita = statusPedido === "em_producao" ? "Acompanhar pedido" : "Pagar pedido";
+  const decisaoBtn = aceita && statusPedido === "concluido"
+    ? `<a class="btn btn-ghost" href="detalhes-pedido.html?pedidoId=${encodeURIComponent(item.idPedido)}">Pedido concluído</a>`
+    : aceita
+    ? `<a class="btn" href="${statusPedido === "em_producao" ? "detalhes-pedido.html" : "pagamento-pedido.html"}?pedidoId=${encodeURIComponent(item.idPedido)}">${rotuloAceita}</a>`
+    : travada
+      ? `<button class="btn btn-ghost" type="button" disabled>${escapeHtml(statusPropostaLabel(status))}</button>`
+      : '<button class="btn js-alert" type="button">Aceitar proposta</button><button class="btn btn-ghost js-alert" type="button">Recusar proposta</button>';
+  return `<article class="card proposal-card ${best && !travada ? "best" : ""} ${aceita ? "accepted" : ""}" data-search-row data-proposal-id="${escapeHtml(item.idProposta)}">
+    ${best && !travada ? '<span class="best-label">Melhor proposta</span>' : ""}
+    <h2>${escapeHtml(nomeUsinaProposta(item.usina))}</h2>
+    <strong class="price">${escapeHtml(formatMoneyBR(item.valor))}</strong>
+    <dl><div><dt>Prazo de fabricação</dt><dd>${escapeHtml(formatPrazo(item.prazo))}</dd></div><div><dt>Frete</dt><dd>${escapeHtml(item.frete ? formatMoneyBR(item.frete) : "A combinar")}</dd></div><div><dt>Entrega em</dt><dd>${escapeHtml(item.pedido?.localEntrega || "Não informado")}</dd></div><div><dt>Status</dt><dd>${escapeHtml(statusPropostaLabel(status))}</dd></div></dl>
+    <p>${escapeHtml(item.observacao || "Sem observações adicionais.")}</p>
+    <div class="card-actions"><button class="btn btn-ghost js-alert" type="button">Ver detalhes</button>${decisaoBtn}</div>
   </article>`;
+}
+
+function renderSentProposalDetails(item) {
+  const status = item.status || "enviada";
+  const pedido = item.pedido || {};
+  const itemPedido = pedido.itens?.[0] || {};
+  const cliente = pedido.empresaCompradora?.nomeFantasia || pedido.empresaCompradora?.razaoSocial || "-";
+  const dataEnvio = item.dataEnvio ? new Date(item.dataEnvio).toLocaleDateString("pt-BR") : "-";
+  const quantidade = itemPedido.quantidade ? String(itemPedido.quantidade) : "-";
+  return `
+    <div class="proposal-detail-head">
+      <div><span>Cliente</span><strong>${escapeHtml(cliente)}</strong></div>
+      <strong class="modal-price">${escapeHtml(formatMoneyBR(item.valor))}</strong>
+    </div>
+    <div class="action-modal-grid">
+      <div><span>Prazo de fabricação</span><strong>${escapeHtml(formatPrazo(item.prazo))}</strong></div>
+      <div><span>Frete</span><strong>${escapeHtml(item.frete ? formatMoneyBR(item.frete) : "A combinar")}</strong></div>
+      <div><span>Status</span><strong>${escapeHtml(statusPropostaLabel(status))}</strong></div>
+      <div><span>Enviada em</span><strong>${escapeHtml(dataEnvio)}</strong></div>
+      <div><span>Peça/Pedido</span><strong>${escapeHtml(itemPedido.nome || "Peça industrial")}</strong></div>
+      <div><span>Material</span><strong>${escapeHtml(itemPedido.material || "-")}</strong></div>
+      <div><span>Quantidade</span><strong>${escapeHtml(quantidade)}</strong></div>
+      <div><span>Pedido</span><strong>${escapeHtml(pedido.numeroPedido || "-")}</strong></div>
+      <div class="span-2"><span>Local de entrega</span><strong>${escapeHtml(pedido.localEntrega || "Não informado")}</strong></div>
+    </div>
+    <div class="detail-list"><div><span>Observações da proposta</span><strong>${escapeHtml(item.observacao || "Sem observações adicionais.")}</strong></div></div>
+    <div class="form-actions"><button class="btn btn-ghost js-action-modal-close" type="button">Fechar</button></div>`;
+}
+
+function renderReceivedProposalDetails(item) {
+  const status = item.status || "enviada";
+  const travada = propostaEstaTravada(status);
+  return `
+    <div class="proposal-detail-head">
+      <div><span>Usina</span><strong>${escapeHtml(nomeUsinaProposta(item.usina))}</strong></div>
+      <strong class="modal-price">${escapeHtml(formatMoneyBR(item.valor))}</strong>
+    </div>
+    <div class="action-modal-grid">
+      <div><span>Prazo de fabricação</span><strong>${escapeHtml(formatPrazo(item.prazo))}</strong></div>
+      <div><span>Frete</span><strong>${escapeHtml(item.frete ? formatMoneyBR(item.frete) : "A combinar")}</strong></div>
+      <div><span>Status</span><strong>${escapeHtml(statusPropostaLabel(status))}</strong></div>
+      <div><span>Pedido</span><strong>${escapeHtml(item.pedido?.numeroPedido || "-")}</strong></div>
+      <div class="span-2"><span>Local de entrega</span><strong>${escapeHtml(item.pedido?.localEntrega || "Não informado")}</strong></div>
+    </div>
+    <div class="detail-list"><div><span>Observações</span><strong>${escapeHtml(item.observacao || "Sem observações adicionais.")}</strong></div></div>
+    <div class="form-actions">
+      <button class="btn btn-ghost js-action-modal-close" type="button">Fechar</button>
+      ${travada ? "" : '<button class="btn js-modal-accept-proposal" type="button">Aceitar proposta</button><button class="btn btn-ghost js-modal-reject-proposal" type="button">Recusar proposta</button>'}
+    </div>`;
+}
+
+function proposalGroupsMarkup(proposals) {
+  // As propostas são comparadas só dentro do mesmo pedido: preço de peças diferentes não se compara.
+  const grupos = new Map();
+  proposals.forEach((item) => {
+    if (!grupos.has(item.idPedido)) grupos.set(item.idPedido, []);
+    grupos.get(item.idPedido).push(item);
+  });
+  return [...grupos.entries()].sort((a, b) => Number(b[0]) - Number(a[0])).map(([, lista]) => {
+    const pedido = lista[0].pedido || {};
+    const peca = pedido.itens?.[0]?.nome || "Peça industrial";
+    const abertas = lista.filter((p) => !propostaEstaTravada(p.status));
+    const melhorValor = abertas.length > 1 ? Math.min(...abertas.map((p) => Number(p.valor) || Infinity)) : null;
+    const total = lista.length === 1 ? "1 proposta" : `${lista.length} propostas`;
+    return `<header class="proposal-group-head" data-search-group><h2>${escapeHtml(peca)}</h2><span>${escapeHtml(pedido.numeroPedido || "")} · ${total}</span></header>`
+      + lista.map((item) => proposalCardMarkup(item, melhorValor !== null && Number(item.valor) === melhorValor)).join("");
+  }).join("");
 }
 
 async function loadProposalsFromApi() {
   if (!window.UsinaLinkApi) return;
-  const session = currentSession();
   const usinaTable = document.querySelector("body[data-user-role='usina'] tbody");
   if (document.body.dataset.userRole === "usina" && usinaTable && window.location.pathname.includes("propostas-usina")) {
     try {
       const proposals = await window.UsinaLinkApi.get(`/propostas/enviadas`);
+      ultimasPropostasEnviadas = proposals;
       usinaTable.innerHTML = proposals.map(proposalRowMarkup).join("") || '<tr><td colspan="7">Nenhuma proposta enviada.</td></tr>';
     } catch (error) {
       showToast(error.message);
     }
   }
-  const empresaGrid = document.querySelector("body[data-user-role='empresa'] .proposal-grid");
-  if (empresaGrid && window.location.pathname.includes("propostas")) {
+  const empresaGrid = document.querySelector("[data-proposals-grid]");
+  if (empresaGrid) {
     try {
       const proposals = await window.UsinaLinkApi.get(`/propostas/recebidas`);
-      empresaGrid.innerHTML = proposals.map((item, index) => proposalCardMarkup(item, index === 0)).join("") || '<article class="card proposal-card"><h2>Nenhuma proposta recebida</h2><p>As propostas enviadas pelas usinas aparecerao aqui.</p></article>';
+      ultimasPropostasRecebidas = proposals;
+      empresaGrid.innerHTML = proposals.length
+        ? proposalGroupsMarkup(proposals)
+        : '<div class="empty-state"><strong>Nenhuma proposta recebida</strong><span>As propostas enviadas pelas usinas aparecem aqui. Publique uma solicitação para começar a receber.</span><a class="btn btn-small" href="novo-pedido-sob-medida.html">Nova solicitação</a></div>';
     } catch (error) {
-      showToast(error.message);
+      empresaGrid.innerHTML = `<article class="card proposal-card"><h2>Falha ao carregar propostas</h2><p>${escapeHtml(error.message)}</p></article>`;
     }
   }
 }
@@ -833,9 +1015,9 @@ function openEmployeeEdit(row) {
     kicker: "Equipe",
     body: `
       <form class="form-grid js-inline-employee-edit">
-        <label class="field"><span>Nome</span><div class="input-wrap"><span class="input-symbol">N</span><input name="name" value="${escapeHtml(cells[0])}"></div></label>
-        <label class="field"><span>E-mail</span><div class="input-wrap"><span class="input-symbol">@</span><input name="email" type="email" value="${escapeHtml(cells[1])}"></div></label>
-        <label class="field"><span>Cargo</span><div class="input-wrap"><span class="input-symbol">C</span><input name="role" value="${escapeHtml(cells[2])}"></div></label>
+        <label class="field"><span>Nome</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">N</span><input name="name" value="${escapeHtml(cells[0])}"></div></label>
+        <label class="field"><span>E-mail</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">@</span><input name="email" type="email" value="${escapeHtml(cells[1])}"></div></label>
+        <label class="field"><span>Cargo</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">C</span><input name="role" value="${escapeHtml(cells[2])}"></div></label>
         <div class="form-actions span-2"><button class="btn btn-ghost js-action-modal-close" type="button">Cancelar</button><button class="btn btn-primary" type="submit">Salvar</button></div>
       </form>`
   });
@@ -869,10 +1051,10 @@ function openProposalEdit(row) {
     kicker: "Comercial",
     body: `
       <form class="form-grid js-inline-proposal-edit">
-        <label class="field"><span>Valor</span><div class="input-wrap"><span class="input-symbol">R$</span><input name="valor" value="${escapeHtml(cells[2])}"></div></label>
-        <label class="field"><span>Prazo</span><div class="input-wrap"><span class="input-symbol">P</span><input name="prazo" value="${escapeHtml(cells[3])}"></div></label>
-        <label class="field"><span>Frete</span><div class="input-wrap"><span class="input-symbol">F</span><input name="frete" value="R$ 950,00"></div></label>
-        <label class="field"><span>Observacao</span><div class="input-wrap"><span class="input-symbol">O</span><input name="observacao" value="Proposta com inspecao dimensional."></div></label>
+        <label class="field"><span>Valor</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">R$</span><input name="valor" value="${escapeHtml(cells[2])}"></div></label>
+        <label class="field"><span>Prazo</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">P</span><input name="prazo" value="${escapeHtml(cells[3])}"></div></label>
+        <label class="field"><span>Frete</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">F</span><input name="frete" value="R$ 950,00"></div></label>
+        <label class="field"><span>Observacao</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">O</span><input name="observacao" value="Proposta com inspecao dimensional."></div></label>
         <div class="form-actions span-2"><button class="btn btn-ghost js-action-modal-close" type="button">Cancelar</button><button class="btn btn-orange" type="submit">Salvar proposta</button></div>
       </form>`
   });
@@ -886,11 +1068,11 @@ function openProposalEdit(row) {
   });
 }
 
-function openSimpleConfirm({ title, message, confirmText, onConfirm, orange = false }) {
+function openSimpleConfirm({ title, message, confirmText, onConfirm, orange = false, cancelText = "Voltar" }) {
   openActionModal({
     title,
     kicker: "Confirmacao",
-    body: `<p class="modal-copy">${escapeHtml(message)}</p><div class="form-actions"><button class="btn btn-ghost js-action-modal-close" type="button">Voltar</button><button class="btn ${orange ? "btn-orange" : "btn-primary"} js-modal-confirm" type="button">${escapeHtml(confirmText)}</button></div>`
+    body: `<p class="modal-copy">${escapeHtml(message)}</p><div class="form-actions"><button class="btn btn-ghost js-action-modal-close" type="button">${escapeHtml(cancelText)}</button><button class="btn ${orange ? "btn-orange" : "btn-primary"} js-modal-confirm" type="button">${escapeHtml(confirmText)}</button></div>`
   });
   document.querySelector(".js-modal-confirm").addEventListener("click", () => {
     onConfirm();
@@ -898,15 +1080,33 @@ function openSimpleConfirm({ title, message, confirmText, onConfirm, orange = fa
   });
 }
 
+let modalPropostaId = null;
+
+async function decidirProposta(idProposta, aceitar) {
+  if (!window.UsinaLinkApi || !idProposta) return;
+  try {
+    const proposta = ultimasPropostasRecebidas.find((p) => String(p.idProposta) === String(idProposta));
+    await window.UsinaLinkApi.patch(`/propostas/${idProposta}/${aceitar ? "aceitar" : "recusar"}`, {});
+    ensureActionModal().hidden = true;
+    if (aceitar && proposta?.idPedido) {
+      showToast("Proposta aceita. Vamos ao pagamento.");
+      window.setTimeout(() => { window.location.href = `pagamento-pedido.html?pedidoId=${encodeURIComponent(proposta.idPedido)}`; }, 700);
+      return;
+    }
+    showToast(aceitar ? "Proposta aceita com sucesso" : "Proposta recusada");
+    await loadProposalsFromApi();
+  } catch (error) {
+    showToast(error.message);
+  }
+}
+
 document.addEventListener("click", (event) => {
   if (event.target.closest(".js-modal-accept-proposal")) {
-    ensureActionModal().hidden = true;
-    showToast("Proposta aceita com sucesso");
+    decidirProposta(modalPropostaId, true);
     return;
   }
   if (event.target.closest(".js-modal-reject-proposal")) {
-    ensureActionModal().hidden = true;
-    showToast("Proposta recusada");
+    decidirProposta(modalPropostaId, false);
     return;
   }
   const button = event.target.closest(".js-alert");
@@ -917,13 +1117,13 @@ document.addEventListener("click", (event) => {
   const commercialCard = button.closest(".order-opportunity");
 
   if (commercialCard && action === "Ver detalhes") {
-    const title = commercialCard.querySelector("h2")?.textContent.trim() || "Peca comercial";
+    const title = commercialCard.querySelector("h2")?.textContent.trim() || "Peça comercial";
     const description = commercialCard.querySelector("p")?.textContent.trim() || "";
     const facts = [...commercialCard.querySelectorAll(".quote-facts div")].map((item) => `<div><span>${escapeHtml(item.querySelector("span")?.textContent || "")}</span><strong>${escapeHtml(item.querySelector("strong")?.textContent || "")}</strong></div>`).join("");
     openActionModal({
       title,
-      kicker: "Peca comercial",
-      body: `<div class="detail-list"><div><span>Material</span><strong>${escapeHtml(description)}</strong></div></div><div class="action-modal-grid">${facts}</div><div class="form-actions"><button class="btn btn-ghost js-action-modal-close" type="button">Fechar</button><button class="btn btn-primary js-action-modal-close" type="button">Solicitar compra</button></div>`
+      kicker: "Peça comercial",
+      body: `<div class="detail-list"><div><span>Material</span><strong>${escapeHtml(description)}</strong></div></div><div class="action-modal-grid">${facts}</div><div class="form-actions"><button class="btn btn-ghost js-action-modal-close" type="button">Fechar</button></div>`
     });
     return;
   }
@@ -939,26 +1139,38 @@ document.addEventListener("click", (event) => {
     return;
   }
 
-  if (card && action === "Ver detalhes") {
-    openActionModal({ title: "Detalhes da proposta", kicker: "Proposta recebida", body: renderProposalDetails(proposalDetailFromCard(card), true) });
+  if (card && action === "Ver detalhes" && card.dataset.proposalId) {
+    modalPropostaId = card.dataset.proposalId;
+    const item = ultimasPropostasRecebidas.find((p) => String(p.idProposta) === modalPropostaId);
+    openActionModal({ title: "Detalhes da proposta", kicker: "Proposta recebida", body: renderReceivedProposalDetails(item || {}) });
     return;
   }
-  if (card && action === "Aceitar proposta") {
+  if (card && action === "Aceitar proposta" && card.dataset.proposalId) {
+    const p = ultimasPropostasRecebidas.find((x) => String(x.idProposta) === String(card.dataset.proposalId)) || {};
     openSimpleConfirm({
       title: "Aceitar proposta",
-      message: "Deseja aceitar esta proposta? As demais propostas deste pedido ficarao bloqueadas visualmente.",
+      message: `Aceitar a proposta de ${nomeUsinaProposta(p.usina)} por ${formatMoneyBR(p.valor)}, prazo de ${formatPrazo(p.prazo).toLowerCase()}? Depois de aceitar, você segue para o pagamento.`,
       confirmText: "Aceitar proposta",
-      onConfirm: () => {
-        document.querySelectorAll(".proposal-card .btn:not(.btn-ghost)").forEach((item) => item.disabled = true);
-        button.textContent = "Proposta aceita";
-        button.disabled = true;
-        card.classList.add("accepted");
-        showToast("Proposta aceita com sucesso");
-      }
+      onConfirm: () => decidirProposta(card.dataset.proposalId, true)
+    });
+    return;
+  }
+  if (card && action === "Recusar proposta" && card.dataset.proposalId) {
+    const p = ultimasPropostasRecebidas.find((x) => String(x.idProposta) === String(card.dataset.proposalId)) || {};
+    openSimpleConfirm({
+      title: "Recusar proposta",
+      message: `Recusar a proposta de ${nomeUsinaProposta(p.usina)} por ${formatMoneyBR(p.valor)}? Essa decisão não pode ser desfeita.`,
+      confirmText: "Recusar proposta",
+      onConfirm: () => decidirProposta(card.dataset.proposalId, false)
     });
     return;
   }
   if (row && action === "Ver detalhes") {
+    const enviada = ultimasPropostasEnviadas.find((p) => String(p.idProposta) === String(row.dataset.proposalId));
+    if (enviada) {
+      openActionModal({ title: "Detalhes da proposta", kicker: "Proposta enviada", body: renderSentProposalDetails(enviada) });
+      return;
+    }
     const cells = rowCells(row);
     openActionModal({ title: "Detalhes da proposta", kicker: "Proposta enviada", body: renderProposalDetails(cells) });
     return;
@@ -981,14 +1193,6 @@ document.addEventListener("click", (event) => {
   }
   if (row && action === "Editar") {
     openEmployeeEdit(row);
-    return;
-  }
-  if (row && action === "Reenviar convite") {
-    openSimpleConfirm({ title: "Reenviar convite", message: "Enviar um novo convite para este funcionario?", confirmText: "Reenviar convite", onConfirm: () => {
-      if (window.UsinaLinkApi && row.dataset.employeeId) {
-        window.UsinaLinkApi.post(`/funcionarios/${row.dataset.employeeId}/reenviar-convite`, {}).then(() => showToast("Convite reenviado com sucesso")).catch((error) => showToast(error.message));
-      } else showToast("Convite reenviado com sucesso");
-    } });
     return;
   }
   if (row && action === "Cancelar convite") {
@@ -1023,15 +1227,6 @@ document.addEventListener("click", (event) => {
     } });
     return;
   }
-  if (row && action === "Ver") {
-    const cells = rowCells(row);
-    openActionModal({
-      title: cells[0] || "Detalhes do pedido",
-      kicker: "Solicitacao",
-      body: `<div class="action-modal-grid"><div><span>Categoria</span><strong>${escapeHtml(cells[1])}</strong></div><div><span>Quantidade</span><strong>${escapeHtml(cells[2])}</strong></div><div><span>Status</span><strong>${escapeHtml(cells[3])}</strong></div><div><span>Propostas</span><strong>${escapeHtml(cells[4])}</strong></div><div><span>Prazo</span><strong>${escapeHtml(cells[5])}</strong></div><div><span>Arquivo tecnico</span><strong>arquivo-tecnico.pdf</strong></div></div><div class="form-actions"><button class="btn btn-ghost js-action-modal-close" type="button">Fechar</button></div>`
-    });
-    return;
-  }
   showToast(`${action} acionado`);
 });
 
@@ -1050,7 +1245,6 @@ function applyOrderFilter(container, filter) {
   rows.forEach((row) => {
     let visible = true;
     if (filter === "alta") visible = row.dataset.urgency === "alta";
-    if (filter === "sudeste") visible = row.dataset.region === "sudeste";
     row.classList.toggle("is-hidden", !visible);
   });
   if (filter === "prazo") {
@@ -1074,8 +1268,10 @@ function closeOrderModal() {
   if (orderModal) orderModal.hidden = true;
 }
 
-document.querySelectorAll(".js-open-order-detail").forEach((button) => {
-  button.addEventListener("click", () => {
+document.addEventListener("click", (event) => {
+  const button = event.target.closest(".js-open-order-detail");
+  if (!button) return;
+  {
     const row = button.closest("[data-search-row]");
     const cells = row.querySelectorAll("td");
     const facts = {};
@@ -1085,21 +1281,24 @@ document.querySelectorAll(".js-open-order-detail").forEach((button) => {
       if (key) facts[key] = value;
     });
     const title = row.querySelector("h2")?.textContent || cells[0]?.textContent || "Pedido";
-    const material = cells[1]?.textContent || facts.material || "";
-    const quantity = cells[2]?.textContent || facts.quantidade || "";
-    const deadline = cells[3]?.textContent || facts.prazo || "";
-    const region = cells[4]?.textContent || facts["regi\u00e3o"] || "";
+    const material = row.dataset.material || cells[1]?.textContent || facts.material || "Não informado";
+    const quantity = row.dataset.quantidade || cells[2]?.textContent || facts.quantidade || "Não informado";
+    const dias = Number(row.dataset.days);
+    const deadline = cells[3]?.textContent || (dias && dias < 999 ? `${dias} dias` : facts.prazo || "A combinar");
+    const region = cells[4]?.textContent || row.dataset.region || facts["regi\u00e3o"] || "Não informado";
     document.querySelector("#order-modal-title").textContent = title;
     document.querySelector("#order-modal-content").innerHTML = `
       <div><span>Detalhes da pe\u00e7a</span><strong>${escapeHtml(title)}</strong></div>
       <div><span>Material</span><strong>${escapeHtml(material)}</strong></div>
       <div><span>Quantidade</span><strong>${escapeHtml(quantity)}</strong></div>
-      <div><span>Descri\u00e7\u00e3o t\u00e9cnica</span><strong>${escapeHtml(row.dataset.description || "Solicita\u00e7\u00e3o com especifica\u00e7\u00f5es t\u00e9cnicas anexas.")}</strong></div>
-      <div><span>Arquivo t\u00e9cnico fict\u00edcio</span><strong>${escapeHtml(row.dataset.file || "arquivo-tecnico.pdf")}</strong></div>
+      <div><span>Descri\u00e7\u00e3o t\u00e9cnica</span><strong>${escapeHtml(row.dataset.description || "Sem descri\u00e7\u00e3o adicional.")}</strong></div>
+      <div><span>Arquivo t\u00e9cnico</span><strong>${escapeHtml(row.dataset.file || "Sem arquivo anexado")}</strong>${window.UsinaLinkArquivosPedido?.[row.dataset.pedidoId] ? `<div class="card-actions"><button class="btn btn-ghost btn-small" type="button" data-arquivo-acao="visualizar" data-pedido-id="${escapeHtml(row.dataset.pedidoId)}">Visualizar</button><button class="btn btn-orange btn-small" type="button" data-arquivo-acao="baixar" data-pedido-id="${escapeHtml(row.dataset.pedidoId)}">Baixar</button></div>` : ""}</div>
       <div><span>Prazo desejado</span><strong>${escapeHtml(deadline)}</strong></div>
       <div><span>Regi\u00e3o</span><strong>${escapeHtml(region)}</strong></div>`;
+    const sendLink = orderModal?.querySelector(".btn-orange");
+    if (sendLink) sendLink.href = row.dataset.pedidoId ? `enviar-proposta.html?pedidoId=${encodeURIComponent(row.dataset.pedidoId)}` : "enviar-proposta.html";
     if (orderModal) orderModal.hidden = false;
-  });
+  }
 });
 
 document.querySelectorAll(".js-close-order-modal").forEach((button) => button.addEventListener("click", closeOrderModal));
@@ -1166,77 +1365,9 @@ if (employeeForm) {
 document.querySelectorAll("[data-employee-table] tr").forEach(renderEmployeeRowActions);
 loadEmployeesFromApi();
 
-function formatCurrencyLike(value, fallback) {
-  const clean = value.trim();
-  if (!clean) return fallback;
-  return clean.startsWith("R$") ? clean : `R$ ${clean}`;
-}
-
-function parseCurrencyLike(value) {
-  const clean = String(value || "").replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", ".");
-  const number = Number(clean);
-  return Number.isFinite(number) ? number : 0;
-}
-
-function formatBRL(value) {
-  return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(value) || 0);
-}
-
-function updateProposalPreview() {
-  const value = document.querySelector("#proposal-value");
-  const deadline = document.querySelector("#proposal-deadline");
-  const freight = document.querySelector("#proposal-freight");
-  const note = document.querySelector("#proposal-note");
-  if (!value) return;
-  document.querySelector("#preview-value").textContent = formatBRL(parseCurrencyLike(value.value) + parseCurrencyLike(freight.value));
-  document.querySelector("#preview-deadline").textContent = deadline.value || "18 dias";
-  document.querySelector("#preview-freight").textContent = formatCurrencyLike(freight.value, "R$ 950,00");
-  document.querySelector("#preview-note").textContent = note.value || "Proposta com inspe\u00e7\u00e3o dimensional e embalagem refor\u00e7ada.";
-}
-
-document.querySelectorAll("#proposal-value, #proposal-deadline, #proposal-freight, #proposal-note").forEach((input) => {
-  input.addEventListener("input", updateProposalPreview);
-});
-
 document.addEventListener("input", (event) => {
   const input = event.target.closest("input[data-mask]");
   if (input) applyMaskByKey(input);
-});
-
-document.querySelectorAll(".js-send-proposal").forEach((button) => {
-  button.addEventListener("click", async () => {
-    if (button.disabled) return;
-    updateProposalPreview();
-    const session = currentSession();
-    const params = new URLSearchParams(window.location.search);
-    const pedidoId = params.get("pedidoId") || "pedido-1";
-    const value = document.querySelector("#proposal-value");
-    const deadline = document.querySelector("#proposal-deadline");
-    const freight = document.querySelector("#proposal-freight");
-    const note = document.querySelector("#proposal-note");
-    if (!value.value.trim() || !deadline.value.trim()) {
-      showToast("Informe valor e prazo para enviar a proposta");
-      return;
-    }
-    try {
-      button.disabled = true;
-      button.textContent = "Enviando...";
-      if (!window.UsinaLinkApi) throw new Error("Nao foi possivel conectar ao servidor. Verifique se o backend esta rodando.");
-      await window.UsinaLinkApi.post("/propostas", {
-        idPedido: pedidoId,
-        valor: formatCurrencyLike(value.value, "R$ 0,00"),
-        prazo: deadline.value.trim(),
-        frete: formatCurrencyLike(freight.value, "R$ 0,00"),
-        observacao: note.value.trim()
-      });
-      showToast("Proposta enviada com sucesso");
-      window.setTimeout(() => { window.location.href = "propostas-usina.html"; }, 800);
-    } catch (error) {
-      showToast(error.message);
-      button.disabled = false;
-      button.textContent = "Enviar proposta";
-    }
-  });
 });
 
 loadProposalsFromApi();
@@ -1245,3 +1376,105 @@ applySessionContext();
 if (window.location.pathname.includes("propostas-usina") || window.location.pathname.includes("propostas-enviadas")) {
   document.querySelectorAll("tbody tr[data-search-row]").forEach(renderProposalRowActions);
 }
+
+// Botao "mostrar senha" em todos os campos de senha e rotulo do tipo de conta abaixo da marca.
+function addPasswordToggle(input) {
+  const host = input.closest(".input-wrap, .input-icon") || input.parentElement;
+  const existing = host.querySelector(".pass-toggle");
+  if (existing) { // campo reaproveitado (cadastro troca o tipo de conta): volta ao estado oculto
+    existing.textContent = "Mostrar";
+    existing.setAttribute("aria-label", "Mostrar senha");
+    return;
+  }
+  host.classList.add("has-pass-toggle");
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "pass-toggle";
+  button.textContent = "Mostrar";
+  button.setAttribute("aria-label", "Mostrar senha");
+  button.addEventListener("click", () => {
+    const show = input.type === "password";
+    input.type = show ? "text" : "password";
+    button.textContent = show ? "Ocultar" : "Mostrar";
+    button.setAttribute("aria-label", show ? "Ocultar senha" : "Mostrar senha");
+  });
+  input.after(button);
+}
+
+function removePasswordToggle(input) {
+  const host = input.closest(".input-wrap, .input-icon") || input.parentElement;
+  host.querySelector(".pass-toggle")?.remove();
+  host.classList.remove("has-pass-toggle");
+}
+
+function setupPasswordToggles() {
+  document.querySelectorAll('input[type="password"]').forEach((input) => {
+    if (input.dataset.toggleReady) return;
+    input.dataset.toggleReady = "1";
+    addPasswordToggle(input);
+  });
+}
+
+function setupRoleLabel() {
+  const brand = document.querySelector(".sidebar .brand");
+  if (!brand || document.querySelector(".brand-role")) return;
+  const role = (document.body.dataset.userRole || "").split(",")[0].trim();
+  const session = currentSession();
+  const tipo = session.tipo && (document.body.dataset.userRole || "").includes(session.tipo) ? session.tipo : role;
+  const nomes = { usina: "Conta Usina", empresa: "Conta Empresa", pessoa_fisica: "Conta Pessoa Física" };
+  if (!nomes[tipo]) return;
+  const tag = document.createElement("span");
+  tag.className = "brand-role";
+  tag.textContent = nomes[tipo];
+  brand.after(tag);
+}
+
+setupPasswordToggles();
+setupRoleLabel();
+document.addEventListener("DOMContentLoaded", () => { setupPasswordToggles(); setupRoleLabel(); });
+
+// Filtro por estados (caixinhas) em Pedidos disponiveis.
+(function () {
+  const painel = document.querySelector(".uf-filter");
+  if (!painel) return;
+  const aplicar = () => {
+    const marcados = [...painel.querySelectorAll("[data-uf-check]:checked")].map((c) => c.value);
+    painel.querySelector("[data-uf-count]").textContent = marcados.length ? "(" + marcados.length + ")" : "";
+    document.querySelectorAll(".order-card-grid [data-search-row], [data-usina-pedidos-body] [data-search-row]").forEach((row) => {
+      row.classList.toggle("uf-hidden", marcados.length > 0 && !marcados.includes(row.dataset.region));
+    });
+  };
+  painel.addEventListener("change", aplicar);
+  painel.querySelector("[data-uf-clear]").addEventListener("click", () => { painel.querySelectorAll("[data-uf-check]").forEach((c) => { c.checked = false; }); aplicar(); });
+  document.addEventListener("usinalink:pedidos-carregados", aplicar);
+}());
+
+// Notificacoes nas atividades do menu lateral: cada notificacao nao lida marca o item do menu a que ela se refere.
+async function setupNavNotifications() {
+  const nav = document.querySelector(".sidebar [data-role-nav]");
+  const session = currentSession();
+  if (!nav || !session.tipo || session.tipo === "pessoa_fisica" || !window.UsinaLinkApi?.get) return;
+  const role = document.body?.dataset.userRole || "";
+  if (role && !role.split(",").map((r) => r.trim()).includes(session.tipo)) return;
+  const pintar = async () => {
+    let lista = [];
+    try { lista = await window.UsinaLinkApi.get("/notificacoes"); } catch { return; }
+    nav.querySelectorAll(".nav-count").forEach((el) => el.remove());
+    const naoLidas = lista.filter((n) => !n.lida);
+    const porLink = {};
+    naoLidas.forEach((n) => { const chave = (n.link || "").split("?")[0]; if (chave) (porLink[chave] ||= []).push(n); });
+    Object.entries(porLink).forEach(([href, itens]) => {
+      const link = nav.querySelector(`a[href="${href}"]`);
+      if (!link) return;
+      link.insertAdjacentHTML("beforeend", ` <span class="badge info nav-count" title="${escapeHtml(itens[0].titulo)}">${itens.length}</span>`);
+      link.addEventListener("click", () => { itens.forEach((n) => window.UsinaLinkApi.patch(`/notificacoes/${n.idNotificacao}/ler`, {}).catch(() => {})); }, { once: true });
+    });
+    const novas = naoLidas.filter((n) => !pintar.vistas.has(n.idNotificacao));
+    if (pintar.vistas.size && novas.length) showToast(novas[0].titulo + (novas.length > 1 ? ` (+${novas.length - 1})` : ""));
+    naoLidas.forEach((n) => pintar.vistas.add(n.idNotificacao));
+  };
+  pintar.vistas = new Set();
+  await pintar();
+  window.setInterval(pintar, 30000);
+}
+setupNavNotifications();

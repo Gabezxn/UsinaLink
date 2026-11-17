@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criar nova senha | Usinalink</title>
+  <meta name="description" content="Crie uma nova senha para a sua conta Usinalink.">
+  <meta name="robots" content="noindex">
+  <meta name="referrer" content="no-referrer">
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/a11y.css">
+  <script src="assets/js/safe-html.js"></script>
+</head>
+<body class="auth-page">
+  <main class="auth-shell">
+    <a class="brand auth-brand" href="index.html">
+      <span class="brand-icon" aria-hidden="true"><img class="brand-mark" src="assets/img/logo-mark-branco.svg" alt="" width="26" height="16"></span>
+      <span>Usinalink</span>
+    </a>
+    <section class="card auth-card">
+      <span class="eyebrow">Recuperar acesso</span>
+      <h1>Criar nova senha</h1>
+      <p>Escolha uma senha com pelo menos 6 caracteres. Depois é só entrar com ela.</p>
+      <form class="form" id="form-redefinir" novalidate>
+        <label class="field">
+          <span>Nova senha</span>
+          <div class="input-icon"><span aria-hidden="true">*</span><input id="redefinir-senha" name="novaSenha" type="password" autocomplete="new-password" placeholder="Mínimo de 6 caracteres" required></div>
+        </label>
+        <label class="field">
+          <span>Confirmar nova senha</span>
+          <div class="input-icon"><span aria-hidden="true">*</span><input id="redefinir-confirmar" name="confirmarSenha" type="password" autocomplete="new-password" placeholder="Repita a nova senha" required></div>
+        </label>
+        <button class="btn full" type="submit">Salvar nova senha</button>
+      </form>
+      <p class="form-notice" id="redefinir-resultado" role="status" hidden></p>
+      <a class="text-link centered" href="login.html">Voltar para o login</a>
+    </section>
+  </main>
+  <script src="assets/js/api.js"></script>
+  <script src="script.js"></script>
+  <script src="assets/js/senha.js"></script>
+  <script src="assets/js/a11y.js" defer></script>
+</body>
+</html>

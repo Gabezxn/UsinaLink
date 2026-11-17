@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solicita&ccedil;&otilde;es de Pe&ccedil;as | Usinalink</title>
+  <meta name="description" content="Solicita&ccedil;&otilde;es de Pe&ccedil;as na Usinalink, marketplace B2B de peças industriais que conecta empresas, usinas e compradores.">
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/a11y.css">
+  <script src="assets/js/safe-html.js"></script>
+</head>
+<body class="orange-mode" data-user-role="usina">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <a class="brand" href="index.html"><span class="brand-icon orange-icon"><img class="brand-mark" src="assets/img/logo-mark-branco.svg" alt="" width="26" height="16"></span><span>Usinalink</span></a>
+      <nav class="side-nav orange-nav" data-role-nav="usina">
+        <a href="dashboard-usina.html" data-icon="D">Início</a>
+        <a href="perfil-usina.html" data-icon="I">Perfil</a>
+        <a href="funcionarios-usina.html" data-icon="F">Funcion&aacute;rios</a>
+        <a href="pedidos-disponiveis.html" data-icon="P">Pedidos dispon&iacute;veis</a>
+        <a href="propostas-usina.html" data-icon="E">Propostas enviadas</a>
+        <a class="active" href="solicitacoes-pecas-usina.html" data-icon="S">Solicita&ccedil;&otilde;es de pe&ccedil;as</a>
+        <a href="pecas-comerciais-usina.html" data-icon="C">Cat&aacute;logo de pe&ccedil;as</a>
+        <a href="historico-pedidos.html" data-icon="H">Hist&oacute;rico relacionado</a>
+        <a href="avaliacoes-usina.html" data-icon="A">Avalia&ccedil;&otilde;es recebidas</a>
+        <a href="index.html" data-icon="X">Sair</a>
+      </nav>
+    </aside>
+    <main class="app-main">
+      <div class="page-header"><div><span class="eyebrow orange-text">Comercial</span><h1>Solicita&ccedil;&otilde;es de pe&ccedil;as</h1><p>Compras das pe&ccedil;as do seu cat&aacute;logo solicitadas por empresas e pessoas f&iacute;sicas.</p></div></div>
+      <section class="summary-grid professional">
+        <article class="card summary-card orange-accent"><span>Total recebido</span><strong data-stat-total>-</strong><small>Solicita&ccedil;&otilde;es</small></article>
+        <article class="card summary-card orange-accent"><span>Novas</span><strong data-stat-novas>-</strong><small>Aguardando voc&ecirc; aceitar</small></article>
+        <article class="card summary-card orange-accent"><span>Para separar</span><strong data-stat-separar>-</strong><small>J&aacute; pagas</small></article>
+        <article class="card summary-card orange-accent"><span>Valor estimado</span><strong data-stat-valor>-</strong><small>Sem recusadas/canceladas</small></article>
+      </section>
+      <section class="card table-card" data-search-scope>
+        <div class="table-toolbar"><label class="search-box wide-search"><span>Buscar</span><input class="js-table-search" type="search" placeholder="Solicitante, pe&ccedil;a ou data"></label></div>
+        <div class="quick-filters">
+          <button class="filter-pill active" type="button" data-tipo-filter="todos">Todos</button>
+          <button class="filter-pill" type="button" data-tipo-filter="empresa">Empresas</button>
+          <button class="filter-pill" type="button" data-tipo-filter="pessoa_fisica">Pessoas f&iacute;sicas</button>
+        </div>
+        <div class="quick-filters">
+          <button class="filter-pill active" type="button" data-status-filter="todos">Qualquer status</button>
+          <button class="filter-pill" type="button" data-status-filter="novas">Novas</button>
+          <button class="filter-pill" type="button" data-status-filter="andamento">Em andamento</button>
+          <button class="filter-pill" type="button" data-status-filter="encerradas">Encerradas</button>
+        </div>
+        <div class="table-wrap">
+          <table class="table-compact">
+            <thead><tr><th>Solicitante</th><th>Tipo</th><th>Contato</th><th>Pe&ccedil;a</th><th>Qtd.</th><th>Valor unit.</th><th>Total</th><th>Status</th><th>Data</th><th>A&ccedil;&otilde;es</th></tr></thead>
+            <tbody data-solicitacoes-pecas-body aria-live="polite"><tr><td colspan="10" style="text-align:center; padding: 24px;">Carregando...</td></tr></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/auth-guard.js"></script>
+  <script src="assets/js/role-nav.js"></script>
+  <script src="assets/js/solicitacoes-pecas-usina.js"></script>
+  <script src="script.js"></script>
+  <script src="assets/js/a11y.js" defer></script>
+</body>
+</html>

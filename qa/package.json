@@ -1,0 +1,14 @@
+{
+  "name": "usinalink-qa",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "up": "node env/up.mjs",
+    "down": "node env/down.mjs",
+    "smoke": "node env/smoke.mjs",
+    "fresh": "node env/down.mjs --wipe && node env/up.mjs"
+  },
+  "devDependencies": {
+    "axe-core": "^4.10.2"
+  }
+}

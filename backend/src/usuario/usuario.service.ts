@@ -3,12 +3,25 @@ import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
 import { PasswordService } from '../auth/password.service';
 import { TokenService } from '../auth/token.service';
-import { Usuario, Empresa, Usina, PessoaFisica, Funcionario, BloqueioUsina } from '../common/entities/core.entities';
+import { TwoFactorService } from '../auth/two-factor.service';
+import { Usuario, Empresa, Usina, PessoaFisica, Funcionario, BloqueioUsina, EnderecoEmpresa, EnderecoUsina } from '../common/entities/core.entities';
 import { CreateUsuarioDto } from './dto/create-usuario.dto';
 import { LoginDto } from './dto/login.dto';
+import { UpdatePerfilPessoaFisicaDto } from './dto/update-perfil-pessoa-fisica.dto';
 
 const digits = (v: any) => String(v || '').replace(/\D/g, '');
 const mail = (v: any) => String(v || '').trim().toLowerCase();
+const UFS = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
+/** CEP, cidade e estado: obrigatorios no cadastro (o frete e a entrega dependem do local). */
+function enderecoDoCadastro(dto: any) {
+  const cep = digits(dto.cep);
+  const cidade = String(dto.cidade || '').trim();
+  const estado = String(dto.estado || '').trim().toUpperCase();
+  if (cep.length !== 8) throw new BadRequestException('Informe um CEP valido com 8 numeros.');
+  if (cidade.length < 2) throw new BadRequestException('Informe a cidade.');
+  if (!UFS.includes(estado)) throw new BadRequestException('Informe o estado com a sigla (ex.: SP).');
+  return { cep, cidade, estado };
+}
 type TipoLogin = 'empresa' | 'usina' | 'pessoa_fisica';
 
 @Injectable()
@@ -23,6 +36,7 @@ export class UsuarioService {
     @InjectDataSource() private readonly dataSource: DataSource,
     private readonly passwords: PasswordService,
     private readonly tokens: TokenService,
+    private readonly doisFatores: TwoFactorService,
   ) {}
 
   private safe(u: any) {
@@ -72,11 +86,12 @@ export class UsuarioService {
     if (confirmar && senha !== confirmar) throw new BadRequestException('Senha e confirmacao devem ser iguais.');
     if (tipoUsuario === 'pessoa_fisica') {
       if (!String((dto as any).nome || '').trim()) throw new BadRequestException('Nome e obrigatorio.');
-      if (cpf.length !== 11) throw new BadRequestException('CPF invalido.');
-    } else if (cnpj.length !== 14) {
+      if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) throw new BadRequestException('CPF invalido.');
+    } else if (cnpj.length !== 14 || /^(\d)\1+$/.test(cnpj)) {
       throw new BadRequestException('CNPJ invalido.');
     }
 
+    const endereco = enderecoDoCadastro(dto);
     if (await this.usuarios.findOne({ where: { email } })) throw new ConflictException('E-mail já cadastrado.');
     if (tipoUsuario === 'empresa' && await this.empresas.findOne({ where: { cnpj } })) throw new ConflictException('CNPJ já cadastrado.');
     if (tipoUsuario === 'usina' && await this.usinas.findOne({ where: { cnpj } })) throw new ConflictException('CNPJ já cadastrado.');
@@ -95,7 +110,7 @@ export class UsuarioService {
 
       if (tipoUsuario === 'pessoa_fisica') {
         await manager.save(PessoaFisica, manager.create(PessoaFisica, {
-          idUsuario: novoUsuario.idUsuario, nome: novoUsuario.nome, cpf, email, telefone,
+          idUsuario: novoUsuario.idUsuario, nome: novoUsuario.nome, cpf, email, telefone, ...endereco,
         }));
       } else {
         const base = {
@@ -106,10 +121,12 @@ export class UsuarioService {
           statusValidacao: 'pendente',
         };
         if (tipoUsuario === 'empresa') {
-          await manager.save(Empresa, manager.create(Empresa, { ...base, cargoResponsavel: (dto as any).cargo }));
+          const empresa = await manager.save(Empresa, manager.create(Empresa, { ...base, cargoResponsavel: (dto as any).cargo }));
+          await manager.save(EnderecoEmpresa, manager.create(EnderecoEmpresa, { idEmpresa: empresa.idEmpresa, ...endereco, pais: 'Brasil' }));
         }
         if (tipoUsuario === 'usina') {
-          await manager.save(Usina, manager.create(Usina, { ...base, especialidade: (dto as any).especialidade }));
+          const usina = await manager.save(Usina, manager.create(Usina, { ...base, especialidade: (dto as any).especialidade }));
+          await manager.save(EnderecoUsina, manager.create(EnderecoUsina, { idUsina: usina.idUsina, ...endereco, pais: 'Brasil' }));
         }
       }
       return novoUsuario;
@@ -118,12 +135,9 @@ export class UsuarioService {
     return { message: 'Cadastro realizado com sucesso.', usuario: this.safe(usuario) };
   }
 
-  async loginArea(dto: LoginDto, area: TipoLogin) {
-    const usuario = await this.buscarEmailComSenha(dto.email);
-    if (!usuario) throw new UnauthorizedException('Usuário não encontrado.');
+  /** Confere a que a conta pode entrar naquela área (tipo, vínculo, usuário inativo, usina bloqueada). */
+  private async vinculoDaArea(usuario: Usuario, area: TipoLogin) {
     if (usuario.status && usuario.status !== 'ativo') throw new ForbiddenException('Usuario inativo.');
-    if (!await this.passwords.compare(String(dto.senha || ''), usuario.senhaHash)) throw new UnauthorizedException('E-mail ou senha inválidos.');
-
     let vinculo: any = null;
     if (area === 'pessoa_fisica') {
       if (usuario.tipoUsuario !== 'pessoa_fisica') throw new ForbiddenException(this.mensagemTipo(usuario.tipoUsuario));
@@ -144,20 +158,109 @@ export class UsuarioService {
         if (await this.bloqueios.findOne({ where: { idUsina, ativo: true } })) throw new ForbiddenException('Usina bloqueada.');
       }
     }
+    return vinculo;
+  }
 
+  private respostaLogin(usuario: Usuario, area: TipoLogin, vinculo: any) {
     const accessToken = this.tokens.sign({ sub: usuario.idUsuario, tipoUsuario: usuario.tipoUsuario });
     const response: any = { accessToken, access_token: accessToken, tipoUsuario: usuario.tipoUsuario, nome: usuario.nome, usuario: this.safe(usuario) };
     if (area !== 'pessoa_fisica') response[area] = vinculo;
     return response;
   }
 
-  async loginAdmin(dto: LoginDto) {
+  async loginArea(dto: LoginDto, area: TipoLogin) {
     const usuario = await this.buscarEmailComSenha(dto.email);
-    if (!usuario) throw new UnauthorizedException('Usuário não encontrado.');
-    if (usuario.tipoUsuario !== 'admin') throw new ForbiddenException('Esta conta nao e de administrador.');
-    if (usuario.status && usuario.status !== 'ativo') throw new ForbiddenException('Usuario inativo.');
+    if (!usuario) throw new UnauthorizedException('E-mail ou senha inválidos.');
     if (!await this.passwords.compare(String(dto.senha || ''), usuario.senhaHash)) throw new UnauthorizedException('E-mail ou senha inválidos.');
+    const vinculo = await this.vinculoDaArea(usuario, area);
+    // Senha e área corretas: se a verificação em duas etapas estiver ligada, o token só sai depois do código por e-mail.
+    if (this.doisFatores.exigido(usuario.email)) return this.doisFatores.iniciar(usuario, area);
+    return this.respostaLogin(usuario, area, vinculo);
+  }
+
+  private respostaAdmin(usuario: Usuario) {
     const accessToken = this.tokens.sign({ sub: usuario.idUsuario, tipoUsuario: usuario.tipoUsuario });
     return { accessToken, access_token: accessToken, tipoUsuario: usuario.tipoUsuario, nome: usuario.nome, usuario: this.safe(usuario) };
+  }
+
+  /** Segunda etapa do login: confere o código recebido por e-mail e só então emite o token. */
+  async verificarDoisFatores(desafio: string, codigo: string) {
+    const { idUsuario, area } = await this.doisFatores.verificar(desafio, codigo);
+    const usuario = await this.usuarios.findOne({ where: { idUsuario } });
+    if (!usuario) throw new UnauthorizedException('Codigo invalido ou expirado.');
+    if (area === 'admin') {
+      if (usuario.tipoUsuario !== 'admin' || (usuario.status && usuario.status !== 'ativo')) throw new ForbiddenException('Esta conta nao e de administrador.');
+      return this.respostaAdmin(usuario);
+    }
+    const vinculo = await this.vinculoDaArea(usuario, area as TipoLogin); // reconfere: a conta pode ter sido bloqueada nesse meio tempo
+    return this.respostaLogin(usuario, area as TipoLogin, vinculo);
+  }
+
+  async reenviarDoisFatores(desafio: string) {
+    const idUsuario = await this.doisFatores.dono(desafio);
+    const usuario = await this.usuarios.findOne({ where: { idUsuario } });
+    if (!usuario) throw new UnauthorizedException('Codigo invalido ou expirado.');
+    return this.doisFatores.reenviar(desafio, usuario);
+  }
+
+  private async pessoaFisicaDoUsuario(user: any) {
+    const pessoa = await this.pessoasFisicas.findOne({ where: { idUsuario: user.sub } });
+    if (!pessoa) throw new ForbiddenException('Esta conta nao e de pessoa fisica.');
+    return pessoa;
+  }
+
+  async perfilPessoaFisica(user: any) {
+    return this.pessoaFisicaDoUsuario(user);
+  }
+
+  async atualizarPerfilPessoaFisica(user: any, dto: UpdatePerfilPessoaFisicaDto) {
+    const pessoa = await this.pessoaFisicaDoUsuario(user);
+    const dados: Partial<PessoaFisica> = {};
+    if (dto.nome !== undefined) dados.nome = dto.nome.trim();
+    if (dto.telefone !== undefined) dados.telefone = digits(dto.telefone);
+    if (dto.cep !== undefined) {
+      const cep = digits(dto.cep);
+      if (cep && cep.length !== 8) throw new BadRequestException('Informe um CEP valido com 8 numeros.');
+      dados.cep = cep;
+    }
+    if (dto.estado !== undefined) {
+      const estado = String(dto.estado).trim().toUpperCase();
+      if (estado && !UFS.includes(estado)) throw new BadRequestException('Informe o estado com a sigla (ex.: SP).');
+      dados.estado = estado;
+    }
+    for (const campo of ['rua', 'numero', 'complemento', 'bairro', 'cidade'] as const) {
+      if (dto[campo] !== undefined) dados[campo] = String(dto[campo]).trim();
+    }
+    if (dto.email !== undefined) {
+      const email = mail(dto.email);
+      const existente = await this.usuarios.findOne({ where: { email } });
+      if (existente && existente.idUsuario !== user.sub) throw new ConflictException('E-mail já cadastrado.');
+      dados.email = email;
+      await this.usuarios.update({ idUsuario: user.sub }, { email });
+    }
+    if (dados.nome) await this.usuarios.update({ idUsuario: user.sub }, { nome: dados.nome });
+    if (Object.keys(dados).length) await this.pessoasFisicas.update({ idPessoaFisica: pessoa.idPessoaFisica }, dados);
+    return this.pessoaFisicaDoUsuario(user);
+  }
+
+  async trocarSenha(user: any, dto: { senhaAtual: string; novaSenha: string; confirmarSenha: string }) {
+    if (!dto.novaSenha || dto.novaSenha.length < 6) throw new BadRequestException('Nova senha deve ter no minimo 6 caracteres.');
+    if (dto.novaSenha !== dto.confirmarSenha) throw new BadRequestException('A nova senha e a confirmacao nao coincidem.');
+    const usuario = await this.usuarios.createQueryBuilder('u').addSelect('u.senhaHash').where('u.idUsuario = :id', { id: user.sub }).getOne();
+    if (!usuario) throw new BadRequestException('Usuário não encontrado.');
+    if (!await this.passwords.compare(String(dto.senhaAtual || ''), usuario.senhaHash)) throw new BadRequestException('Senha atual incorreta.');
+    const senhaHash = await this.passwords.hash(dto.novaSenha);
+    await this.usuarios.update({ idUsuario: user.sub }, { senhaHash });
+    return { message: 'Senha atualizada com sucesso.' };
+  }
+
+  async loginAdmin(dto: LoginDto) {
+    const usuario = await this.buscarEmailComSenha(dto.email);
+    if (!usuario) throw new UnauthorizedException('E-mail ou senha inválidos.');
+    if (!await this.passwords.compare(String(dto.senha || ''), usuario.senhaHash)) throw new UnauthorizedException('E-mail ou senha inválidos.');
+    if (usuario.tipoUsuario !== 'admin') throw new ForbiddenException('Esta conta nao e de administrador.');
+    if (usuario.status && usuario.status !== 'ativo') throw new ForbiddenException('Usuario inativo.');
+    if (this.doisFatores.exigido(usuario.email)) return this.doisFatores.iniciar(usuario, 'admin');
+    return this.respostaAdmin(usuario);
   }
 }

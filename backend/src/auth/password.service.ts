@@ -10,7 +10,7 @@ export class PasswordService {
   }
   async compare(senha: string, stored: string) {
     if (!stored) return false;
-    if (!stored.startsWith('pbkdf2$')) return senha === stored;
+    if (!stored.startsWith('pbkdf2$')) return false; // sem texto puro (SEC-14)
     const [, salt, hash] = stored.split('$');
     const actual = pbkdf2Sync(senha, salt, 120000, 32, 'sha256');
     return timingSafeEqual(Buffer.from(hash, 'hex'), actual);

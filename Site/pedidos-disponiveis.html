@@ -4,18 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pedidos Dispon&iacute;veis | Usinalink</title>
+  <meta name="description" content="Pedidos Dispon&iacute;veis na Usinalink, marketplace B2B de peças industriais que conecta empresas, usinas e compradores.">
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/a11y.css">
+  <script src="assets/js/safe-html.js"></script>
 </head>
 <body class="orange-mode" data-user-role="usina">
   <div class="app-layout">
     <aside class="sidebar">
-      <a class="brand" href="index.html"><span class="brand-icon orange-icon">US</span><span>Usinalink</span></a>
+      <a class="brand" href="index.html"><span class="brand-icon orange-icon"><img class="brand-mark" src="assets/img/logo-mark-branco.svg" alt="" width="26" height="16"></span><span>Usinalink</span></a>
       <nav class="side-nav orange-nav" data-role-nav="usina">
-        <a href="dashboard-usina.html" data-icon="D">Dashboard usina</a>
+        <a href="dashboard-usina.html" data-icon="D">Início</a>
         <a href="perfil-usina.html" data-icon="I">Perfil</a>
         <a href="funcionarios-usina.html" data-icon="F">Funcion&aacute;rios</a>
         <a class="active" href="pedidos-disponiveis.html" data-icon="P">Pedidos dispon&iacute;veis</a>
         <a href="propostas-usina.html" data-icon="E">Propostas enviadas</a>
+
+        <a href="solicitacoes-pecas-usina.html" data-icon="S">Solicita&ccedil;&otilde;es de pe&ccedil;as</a>
+        <a href="pecas-comerciais-usina.html" data-icon="C">Cat&aacute;logo de pe&ccedil;as</a>
         <a href="historico-pedidos.html" data-icon="H">Hist&oacute;rico relacionado</a>
         <a href="avaliacoes-usina.html" data-icon="A">Avalia&ccedil;&otilde;es recebidas</a>
         <a href="index.html" data-icon="X">Sair</a>
@@ -33,26 +40,11 @@
         <div class="quick-filters">
           <button class="filter-pill active js-order-filter" type="button" data-filter="all">Todos</button>
           <button class="filter-pill js-order-filter" type="button" data-filter="alta">Alta urg&ecirc;ncia</button>
-          <button class="filter-pill js-order-filter" type="button" data-filter="sudeste">Sudeste</button>
           <button class="filter-pill js-order-filter" type="button" data-filter="prazo">Menor prazo</button>
         </div>
+        <details class="uf-filter"><summary>Filtrar por estado <span data-uf-count></span></summary><div class="uf-groups"><fieldset class="uf-group"><legend>Norte</legend><label class="check-chip"><input type="checkbox" value="AC" data-uf-check> AC</label><label class="check-chip"><input type="checkbox" value="AP" data-uf-check> AP</label><label class="check-chip"><input type="checkbox" value="AM" data-uf-check> AM</label><label class="check-chip"><input type="checkbox" value="PA" data-uf-check> PA</label><label class="check-chip"><input type="checkbox" value="RO" data-uf-check> RO</label><label class="check-chip"><input type="checkbox" value="RR" data-uf-check> RR</label><label class="check-chip"><input type="checkbox" value="TO" data-uf-check> TO</label></fieldset><fieldset class="uf-group"><legend>Nordeste</legend><label class="check-chip"><input type="checkbox" value="AL" data-uf-check> AL</label><label class="check-chip"><input type="checkbox" value="BA" data-uf-check> BA</label><label class="check-chip"><input type="checkbox" value="CE" data-uf-check> CE</label><label class="check-chip"><input type="checkbox" value="MA" data-uf-check> MA</label><label class="check-chip"><input type="checkbox" value="PB" data-uf-check> PB</label><label class="check-chip"><input type="checkbox" value="PE" data-uf-check> PE</label><label class="check-chip"><input type="checkbox" value="PI" data-uf-check> PI</label><label class="check-chip"><input type="checkbox" value="RN" data-uf-check> RN</label><label class="check-chip"><input type="checkbox" value="SE" data-uf-check> SE</label></fieldset><fieldset class="uf-group"><legend>Centro-Oeste</legend><label class="check-chip"><input type="checkbox" value="DF" data-uf-check> DF</label><label class="check-chip"><input type="checkbox" value="GO" data-uf-check> GO</label><label class="check-chip"><input type="checkbox" value="MT" data-uf-check> MT</label><label class="check-chip"><input type="checkbox" value="MS" data-uf-check> MS</label></fieldset><fieldset class="uf-group"><legend>Sudeste</legend><label class="check-chip"><input type="checkbox" value="ES" data-uf-check> ES</label><label class="check-chip"><input type="checkbox" value="MG" data-uf-check> MG</label><label class="check-chip"><input type="checkbox" value="RJ" data-uf-check> RJ</label><label class="check-chip"><input type="checkbox" value="SP" data-uf-check> SP</label></fieldset><fieldset class="uf-group"><legend>Sul</legend><label class="check-chip"><input type="checkbox" value="PR" data-uf-check> PR</label><label class="check-chip"><input type="checkbox" value="RS" data-uf-check> RS</label><label class="check-chip"><input type="checkbox" value="SC" data-uf-check> SC</label></fieldset></div><button class="btn btn-ghost btn-small" type="button" data-uf-clear>Limpar estados</button></details>
         <div class="order-card-grid">
-          <article class="card order-opportunity" data-search-row data-region="sudeste" data-urgency="normal" data-days="20" data-description="Eixo para conjunto de transmissao com tratamento termico." data-file="desenho-eixo-estriado.pdf">
-            <h2>Eixo estriado</h2><p>Metal Forte Componentes</p>
-            <div class="card-actions"><button class="btn btn-ghost js-open-order-detail" type="button">Ver detalhes</button><a class="btn btn-orange" href="enviar-proposta.html?pedidoId=pedido-1">Enviar proposta</a></div>
-          </article>
-          <article class="card order-opportunity" data-search-row data-region="sul" data-urgency="alta" data-days="12" data-description="Flange para linha industrial com acabamento usinado." data-file="flange-industrial.dwg">
-            <h2>Flange industrial</h2><p>Energia Sul</p>
-            <div class="card-actions"><button class="btn btn-ghost js-open-order-detail" type="button">Ver detalhes</button><a class="btn btn-orange" href="enviar-proposta.html?pedidoId=pedido-2">Enviar proposta</a></div>
-          </article>
-          <article class="card order-opportunity" data-search-row data-region="sudeste" data-urgency="normal" data-days="25" data-description="Suporte estrutural em aluminio para linha de montagem." data-file="suporte-metalico.pdf">
-            <h2>Suporte met&aacute;lico</h2><p>ValeTech</p>
-            <div class="card-actions"><button class="btn btn-ghost js-open-order-detail" type="button">Ver detalhes</button><a class="btn btn-orange" href="enviar-proposta.html">Enviar proposta</a></div>
-          </article>
-          <article class="card order-opportunity" data-search-row data-region="nordeste" data-urgency="alta" data-days="18" data-description="Engrenagem helicoidal com cementacao e controle de rugosidade." data-file="engrenagem-helicoidal.step">
-            <h2>Engrenagem helicoidal</h2><p>Minas Parts</p>
-            <div class="card-actions"><button class="btn btn-ghost js-open-order-detail" type="button">Ver detalhes</button><a class="btn btn-orange" href="enviar-proposta.html">Enviar proposta</a></div>
-          </article>
+          <article class="card order-opportunity"><h2>Carregando...</h2></article>
         </div>
       </section>
     </main>
@@ -64,7 +56,11 @@
       <div class="form-actions"><button class="btn btn-ghost js-close-order-modal" type="button">Cancelar</button><a class="btn btn-orange" href="enviar-proposta.html">Enviar proposta</a></div>
     </section>
   </div>
+  <script src="assets/js/api.js"></script>
   <script src="assets/js/auth-guard.js"></script>
+  <script src="assets/js/role-nav.js"></script>
   <script src="script.js"></script>
+  <script src="assets/js/pedidos-usina.js"></script>
+  <script src="assets/js/a11y.js" defer></script>
 </body>
 </html>

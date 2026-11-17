@@ -2,7 +2,8 @@ import { BadRequestException, ConflictException, ForbiddenException, Injectable,
 import { InjectRepository } from '@nestjs/typeorm';
 import { Not, Repository } from 'typeorm';
 import { ContextoUsuarioService } from '../contexto-usuario/contexto-usuario.service';
-import { Proposta, Pedido, Usina, BloqueioUsina } from '../common/entities/core.entities';
+import { NotificacaoService } from '../notificacao/notificacao.service';
+import { Proposta, Pedido, Usina, BloqueioUsina, Solicitacao, PessoaFisica } from '../common/entities/core.entities';
 
 const STATUS_ABERTOS = ['aberto', 'em_negociacao'];
 
@@ -13,15 +14,44 @@ export class PropostaService {
     @InjectRepository(Pedido) private readonly pedidos: Repository<Pedido>,
     @InjectRepository(Usina) private readonly usinas: Repository<Usina>,
     @InjectRepository(BloqueioUsina) private readonly bloqueios: Repository<BloqueioUsina>,
+    @InjectRepository(Solicitacao) private readonly solicitacoes: Repository<Solicitacao>,
+    @InjectRepository(PessoaFisica) private readonly pessoasFisicas: Repository<PessoaFisica>,
     private readonly ctx: ContextoUsuarioService,
+    private readonly notificacoes: NotificacaoService,
   ) {}
+
+  private async sincronizarSolicitacao(idPedido: number, status: string, apenasSe?: string) {
+    const pedido = await this.pedidos.findOne({ where: { idPedido } });
+    if (!pedido?.idSolicitacao) return;
+    if (apenasSe) {
+      const atual = await this.solicitacoes.findOne({ where: { idSolicitacao: pedido.idSolicitacao } });
+      if (atual?.status !== apenasSe) return;
+    }
+    await this.solicitacoes.update({ idSolicitacao: pedido.idSolicitacao }, { status });
+  }
 
   private async enrich(proposta: Proposta) {
     const [pedido, usina] = await Promise.all([
-      this.pedidos.findOne({ where: { idPedido: proposta.idPedido } }),
+      this.pedidos.findOne({ where: { idPedido: proposta.idPedido }, relations: ['itens', 'empresaCompradora'] }),
       this.usinas.findOne({ where: { idUsina: proposta.idUsina } }),
     ]);
+    // Comprador pessoa fisica aparece no mesmo campo da empresa, como em PedidoService.enrich.
+    if (pedido && !pedido.empresaCompradora && pedido.idPessoaFisicaCompradora) {
+      const pessoa = await this.pessoasFisicas.findOne({ where: { idPessoaFisica: pedido.idPessoaFisicaCompradora } });
+      if (pessoa) (pedido as any).empresaCompradora = { nomeFantasia: pessoa.nome, razaoSocial: pessoa.nome, email: pessoa.email, telefone: pessoa.telefone, tipoComprador: 'pessoa_fisica' };
+    }
     return { ...proposta, pedido, usina };
+  }
+
+  private ehComprador(user: any) {
+    return user?.tipoUsuario === 'pessoa_fisica' || !!user?.tipoUsuario?.includes('empresa');
+  }
+
+  /** Para a usina, o comprador aparece só com nome público (sem contato, documento ou anexos). */
+  private paraUsina(p: any) {
+    const e = p?.pedido?.empresaCompradora;
+    if (e) p.pedido.empresaCompradora = { nomeFantasia: e.nomeFantasia, razaoSocial: e.razaoSocial, tipoComprador: e.tipoComprador };
+    return p;
   }
 
   async criar(dto: any, user: any) {
@@ -36,23 +66,30 @@ export class PropostaService {
       throw new ConflictException('Ja existe proposta desta usina para este pedido.');
     }
 
+    const valor = Number(dto.valor);
+    if (!Number.isFinite(valor) || valor <= 0 || valor > 1_000_000_000) throw new BadRequestException('Informe um valor de proposta maior que zero.');
     const proposta = await this.propostas.save(this.propostas.create({
       idPedido: pedido.idPedido,
       idUsina,
       idUsuarioResponsavel: user.sub,
-      valor: Number(dto.valor),
+      valor,
       prazo: dto.prazo,
+      frete: dto.frete !== undefined && dto.frete !== '' ? Number(dto.frete) : undefined,
       observacao: dto.observacao,
       status: 'enviada',
     }));
 
     if (pedido.status === 'aberto') await this.pedidos.update({ idPedido: pedido.idPedido }, { status: 'em_negociacao' });
+    await this.sincronizarSolicitacao(pedido.idPedido, 'em_analise', 'aberta');
+    const usina = await this.usinas.findOne({ where: { idUsina } });
+    this.notificacoes.criar(pedido.idUsuarioSolicitante, 'Nova proposta recebida', `${usina?.nomeFantasia || usina?.razaoSocial || 'Uma usina'} enviou uma proposta para o seu pedido.`, 'propostas.html');
     return proposta;
   }
 
   async recebidas(user: any) {
-    const idEmpresa = await this.ctx.obterEmpresaId(user.sub);
-    const pedidos = await this.pedidos.find({ where: { idEmpresaCompradora: idEmpresa } });
+    const comprador = await this.ctx.obterComprador(user.sub);
+    const where = comprador.idPessoaFisica ? { idPessoaFisicaCompradora: comprador.idPessoaFisica } : { idEmpresaCompradora: comprador.idEmpresa };
+    const pedidos = await this.pedidos.find({ where });
     const ids = pedidos.map(p => p.idPedido);
     if (!ids.length) return [];
     const rows = await this.propostas.createQueryBuilder('p').where('p.idPedido IN (:...ids)', { ids }).andWhere('p.status != :cancelada', { cancelada: 'cancelada' }).getMany();
@@ -62,40 +99,54 @@ export class PropostaService {
   async enviadas(user: any) {
     const idUsina = await this.ctx.obterUsinaId(user.sub);
     const rows = await this.propostas.find({ where: { idUsina } });
-    return Promise.all(rows.map(p => this.enrich(p)));
+    return Promise.all(rows.map(async p => this.paraUsina(await this.enrich(p))));
   }
 
   async detalhe(id: number | string, user: any) {
     const proposta = await this.propostas.findOne({ where: { idProposta: Number(id) } });
     if (!proposta) throw new NotFoundException('Proposta não encontrada.');
     const enriched = await this.enrich(proposta);
-    if (user.tipoUsuario?.includes('empresa')) {
-      const idEmpresa = await this.ctx.obterEmpresaId(user.sub);
-      if (enriched.pedido?.idEmpresaCompradora !== idEmpresa) throw new ForbiddenException();
+    if (user.tipoUsuario === 'pessoa_fisica' || user.tipoUsuario?.includes('empresa')) {
+      const comprador = await this.ctx.obterComprador(user.sub);
+      const dono = comprador.idPessoaFisica
+        ? enriched.pedido?.idPessoaFisicaCompradora === comprador.idPessoaFisica
+        : !!comprador.idEmpresa && enriched.pedido?.idEmpresaCompradora === comprador.idEmpresa;
+      if (!dono) throw new ForbiddenException();
     }
     if (user.tipoUsuario?.includes('usina')) {
       const idUsina = await this.ctx.obterUsinaId(user.sub);
       if (proposta.idUsina !== idUsina) throw new ForbiddenException();
+      return this.paraUsina(enriched);
     }
+    if (!this.ehComprador(user)) throw new ForbiddenException();
     return enriched;
   }
 
   async aceitar(id: number | string, user: any) {
+    if (!this.ehComprador(user)) throw new ForbiddenException('Somente o comprador pode aceitar propostas.');
     const proposta = await this.detalhe(id, user);
-    await this.propostas.update({ idPedido: proposta.idPedido }, { status: 'recusada' });
+    if (proposta.status !== 'enviada') throw new BadRequestException('Esta proposta não está mais disponível para aceite.');
+    if (!STATUS_ABERTOS.includes(proposta.pedido?.status as string)) throw new BadRequestException('O pedido não está mais aberto para propostas.');
+    await this.propostas.update({ idPedido: proposta.idPedido, status: 'enviada' }, { status: 'recusada' });
     await this.propostas.update({ idProposta: proposta.idProposta }, { status: 'aceita' });
     await this.pedidos.update({ idPedido: proposta.idPedido }, { status: 'proposta_aceita', valorTotal: proposta.valor });
+    await this.sincronizarSolicitacao(proposta.idPedido, 'concluida');
+    this.notificacoes.criar(await this.ctx.idUsuarioDaUsina(proposta.idUsina), 'Proposta aceita', `Sua proposta para o pedido ${proposta.pedido?.numeroPedido || '#' + proposta.idPedido} foi aceita.`, 'propostas-usina.html');
     return this.propostas.findOne({ where: { idProposta: proposta.idProposta } });
   }
 
   async recusar(id: number | string, user: any) {
-    await this.detalhe(id, user);
+    if (!this.ehComprador(user)) throw new ForbiddenException('Somente o comprador pode recusar propostas.');
+    const proposta = await this.detalhe(id, user);
+    if (proposta.status !== 'enviada') throw new BadRequestException('Esta proposta não pode mais ser recusada.');
     await this.propostas.update({ idProposta: Number(id) }, { status: 'recusada' });
     return this.propostas.findOne({ where: { idProposta: Number(id) } });
   }
 
   async cancelar(id: number | string, user: any) {
-    await this.detalhe(id, user);
+    if (!user.tipoUsuario?.includes('usina')) throw new ForbiddenException('Somente a usina pode cancelar a própria proposta.');
+    const proposta = await this.detalhe(id, user);
+    if (proposta.status !== 'enviada') throw new BadRequestException('Esta proposta não pode mais ser cancelada.');
     await this.propostas.update({ idProposta: Number(id) }, { status: 'cancelada' });
     return this.propostas.findOne({ where: { idProposta: Number(id) } });
   }

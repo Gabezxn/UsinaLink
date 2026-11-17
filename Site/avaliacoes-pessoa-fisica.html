@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avaliações | Usinalink</title>
+  <meta name="description" content="Avaliações na Usinalink, marketplace B2B de peças industriais que conecta empresas, usinas e compradores.">
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/a11y.css">
+  <script src="assets/js/safe-html.js"></script>
+</head>
+<body data-user-role="pessoa_fisica">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <a class="brand" href="index.html"><span class="brand-icon"><img class="brand-mark" src="assets/img/logo-mark-branco.svg" alt="" width="26" height="16"></span><span>Usinalink</span></a>
+      <nav class="side-nav" data-role-nav="pessoa_fisica"></nav>
+    </aside>
+    <main class="app-main">
+      <div class="page-header">
+        <div><span class="eyebrow">Qualidade</span><h1>Avalia&ccedil;&otilde;es</h1><p>Avalie as usinas depois da entrega e consulte o que voc&ecirc; j&aacute; avaliou.</p></div>
+      </div>
+      <section class="card table-card">
+        <div class="table-toolbar"><div><h2>Aguardando sua avalia&ccedil;&atilde;o</h2><p>Compras e pedidos j&aacute; entregues.</p></div></div>
+        <div class="pf-actions-list" data-pendentes><div class="loading-state" aria-busy="true">Carregando...</div></div>
+      </section>
+      <section class="card table-card">
+        <div class="table-toolbar"><div><h2>Minhas avalia&ccedil;&otilde;es</h2><p>O que voc&ecirc; j&aacute; enviou e as respostas das usinas.</p></div></div>
+        <div class="review-list" data-minhas-avaliacoes style="padding: 0 22px 22px;"><div class="loading-state" aria-busy="true">Carregando...</div></div>
+      </section>
+    </main>
+  </div>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/auth-guard.js"></script>
+  <script src="assets/js/pf-common.js"></script>
+  <script src="assets/js/role-nav.js"></script>
+  <script src="assets/js/avaliacoes-pessoa-fisica.js"></script>
+  <script src="script.js"></script>
+  <script src="assets/js/a11y.js" defer></script>
+</body>
+</html>

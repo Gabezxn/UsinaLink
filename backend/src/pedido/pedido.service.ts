@@ -1,8 +1,9 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
-import { ContextoUsuarioService } from '../contexto-usuario/contexto-usuario.service';
-import { Pedido, ItemPedido, ArquivoPedido, HistoricoStatusPedido, Proposta, Empresa } from '../common/entities/core.entities';
+import { Comprador, ContextoUsuarioService } from '../contexto-usuario/contexto-usuario.service';
+import { NotificacaoService } from '../notificacao/notificacao.service';
+import { Pedido, ItemPedido, ArquivoPedido, HistoricoStatusPedido, Proposta, Empresa, PessoaFisica, Solicitacao, Usina } from '../common/entities/core.entities';
 
 const STATUS_ABERTOS = ['aberto', 'em_negociacao'];
 
@@ -15,29 +16,71 @@ export class PedidoService {
     @InjectRepository(HistoricoStatusPedido) private readonly historico: Repository<HistoricoStatusPedido>,
     @InjectRepository(Proposta) private readonly propostas: Repository<Proposta>,
     @InjectRepository(Empresa) private readonly empresas: Repository<Empresa>,
+    @InjectRepository(PessoaFisica) private readonly pessoasFisicas: Repository<PessoaFisica>,
+    @InjectRepository(Solicitacao) private readonly solicitacoes: Repository<Solicitacao>,
+    @InjectRepository(Usina) private readonly usinas: Repository<Usina>,
     private readonly ctx: ContextoUsuarioService,
+    private readonly notificacoes: NotificacaoService,
   ) {}
 
-  private async enrich(pedido: Pedido) {
-    const [propostas, empresaCompradora, itens, arquivos] = await Promise.all([
+  private ehDoComprador(pedido: Pedido, c: Comprador) {
+    return c.idPessoaFisica
+      ? pedido.idPessoaFisicaCompradora === c.idPessoaFisica
+      : !!c.idEmpresa && pedido.idEmpresaCompradora === c.idEmpresa;
+  }
+
+  /** Dados do comprador que uma usina pode ver (sem contato, documento ou anexos). */
+  private compradorPublico(e: any) {
+    return e ? { nomeFantasia: e.nomeFantasia, razaoSocial: e.razaoSocial, tipoComprador: e.tipoComprador } : null;
+  }
+
+  private ehComprador(user: any) {
+    return user?.tipoUsuario === 'pessoa_fisica' || !!user?.tipoUsuario?.includes('empresa');
+  }
+
+  /** Só o comprador dono do pedido pode alterar ou cancelar. */
+  private async exigirDono(id: number | string, user: any) {
+    const pedido = await this.pedidos.findOne({ where: { idPedido: Number(id) } });
+    if (!pedido) throw new NotFoundException('Pedido não encontrado.');
+    if (!this.ehComprador(user)) throw new ForbiddenException();
+    const comprador = await this.ctx.obterComprador(user.sub);
+    if (!this.ehDoComprador(pedido, comprador)) throw new ForbiddenException();
+    return pedido;
+  }
+
+  private async enrich(pedido: Pedido, idUsinaViewer?: number) {
+    const [propostas, empresa, pessoa, itens, arquivos] = await Promise.all([
       this.propostas.find({ where: { idPedido: pedido.idPedido } }),
-      this.empresas.findOne({ where: { idEmpresa: pedido.idEmpresaCompradora } }),
+      pedido.idEmpresaCompradora ? this.empresas.findOne({ where: { idEmpresa: pedido.idEmpresaCompradora } }) : null,
+      pedido.idPessoaFisicaCompradora ? this.pessoasFisicas.findOne({ where: { idPessoaFisica: pedido.idPessoaFisicaCompradora } }) : null,
       this.itens.find({ where: { idPedido: pedido.idPedido } }),
       this.arquivos.find({ where: { idPedido: pedido.idPedido } }),
     ]);
+    // Comprador pessoa fisica aparece no mesmo campo que a empresa, assim as telas da usina funcionam sem mudanca.
+    const empresaCompradora = empresa || (pessoa
+      ? { nomeFantasia: pessoa.nome, razaoSocial: pessoa.nome, email: pessoa.email, telefone: pessoa.telefone, tipoComprador: 'pessoa_fisica' }
+      : null);
+    if (idUsinaViewer !== undefined) {
+      // Usina só enxerga as próprias propostas e o nome público do comprador.
+      return { ...pedido, propostas: propostas.filter(p => p.idUsina === idUsinaViewer), empresaCompradora: this.compradorPublico(empresaCompradora), itens, arquivos };
+    }
     return { ...pedido, propostas, empresaCompradora, itens, arquivos };
   }
 
   async criar(dto: any, user: any) {
-    const idEmpresa = await this.ctx.obterEmpresaId(user.sub);
+    const comprador = await this.ctx.obterComprador(user.sub);
+    const prazoDigits = dto.prazoEntregaDias ?? String(dto.prazo || '').match(/\d+/)?.[0];
     const pedido = await this.pedidos.save(this.pedidos.create({
-      idEmpresaCompradora: idEmpresa,
+      idEmpresaCompradora: comprador.idEmpresa,
+      idPessoaFisicaCompradora: comprador.idPessoaFisica,
       idUsuarioSolicitante: user.sub,
+      idSolicitacao: dto.idSolicitacao || undefined,
       numeroPedido: dto.numeroPedido || `PED-${Date.now()}`,
       urgencia: dto.urgencia,
       status: 'aberto',
       observacoes: dto.observacoes || dto.descricao,
-      prazoEntregaDias: dto.prazoEntregaDias ? Number(dto.prazoEntregaDias) : undefined,
+      localEntrega: dto.localEntrega,
+      prazoEntregaDias: prazoDigits ? Number(prazoDigits) : undefined,
       dataPedido: new Date(),
     }));
 
@@ -63,44 +106,86 @@ export class PedidoService {
     }
 
     await this.historico.save(this.historico.create({ idPedido: pedido.idPedido, statusNovo: 'aberto', idUsuarioResponsavel: user.sub, observacao: 'Pedido criado' }));
+    // Avisa as usinas de que ha um novo pedido para responder.
+    const titulo = itensDto[0]?.nome || 'peça industrial';
+    this.usinas.find({ select: ['idUsuario'] }).then(lista => Promise.all(lista.map(u => this.notificacoes.criar(u.idUsuario, 'Novo pedido disponível', `Há um novo pedido de ${titulo} aguardando propostas.`, 'pedidos-disponiveis.html')))).catch(() => undefined);
     return this.enrich(pedido);
   }
 
   async meus(user: any) {
-    const idEmpresa = await this.ctx.obterEmpresaId(user.sub);
-    const pedidos = await this.pedidos.find({ where: { idEmpresaCompradora: idEmpresa } });
+    const comprador = await this.ctx.obterComprador(user.sub);
+    const where = comprador.idPessoaFisica ? { idPessoaFisicaCompradora: comprador.idPessoaFisica } : { idEmpresaCompradora: comprador.idEmpresa };
+    const pedidos = await this.pedidos.find({ where });
     return Promise.all(pedidos.map(p => this.enrich(p)));
   }
 
-  async disponiveis() {
+  async disponiveis(user: any) {
+    const idUsina = await this.ctx.obterUsinaId(user.sub);
     const pedidos = await this.pedidos.find({ where: { status: In(STATUS_ABERTOS) } });
-    return Promise.all(pedidos.map(p => this.enrich(p)));
+    const enriched = await Promise.all(pedidos.map(p => this.enrich(p, idUsina)));
+    // Pedido que esta usina ja respondeu com proposta (exceto cancelada) sai da lista.
+    return enriched.filter(p => !p.propostas.some(pr => pr.idUsina === idUsina && pr.status !== 'cancelada'));
   }
 
   async detalhe(id: number | string, user: any) {
     const pedido = await this.pedidos.findOne({ where: { idPedido: Number(id) } });
     if (!pedido) throw new NotFoundException('Pedido não encontrado.');
-    const enriched = await this.enrich(pedido);
-    if (user.tipoUsuario?.includes('empresa')) {
-      const idEmpresa = await this.ctx.obterEmpresaId(user.sub);
-      if (pedido.idEmpresaCompradora !== idEmpresa) throw new ForbiddenException();
-    } else {
-      const idUsina = await this.ctx.obterUsinaId(user.sub);
-      const temProposta = enriched.propostas?.some(p => p.idUsina === idUsina);
-      if (!STATUS_ABERTOS.includes(pedido.status) && !temProposta) throw new ForbiddenException();
+    if (this.ehComprador(user)) {
+      const comprador = await this.ctx.obterComprador(user.sub);
+      if (!this.ehDoComprador(pedido, comprador)) throw new ForbiddenException();
+      return this.enrich(pedido);
     }
+    if (!user.tipoUsuario?.includes('usina')) throw new ForbiddenException();
+    const idUsina = await this.ctx.obterUsinaId(user.sub);
+    const enriched = await this.enrich(pedido, idUsina);
+    const temProposta = enriched.propostas?.some(p => p.idUsina === idUsina);
+    if (!STATUS_ABERTOS.includes(pedido.status) && !temProposta) throw new ForbiddenException();
     return enriched;
   }
 
   async atualizar(id: number | string, dto: any, user: any) {
-    await this.detalhe(id, user);
-    await this.pedidos.update({ idPedido: Number(id) }, dto);
+    await this.exigirDono(id, user);
+    // Só campos descritivos: o status muda apenas pelos fluxos próprios (proposta, pagamento, entrega, cancelamento).
+    const campos: Record<string, any> = {};
+    for (const k of ['urgencia', 'observacoes', 'prazoEntregaDias']) if (dto?.[k] !== undefined) campos[k] = dto[k];
+    if (Object.keys(campos).length) await this.pedidos.update({ idPedido: Number(id) }, campos);
+    return this.detalhe(id, user);
+  }
+
+  async confirmarEntrega(id: number | string, user: any) {
+    if (!user.tipoUsuario?.includes('empresa') && user.tipoUsuario !== 'pessoa_fisica' && !user.tipoUsuario?.includes('usina')) throw new ForbiddenException();
+    const pedido = await this.detalhe(id, user);
+    if (pedido.status !== 'em_producao') throw new ForbiddenException('Pedido ainda nao esta em producao.');
+    if (user.tipoUsuario?.includes('usina')) {
+      const idUsina = await this.ctx.obterUsinaId(user.sub);
+      if (!pedido.propostas?.some(p => p.status === 'aceita' && p.idUsina === idUsina)) throw new ForbiddenException('Somente a usina com a proposta aceita pode confirmar a entrega.');
+    }
+    await this.pedidos.update({ idPedido: Number(id) }, { status: 'concluido', dataEntregaReal: new Date() });
+    await this.historico.save(this.historico.create({ idPedido: Number(id), statusNovo: 'concluido', idUsuarioResponsavel: user.sub, observacao: user.tipoUsuario?.includes('usina') ? 'Entrega confirmada pela usina' : 'Entrega confirmada pelo comprador' }));
+    const aceita = pedido.propostas?.find(p => p.status === 'aceita');
+    if (user.tipoUsuario?.includes('usina')) {
+      this.notificacoes.criar(pedido.idUsuarioSolicitante, 'Entrega confirmada', `A usina confirmou a entrega do pedido ${pedido.numeroPedido || '#' + pedido.idPedido}.`, 'historico-pedidos.html');
+    } else {
+      this.notificacoes.criar(await this.ctx.idUsuarioDaUsina(aceita?.idUsina), 'Entrega confirmada', `O comprador confirmou a entrega do pedido ${pedido.numeroPedido || '#' + pedido.idPedido}.`, 'historico-pedidos.html');
+    }
     return this.detalhe(id, user);
   }
 
   async cancelar(id: number | string, user: any) {
-    await this.detalhe(id, user);
+    const pedido = await this.exigirDono(id, user);
+    if (![...STATUS_ABERTOS, 'proposta_aceita'].includes(pedido.status)) throw new BadRequestException('Este pedido não pode mais ser cancelado.');
     await this.pedidos.update({ idPedido: Number(id) }, { status: 'cancelado' });
+    // As propostas ainda vivas (inclusive a aceita) deixam de valer, e as usinas sao avisadas.
+    const vivas = await this.propostas.find({ where: { idPedido: Number(id), status: In(['enviada', 'em_analise', 'aceita']) } });
+    if (vivas.length) {
+      await this.propostas.update({ idProposta: In(vivas.map(p => p.idProposta)) }, { status: 'cancelada' });
+      for (const p of vivas) {
+        this.notificacoes.criar(await this.ctx.idUsuarioDaUsina(p.idUsina), 'Pedido cancelado', `O pedido ${pedido.numeroPedido || '#' + pedido.idPedido} foi cancelado pelo comprador e a sua proposta deixou de valer.`, 'propostas-usina.html');
+      }
+    }
+    if (pedido.idSolicitacao) {
+      await this.solicitacoes.update({ idSolicitacao: pedido.idSolicitacao }, { status: 'cancelada' });
+    }
     return this.detalhe(id, user);
   }
 }

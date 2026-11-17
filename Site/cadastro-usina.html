@@ -3,33 +3,43 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cadastro | Usinalink</title>
+  <title>Cadastro de usina | Usinalink</title>
+  <meta name="description" content="Cadastro de usina na Usinalink, marketplace B2B de peças industriais que conecta empresas, usinas e compradores.">
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/motion.css">
+  <link rel="stylesheet" href="assets/css/a11y.css">
+  <script src="assets/js/safe-html.js"></script>
 </head>
 <body class="page-shell">
   <main class="signup-page">
-    <a class="brand brand-centered" href="index.html"><span class="brand-icon" aria-hidden="true">US</span><span>Usinalink</span></a>
+    <a class="brand brand-centered" href="index.html"><span class="brand-icon" aria-hidden="true"><img class="brand-mark" src="assets/img/logo-mark-branco.svg" alt="" width="26" height="16"></span><span>Usinalink</span></a>
     <section class="card signup-panel">
       <div class="panel-heading centered-block"><h1>Criar nova conta</h1><p>Selecione o tipo de usu&aacute;rio e preencha os dados</p></div>
-      <div class="choice-grid" role="radiogroup" aria-label="Tipo de usuario">
-        <label class="choice-card active" data-choice-card="empresa"><input type="radio" name="accountType" value="empresa" checked><span class="choice-check">OK</span><span class="choice-icon">EMP</span><strong>Empresa</strong><small>Compras e solicita&ccedil;&otilde;es</small></label>
-        <label class="choice-card blue" data-choice-card="pessoa"><input type="radio" name="accountType" value="pessoa"><span class="choice-check">OK</span><span class="choice-icon">PF</span><strong>Pessoa F&iacute;sica</strong><small>Acompanhamento individual</small></label>
-        <label class="choice-card orange" data-choice-card="usina"><input type="radio" name="accountType" value="usina"><span class="choice-check">OK</span><span class="choice-icon">USI</span><strong>Usina</strong><small>Or&ccedil;amentos industriais</small></label>
+      <div class="choice-grid" role="radiogroup" aria-label="Tipo de conta">
+        <label class="choice-card active" data-choice-card="empresa"><input type="radio" name="accountType" value="empresa" checked><span class="choice-check">OK</span><span class="choice-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 21V5l8-2v18M12 9h8v12M7 8h2M7 12h2M7 16h2M15 13h2M15 17h2"/></svg></span><strong>Empresa</strong><small>Compras e solicita&ccedil;&otilde;es</small></label>
+        <label class="choice-card blue" data-choice-card="pessoa"><input type="radio" name="accountType" value="pessoa"><span class="choice-check">OK</span><span class="choice-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></span><strong>Pessoa F&iacute;sica</strong><small>Compra para uso próprio</small></label>
+        <label class="choice-card orange" data-choice-card="usina"><input type="radio" name="accountType" value="usina"><span class="choice-check">OK</span><span class="choice-icon"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 21V10l6 4v-4l6 4V6h4l2 15z"/></svg></span><strong>Usina</strong><small>Or&ccedil;amentos industriais</small></label>
       </div>
       <form class="form-grid signup-dynamic-form js-demo-form" data-redirect="dashboard-empresa.html" novalidate>
-        <label class="field"><span id="field-label-1">Nome da empresa</span><div class="input-wrap"><span class="input-symbol">EMP</span><input id="signup-field-1" type="text" placeholder="Metal Forte Ltda." required></div></label>
-        <label class="field"><span id="field-label-2">CNPJ</span><div class="input-wrap"><span class="input-symbol">#</span><input id="signup-field-2" type="text" placeholder="00.000.000/0001-00" required></div></label>
-        <label class="field"><span id="field-label-3">E-mail corporativo</span><div class="input-wrap"><span class="input-symbol">@</span><input id="signup-field-3" type="email" placeholder="compras@empresa.com" required></div></label>
-        <label class="field"><span id="field-label-4">Nome do respons&aacute;vel</span><div class="input-wrap"><span class="input-symbol">N</span><input id="signup-field-4" type="text" placeholder="Nome e sobrenome" required></div></label>
-        <label class="field"><span id="field-label-5">Cargo</span><div class="input-wrap"><span class="input-symbol">C</span><input id="signup-field-5" type="text" placeholder="Gerente de compras" required></div></label>
-        <label class="field"><span id="field-label-6">Senha</span><div class="input-wrap"><span class="input-symbol">*</span><input id="signup-field-6" type="password" placeholder="Crie uma senha" required></div></label>
-        <label class="field" hidden><span id="field-label-7">Confirmar senha</span><div class="input-wrap"><span class="input-symbol">*</span><input id="signup-field-7" type="password" placeholder="Digite a senha novamente"></div></label>
+        <label class="field"><span id="field-label-1">Nome da empresa</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">EMP</span><input id="signup-field-1" type="text" placeholder="Metal Forte Ltda." required></div></label>
+        <label class="field"><span id="field-label-2">CNPJ</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">#</span><input id="signup-field-2" type="text" placeholder="00.000.000/0001-00" required></div></label>
+        <label class="field"><span id="field-label-3">E-mail corporativo</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">@</span><input id="signup-field-3" type="email" autocomplete="email" placeholder="compras@empresa.com" required></div></label>
+        <label class="field"><span id="field-label-4">Nome do respons&aacute;vel</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">N</span><input id="signup-field-4" type="text" placeholder="Nome e sobrenome" required></div></label>
+        <label class="field"><span id="field-label-5">Cargo</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">C</span><input id="signup-field-5" type="text" placeholder="Gerente de compras" required></div></label>
+        <label class="field"><span id="field-label-6">Senha</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">*</span><input id="signup-field-6" type="password" autocomplete="new-password" placeholder="Crie uma senha" required></div></label>
+        <label class="field" hidden><span id="field-label-7">Confirmar senha</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">*</span><input id="signup-field-7" type="password" autocomplete="new-password" placeholder="Digite a senha novamente"></div></label>
+        <label class="field" hidden><span id="field-label-8">Estado</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">UF</span><input id="signup-field-8" type="text" placeholder="SP"></div></label>
+        <label class="field" hidden><span id="field-label-9">Senha</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">*</span><input id="signup-field-9" type="password" autocomplete="new-password" placeholder="Crie uma senha"></div></label>
+        <label class="field" hidden><span id="field-label-10">Confirmar senha</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">*</span><input id="signup-field-10" type="password" autocomplete="new-password" placeholder="Digite a senha novamente"></div></label>
         <button class="btn btn-primary full" id="signup-submit" type="submit">Cadastrar empresa</button>
       </form>
       <a class="text-link centered" id="signup-login-link" href="login-empresa.html">J&aacute; tenho conta</a>
     </section>
   </main>
   <script src="assets/js/api.js"></script>
+  <script src="assets/js/motion.js"></script>
   <script src="script.js"></script>
+  <script src="assets/js/a11y.js" defer></script>
 </body>
 </html>

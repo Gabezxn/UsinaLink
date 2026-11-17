@@ -15,12 +15,101 @@
     return data?.message || data?.error || 'Nao foi possivel concluir a requisicao.';
   }
 
+  function getAccessToken() {
+    try {
+      return sessionStorage.getItem('accessToken') || localStorage.getItem('accessToken');
+    } catch {
+      return null;
+    }
+  }
+
+  const LOGIN_BY_ROLE = { empresa: 'login-empresa.html', usina: 'login-usina.html', pessoa_fisica: 'login-pessoa-fisica.html', 'pessoa-fisica': 'login-pessoa-fisica.html' };
+  const SESSION_MESSAGE = 'Sua sessão expirou. Entre novamente para continuar.';
+
+  // Token expirado/inválido: limpa a sessão e leva ao login do perfil, com aviso (sem laço de redirecionamento).
+  let encerrando = false;
+  function sessionExpired() {
+    if (encerrando) return; // várias chamadas em paralelo recebem 401: só a primeira redireciona
+    encerrando = true;
+    let tipo = null;
+    try { tipo = (JSON.parse(sessionStorage.getItem('usinalinkSession') || localStorage.getItem('usinalinkSession') || 'null') || {}).tipo; } catch { /* sem sessão legível */ }
+    ['usinalinkSession', 'accessToken', 'tipoUsuario', 'nome'].forEach((k) => { try { sessionStorage.removeItem(k); localStorage.removeItem(k); } catch { /* sem armazenamento */ } });
+    try { sessionStorage.setItem('usinalinkNotice', SESSION_MESSAGE); } catch { /* sem armazenamento */ }
+    if (!/\/login[^/]*\.html$|\/index\.html$|\/$/.test(window.location.pathname)) window.location.href = LOGIN_BY_ROLE[tipo] || 'login.html';
+  }
+
+  // Mostra o aviso guardado (ex.: sessão expirada) na tela de login.
+  document.addEventListener('DOMContentLoaded', () => {
+    let msg = null;
+    try { msg = sessionStorage.getItem('usinalinkNotice'); sessionStorage.removeItem('usinalinkNotice'); } catch { /* sem armazenamento */ }
+    const alvo = msg && document.querySelector('form.js-login-form');
+    if (!alvo) return;
+    const p = document.createElement('p');
+    p.className = 'form-notice';
+    p.setAttribute('role', 'alert');
+    p.style.cssText = 'margin:0 0 16px;padding:12px 14px;border:2px solid #92400e;border-radius:10px;background:#fffbeb;color:#451a03;font-weight:600';
+    p.textContent = msg;
+    alvo.insertBefore(p, alvo.firstChild);
+  });
+
+  // ---- Servidor dormindo (Render gratuito): aviso após 4 s e novas tentativas com espera crescente ----
+  const WAKE_AFTER_MS = 4000;
+  const RETRY_DELAYS = [1500, 3000, 6000];
+  const WAKE_MESSAGE = 'Carregando, aguarde um instante…';
+  const NETWORK_MESSAGE = 'Não foi possível conectar ao servidor. Verifique sua internet e tente de novo.';
+  let wakeUsers = 0;
+
+  function wakeNotice() {
+    let el = document.getElementById('api-wake-notice');
+    if (!el && document.body) {
+      el = document.createElement('div');
+      el.id = 'api-wake-notice';
+      el.setAttribute('role', 'status');
+      el.setAttribute('aria-live', 'polite');
+      el.style.cssText = 'position:fixed;top:12px;left:50%;transform:translateX(-50%);z-index:100001;max-width:calc(100vw - 32px);padding:12px 18px;border-radius:12px;background:#123273;color:#fff;font:600 15px/1.4 system-ui,sans-serif;box-shadow:0 6px 20px rgba(0,0,0,.3);text-align:center';
+      el.textContent = WAKE_MESSAGE;
+      document.body.appendChild(el);
+    }
+    return el;
+  }
+  function wakeShow() { wakeUsers++; wakeNotice(); }
+  function wakeHide() { wakeUsers = Math.max(0, wakeUsers - 1); if (!wakeUsers) { const el = document.getElementById('api-wake-notice'); if (el) el.remove(); } }
+  const dormir = (ms) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+  // Repete em 502/503/504 (servidor acordando) e, só para leituras (GET), em falha de rede.
+  async function fetchResiliente(url, init) {
+    const metodo = String(init.method || 'GET').toUpperCase();
+    let mostrando = false;
+    const timer = window.setTimeout(() => { mostrando = true; wakeShow(); }, WAKE_AFTER_MS);
+    try {
+      for (let tentativa = 0; ; tentativa++) {
+        let resposta;
+        try {
+          resposta = await fetch(url, init);
+        } catch (erro) {
+          if (metodo === 'GET' && tentativa < RETRY_DELAYS.length) { if (!mostrando) { mostrando = true; wakeShow(); } await dormir(RETRY_DELAYS[tentativa]); continue; }
+          throw new TypeError(NETWORK_MESSAGE);
+        }
+        if ([502, 503, 504].includes(resposta.status) && tentativa < RETRY_DELAYS.length) {
+          if (!mostrando) { mostrando = true; wakeShow(); }
+          await dormir(RETRY_DELAYS[tentativa]);
+          continue;
+        }
+        return resposta;
+      }
+    } finally {
+      window.clearTimeout(timer);
+      if (mostrando) wakeHide();
+    }
+  }
+
   async function apiRequest(endpoint, options = {}) {
-    const response = await fetch(buildUrl(endpoint), {
+    const token = getAccessToken();
+    const response = await fetchResiliente(buildUrl(endpoint), {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        ...(localStorage.getItem('accessToken') ? { Authorization: `Bearer ${localStorage.getItem('accessToken')}` } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
         ...(options.headers || {}),
       },
     });
@@ -28,8 +117,16 @@
     const contentType = response.headers.get('content-type');
     const data = contentType?.includes('application/json') ? await response.json() : null;
 
+    if (response.status === 401 && !/\/?(auth\/login|auth\/2fa|cadastro)/.test(String(endpoint))) {
+      sessionExpired();
+      throw new Error(SESSION_MESSAGE);
+    }
+
     if (!response.ok) {
-      throw new Error(extractErrorMessage(data));
+      const bruta = extractErrorMessage(data);
+      const ingles = /^(forbidden( resource)?|not found|unauthorized|bad request|internal server error|too many requests)$/i.test(bruta) || /^cannot (get|post|put|patch|delete) /i.test(bruta);
+      const porStatus = { 400: 'Dados inválidos. Confira e tente de novo.', 403: 'Você não tem permissão para fazer isso.', 404: 'Não encontramos o que você procurou.', 429: 'Muitas tentativas. Aguarde um instante e tente de novo.', 500: 'Erro no servidor. Tente de novo em instantes.' };
+      throw new Error(ingles ? (porStatus[response.status] || bruta) : bruta);
     }
 
     return data;

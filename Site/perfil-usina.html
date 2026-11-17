@@ -4,18 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Perfil Usina | Usinalink</title>
+  <meta name="description" content="Perfil Usina na Usinalink, marketplace B2B de peças industriais que conecta empresas, usinas e compradores.">
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/a11y.css">
+  <script src="assets/js/safe-html.js"></script>
 </head>
 <body class="orange-mode" data-user-role="usina" data-profile-kind="usina">
   <div class="app-layout">
     <aside class="sidebar">
-      <a class="brand" href="index.html"><span class="brand-icon orange-icon">US</span><span>Usinalink</span></a>
+      <a class="brand" href="index.html"><span class="brand-icon orange-icon"><img class="brand-mark" src="assets/img/logo-mark-branco.svg" alt="" width="26" height="16"></span><span>Usinalink</span></a>
       <nav class="side-nav orange-nav" data-role-nav="usina">
-        <a href="dashboard-usina.html" data-icon="D">Dashboard usina</a>
+        <a href="dashboard-usina.html" data-icon="D">Início</a>
         <a class="active" href="perfil-usina.html" data-icon="I">Perfil</a>
         <a href="funcionarios-usina.html" data-icon="F">Funcion&aacute;rios</a>
         <a href="pedidos-disponiveis.html" data-icon="P">Pedidos dispon&iacute;veis</a>
         <a href="propostas-usina.html" data-icon="E">Propostas enviadas</a>
+
+        <a href="solicitacoes-pecas-usina.html" data-icon="S">Solicita&ccedil;&otilde;es de pe&ccedil;as</a>
+        <a href="pecas-comerciais-usina.html" data-icon="C">Cat&aacute;logo de pe&ccedil;as</a>
         <a href="historico-pedidos.html" data-icon="H">Hist&oacute;rico relacionado</a>
         <a href="avaliacoes-usina.html" data-icon="A">Avalia&ccedil;&otilde;es recebidas</a>
         <a href="index.html" data-icon="X">Sair</a>
@@ -29,9 +36,6 @@
           <div class="avatar orange-avatar" aria-hidden="true">AT</div>
           <div><h1>Usina Atlas Metais</h1><p>Atualize dados industriais e operacionais.</p></div>
         </div>
-        <nav class="tabs profile-tabs orange-active" aria-label="Tipo de perfil">
-          <button class="tab-pill orange-tab active" type="button">Usina</button>
-        </nav>
       </section>
 
       <section class="profile-grid">
@@ -47,10 +51,24 @@
 
         <article class="card form-panel profile-form-card">
           <div class="panel-heading with-divider">
-            <h2 id="profile-section-title">Informa&ccedil;&otilde;es gerais</h2>
-            <p id="profile-section-subtitle">Dados industriais exibidos para empresas compradoras.</p>
+            <div style="display: flex; justify-content: space-between; align-items: start; gap: 16px;">
+              <div>
+                <h2 id="profile-section-title">Informa&ccedil;&otilde;es gerais</h2>
+                <p id="profile-section-subtitle">Dados industriais exibidos para empresas compradoras.</p>
+              </div>
+              <button class="btn btn-small js-toggle-profile-edit" type="button">Editar perfil</button>
+            </div>
           </div>
-          <form class="form-grid js-demo-form" id="profile-dynamic-form"></form>
+          <div id="profile-view-mode" class="profile-view-content">
+            <div class="form-grid">
+              <div class="field"><span>Raz&atilde;o social</span><div class="view-value">Carregando...</div></div>
+              <div class="field"><span>Nome fantasia</span><div class="view-value">Carregando...</div></div>
+              <div class="field"><span>Especialidade principal</span><div class="view-value">Carregando...</div></div>
+              <div class="field"><span>Capacidade produtiva</span><div class="view-value">Carregando...</div></div>
+              <div class="field span-2"><span>Descri&ccedil;&atilde;o industrial</span><div class="view-value">Carregando...</div></div>
+            </div>
+          </div>
+          <form class="form-grid is-hidden" id="profile-dynamic-form"></form>
         </article>
 
         <aside class="card rating-summary-card">
@@ -76,7 +94,11 @@
       </section>
     </main>
   </div>
+  <script src="assets/js/api.js"></script>
   <script src="assets/js/auth-guard.js"></script>
+  <script src="assets/js/role-nav.js"></script>
   <script src="script.js"></script>
+  <script src="assets/js/perfil-usina.js"></script>
+  <script src="assets/js/a11y.js" defer></script>
 </body>
 </html>

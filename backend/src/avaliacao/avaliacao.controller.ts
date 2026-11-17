@@ -15,19 +15,28 @@ export class AvaliacaoController {
     return this.service.create(dto, r.user);
   }
 
+  @UseGuards(JwtAuthGuard)
+  @Get('minhas')
+  minhas(@Req() r: any) {
+    return this.service.minhas(r.user);
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get('usina/:usinaId')
-  findByUsina(@Param('usinaId') usinaId: string) {
-    return this.service.findByUsina(+usinaId);
+  findByUsina(@Param('usinaId') usinaId: string, @Req() r: any) {
+    return this.service.findByUsina(+usinaId, r.user);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('empresa/:empresaId')
-  findByEmpresa(@Param('empresaId') empresaId: string) {
-    return this.service.findByEmpresa(+empresaId);
+  findByEmpresa(@Param('empresaId') empresaId: string, @Req() r: any) {
+    return this.service.findByEmpresa(+empresaId, r.user);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('pedido/:pedidoId')
-  findByPedido(@Param('pedidoId') pedidoId: string) {
-    return this.service.findByPedido(+pedidoId);
+  findByPedido(@Param('pedidoId') pedidoId: string, @Req() r: any) {
+    return this.service.findByPedido(+pedidoId, r.user);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -42,6 +51,7 @@ export class AvaliacaoController {
     return this.service.answer(+id, dto, r.user);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('usina/:usinaId/resumo')
   summary(@Param('usinaId') usinaId: string) {
     return this.service.summary(+usinaId);

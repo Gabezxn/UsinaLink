@@ -4,18 +4,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Funcion&aacute;rios da Usina | Usinalink</title>
+  <meta name="description" content="Funcion&aacute;rios da Usina na Usinalink, marketplace B2B de peças industriais que conecta empresas, usinas e compradores.">
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/a11y.css">
+  <script src="assets/js/safe-html.js"></script>
 </head>
 <body class="orange-mode" data-user-role="usina">
   <div class="app-layout">
     <aside class="sidebar">
-      <a class="brand" href="index.html"><span class="brand-icon orange-icon">US</span><span>Usinalink</span></a>
+      <a class="brand" href="index.html"><span class="brand-icon orange-icon"><img class="brand-mark" src="assets/img/logo-mark-branco.svg" alt="" width="26" height="16"></span><span>Usinalink</span></a>
       <nav class="side-nav orange-nav" data-role-nav="usina">
-        <a href="dashboard-usina.html" data-icon="D">Dashboard usina</a>
+        <a href="dashboard-usina.html" data-icon="D">Início</a>
         <a href="perfil-usina.html" data-icon="I">Perfil</a>
         <a class="active" href="funcionarios-usina.html" data-icon="F">Funcion&aacute;rios</a>
         <a href="pedidos-disponiveis.html" data-icon="P">Pedidos dispon&iacute;veis</a>
         <a href="propostas-usina.html" data-icon="E">Propostas enviadas</a>
+
+        <a href="solicitacoes-pecas-usina.html" data-icon="S">Solicita&ccedil;&otilde;es de pe&ccedil;as</a>
+        <a href="pecas-comerciais-usina.html" data-icon="C">Cat&aacute;logo de pe&ccedil;as</a>
         <a href="historico-pedidos.html" data-icon="H">Hist&oacute;rico relacionado</a>
         <a href="avaliacoes-usina.html" data-icon="A">Avalia&ccedil;&otilde;es recebidas</a>
         <a href="index.html" data-icon="X">Sair</a>
@@ -35,11 +42,8 @@
         <div class="table-wrap">
           <table>
             <thead><tr><th>Nome</th><th>E-mail</th><th>Cargo</th><th>Setor</th><th>Status</th><th>A&ccedil;&otilde;es</th></tr></thead>
-            <tbody data-employee-table="usina">
-              <tr data-search-row><td>Carlos Mendes</td><td>carlos@atlasmetais.com</td><td>Supervisor de produ&ccedil;&atilde;o</td><td>Produ&ccedil;&atilde;o</td><td><span class="badge success">Ativo</span></td><td><button class="table-action js-alert" type="button">Editar</button></td></tr>
-              <tr data-search-row><td>Fernanda Rocha</td><td>fernanda@atlasmetais.com</td><td>Or&ccedil;amentista</td><td>Comercial</td><td><span class="badge success">Ativo</span></td><td><button class="table-action js-alert" type="button">Editar</button></td></tr>
-              <tr data-search-row><td>Jo&atilde;o Pereira</td><td>joao@atlasmetais.com</td><td>T&eacute;cnico CNC</td><td>Opera&ccedil;&atilde;o</td><td><span class="badge success">Ativo</span></td><td><button class="table-action js-alert" type="button">Editar</button></td></tr>
-              <tr data-search-row><td>Marina Lopes</td><td>marina@atlasmetais.com</td><td>Financeiro</td><td>Financeiro</td><td><span class="badge warning">Pendente</span></td><td><button class="table-action js-alert" type="button">Reenviar convite</button></td></tr>
+            <tbody data-employee-table="usina" aria-live="polite">
+              <tr><td colspan="6" style="text-align:center; padding: 24px;">Carregando...</td></tr>
             </tbody>
           </table>
         </div>
@@ -50,16 +54,18 @@
     <section class="card modal-card" role="dialog" aria-modal="true" aria-labelledby="employee-modal-title">
       <div class="modal-header"><div><span class="eyebrow orange-text">Equipe industrial</span><h2 id="employee-modal-title">Adicionar funcion&aacute;rio</h2></div><button class="modal-close js-close-modal" type="button">x</button></div>
       <form class="form-grid" id="employee-form" data-context="usina">
-        <label class="field"><span>Nome completo</span><div class="input-wrap"><span class="input-symbol">N</span><input name="name" type="text" required></div></label>
-        <label class="field"><span>E-mail</span><div class="input-wrap"><span class="input-symbol">@</span><input name="email" type="email" required></div></label>
-        <label class="field"><span>Cargo</span><div class="input-wrap"><span class="input-symbol">C</span><input name="role" type="text" required></div></label>
-        <label class="field"><span>Setor</span><div class="input-wrap select-field"><span class="input-symbol">S</span><select name="type"><option>Produ&ccedil;&atilde;o</option><option>Comercial</option><option>Opera&ccedil;&atilde;o</option><option>Financeiro</option></select></div></label>
+        <label class="field"><span>Nome completo</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">N</span><input name="name" type="text" required></div></label>
+        <label class="field"><span>E-mail</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">@</span><input name="email" type="email" required></div></label>
+        <label class="field"><span>Cargo</span><div class="input-wrap"><span class="input-symbol" aria-hidden="true">C</span><input name="role" type="text" required></div></label>
+        <label class="field"><span>Setor</span><div class="input-wrap select-field"><span class="input-symbol" aria-hidden="true">S</span><select name="type"><option>Dire&ccedil;&atilde;o t&eacute;cnica</option><option>Setor de compras</option><option>Faturamento</option><option>Projetista</option><option>Serralheria</option><option>Torneiros</option><option>Caldeiraria</option><option>Operador de m&aacute;quinas</option><option>Outro</option></select></div></label>
         <div class="form-actions span-2"><button class="btn btn-ghost js-close-modal" type="button">Cancelar</button><button class="btn btn-orange" type="submit">Salvar funcion&aacute;rio</button></div>
       </form>
     </section>
   </div>
   <script src="assets/js/api.js"></script>
   <script src="assets/js/auth-guard.js"></script>
+  <script src="assets/js/role-nav.js"></script>
   <script src="script.js"></script>
+  <script src="assets/js/a11y.js" defer></script>
 </body>
 </html>

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Avalia&ccedil;&otilde;es | Usinalink</title>
+  <meta name="description" content="Avalia&ccedil;&otilde;es na Usinalink, marketplace B2B de peças industriais que conecta empresas, usinas e compradores.">
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/a11y.css">
+  <script src="assets/js/safe-html.js"></script>
+</head>
+<body data-user-role="empresa">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <a class="brand" href="index.html"><span class="brand-icon"><img class="brand-mark" src="assets/img/logo-mark-branco.svg" alt="" width="26" height="16"></span><span>Usinalink</span></a>
+      <nav class="side-nav" data-role-nav="empresa">
+        <a href="dashboard-empresa.html" data-icon="D">Início</a>
+        <a href="pecas-comerciais-empresa.html" data-icon="P">Pe&ccedil;as comerciais</a>
+        <a href="perfil-empresa.html" data-icon="I">Perfil</a>
+        <a href="funcionarios-empresa.html" data-icon="F">Funcion&aacute;rios</a>
+        <a href="pedidos-sob-medida.html" data-icon="S">Pedido sob medida</a>
+        <a href="propostas.html" data-icon="R">Propostas recebidas</a>
+        <a href="historico-pedidos.html" data-icon="H">Hist&oacute;rico de pedidos</a>
+        <a class="active" href="avaliacoes-empresa.html" data-icon="A">Avalia&ccedil;&otilde;es</a>
+        <a href="usinas-bloqueadas.html" data-icon="B">Usinas bloqueadas</a>
+        <a href="index.html" data-icon="X">Sair</a>
+      </nav>
+    </aside>
+    <main class="app-main" data-company-reviews>
+      <header class="page-header clean-header">
+        <div><span class="eyebrow">Relacionamento</span><h1>Avalia&ccedil;&otilde;es realizadas</h1><p>Avalie usinas somente ap&oacute;s pedidos conclu&iacute;dos e acompanhe respostas recebidas.</p></div>
+      </header>
+      <section class="review-layout">
+        <form class="card review-form" data-review-form hidden>
+          <h2>Nova avalia&ccedil;&atilde;o</h2>
+          <label class="field">Pedido conclu&iacute;do
+            <span class="input-wrap select-field"><select name="pedidoId" data-review-order required></select></span>
+          </label>
+          <div class="rating-grid">
+            <label class="field">Nota geral<span class="input-wrap select-field"><select name="notaGeral" required><option value="">Nota</option><option value="5">5 - Excelente</option><option value="4">4 - Bom</option><option value="3">3 - Regular</option><option value="2">2 - Ruim</option><option value="1">1 - Critico</option></select></span></label>
+            <label class="field">Qualidade<span class="input-wrap select-field"><select name="qualidade" required><option value="">Nota</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></span></label>
+            <label class="field">Prazo<span class="input-wrap select-field"><select name="prazo" required><option value="">Nota</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></span></label>
+            <label class="field">Comunica&ccedil;&atilde;o<span class="input-wrap select-field"><select name="comunicacao" required><option value="">Nota</option><option value="5">5</option><option value="4">4</option><option value="3">3</option><option value="2">2</option><option value="1">1</option></select></span></label>
+          </div>
+          <label class="field">Coment&aacute;rio opcional
+            <textarea name="comentario" rows="4" placeholder="Conte como foi a experi&ecirc;ncia com qualidade, prazo e comunica&ccedil;&atilde;o."></textarea>
+          </label>
+          <button class="btn" type="submit">Enviar avalia&ccedil;&atilde;o</button>
+        </form>
+        <section class="review-list" data-review-list aria-live="polite"></section>
+      </section>
+    </main>
+  </div>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/auth-guard.js"></script>
+  <script src="assets/js/role-nav.js"></script>
+  <script src="assets/js/ui-utils.js"></script>
+  <script src="assets/js/reviews-blocks.js"></script>
+  <script src="script.js"></script>
+  <script src="assets/js/a11y.js" defer></script>
+</body>
+</html>

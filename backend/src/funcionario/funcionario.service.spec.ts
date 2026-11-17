@@ -13,7 +13,7 @@ describe('FuncionarioService', () => {
 
   beforeEach(() => {
     funcionarios = repoMock();
-    ctx = { obterEmpresaId: jest.fn().mockResolvedValue(10), obterUsinaId: jest.fn().mockResolvedValue(20) };
+    ctx = { ehTitular: jest.fn().mockResolvedValue(true), obterEmpresaId: jest.fn().mockResolvedValue(10), obterUsinaId: jest.fn().mockResolvedValue(20) };
     service = new FuncionarioService(funcionarios, ctx);
   });
 

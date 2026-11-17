@@ -4,22 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Perfil Empresa | Usinalink</title>
+  <meta name="description" content="Perfil Empresa na Usinalink, marketplace B2B de peças industriais que conecta empresas, usinas e compradores.">
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/a11y.css">
+  <script src="assets/js/safe-html.js"></script>
 </head>
 <body data-user-role="empresa" data-profile-kind="empresa">
   <div class="app-layout">
     <aside class="sidebar">
-      <a class="brand" href="index.html"><span class="brand-icon">US</span><span>Usinalink</span></a>
+      <a class="brand" href="index.html"><span class="brand-icon"><img class="brand-mark" src="assets/img/logo-mark-branco.svg" alt="" width="26" height="16"></span><span>Usinalink</span></a>
       <nav class="side-nav" data-role-nav="empresa">
-        <a href="dashboard-empresa.html" data-icon="D">Dashboard empresa</a>
-        <a href="dashboard-pessoa-juridica.html" data-icon="P">Pe&ccedil;as comerciais</a>
+        <a href="dashboard-empresa.html" data-icon="D">Início</a>
+        <a href="pecas-comerciais-empresa.html" data-icon="P">Pe&ccedil;as comerciais</a>
         <a class="active" href="perfil-empresa.html" data-icon="I">Perfil</a>
-        <a href="funcionarios.html" data-icon="F">Funcion&aacute;rios</a>
-        <a href="solicitacoes.html" data-icon="S">Solicita&ccedil;&otilde;es</a>
+        <a href="funcionarios-empresa.html" data-icon="F">Funcion&aacute;rios</a>
+        <a href="pedidos-sob-medida.html" data-icon="S">Pedido sob medida</a>
         <a href="propostas.html" data-icon="R">Propostas recebidas</a>
         <a href="historico-pedidos.html" data-icon="H">Hist&oacute;rico de pedidos</a>
-        <a href="avaliacoes.html" data-icon="A">Avalia&ccedil;&otilde;es</a>
-        <a href="solicitacoes-bloqueio-usina.html" data-icon="B">Usinas bloqueadas</a>
+        <a href="avaliacoes-empresa.html" data-icon="A">Avalia&ccedil;&otilde;es</a>
+        <a href="usinas-bloqueadas.html" data-icon="B">Usinas bloqueadas</a>
         <a href="index.html" data-icon="X">Sair</a>
       </nav>
     </aside>
@@ -31,9 +35,6 @@
           <div class="avatar" aria-hidden="true">MF</div>
           <div><h1>Metal Forte Componentes Industriais</h1><p>Atualize dados comerciais, fiscais e operacionais.</p></div>
         </div>
-        <nav class="tabs profile-tabs" aria-label="Tipo de perfil">
-          <button class="tab-pill active" type="button">Empresa</button>
-        </nav>
       </section>
 
       <section class="profile-grid">
@@ -58,19 +59,23 @@
           </div>
           <div id="profile-view-mode" class="profile-view-content">
             <div class="form-grid">
-              <div class="field"><span>Raz&atilde;o Social</span><div class="view-value">Metal Forte Componentes Industriais Ltda.</div></div>
-              <div class="field"><span>Nome Fantasia</span><div class="view-value">Metal Forte</div></div>
-              <div class="field"><span>Setor de Atua&ccedil;&atilde;o</span><div class="view-value">Ind&uacute;stria metalmec&acirc;nica</div></div>
-              <div class="field"><span>Porte da Empresa</span><div class="view-value">M&eacute;dio porte</div></div>
-              <div class="field span-2"><span>Descri&ccedil;&atilde;o / Apresenta&ccedil;&atilde;o</span><div class="view-value">Empresa especializada em aquisi&ccedil;&atilde;o e manuten&ccedil;&atilde;o de componentes industriais para linhas de produ&ccedil;&atilde;o.</div></div>
+              <div class="field"><span>Raz&atilde;o Social</span><div class="view-value">Carregando...</div></div>
+              <div class="field"><span>Nome Fantasia</span><div class="view-value">Carregando...</div></div>
+              <div class="field"><span>Setor de Atua&ccedil;&atilde;o</span><div class="view-value">Carregando...</div></div>
+              <div class="field"><span>Porte da Empresa</span><div class="view-value">Carregando...</div></div>
+              <div class="field span-2"><span>Descri&ccedil;&atilde;o / Apresenta&ccedil;&atilde;o</span><div class="view-value">Carregando...</div></div>
             </div>
           </div>
-          <form class="form-grid js-demo-form is-hidden" id="profile-dynamic-form"></form>
+          <form class="form-grid is-hidden" id="profile-dynamic-form"></form>
         </article>
       </section>
     </main>
   </div>
+  <script src="assets/js/api.js"></script>
   <script src="assets/js/auth-guard.js"></script>
+  <script src="assets/js/role-nav.js"></script>
   <script src="script.js"></script>
+  <script src="assets/js/perfil-empresa.js"></script>
+  <script src="assets/js/a11y.js" defer></script>
 </body>
 </html>

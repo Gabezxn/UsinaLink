@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pe&ccedil;as comerciais | Usinalink</title>
+  <meta name="description" content="In&iacute;cio pessoa jur&iacute;dica na Usinalink, marketplace B2B de peças industriais que conecta empresas, usinas e compradores.">
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/a11y.css">
+  <script src="assets/js/safe-html.js"></script>
+</head>
+<body data-user-role="empresa">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <a class="brand" href="index.html"><span class="brand-icon"><img class="brand-mark" src="assets/img/logo-mark-branco.svg" alt="" width="26" height="16"></span><span>Usinalink</span></a>
+      <nav class="side-nav" data-role-nav="empresa">
+        <a href="dashboard-empresa.html" data-icon="D">Início</a>
+        <a class="active" href="pecas-comerciais-empresa.html" data-icon="P">Pe&ccedil;as comerciais</a>
+        <a href="perfil-empresa.html" data-icon="I">Perfil</a>
+        <a href="funcionarios-empresa.html" data-icon="F">Funcion&aacute;rios</a>
+        <a href="pedidos-sob-medida.html" data-icon="S">Pedido sob medida</a>
+        <a href="propostas.html" data-icon="R">Propostas recebidas</a>
+        <a href="historico-pedidos.html" data-icon="H">Hist&oacute;rico de pedidos</a>
+        <a href="avaliacoes-empresa.html" data-icon="A">Avalia&ccedil;&otilde;es</a>
+        <a href="usinas-bloqueadas.html" data-icon="B">Usinas bloqueadas</a>
+        <a href="index.html" data-icon="X">Sair</a>
+      </nav>
+    </aside>
+
+    <main class="app-main">
+      <header class="app-header">
+        <div>
+          <span class="eyebrow">Empresa</span>
+          <h1>Pe&ccedil;as comerciais</h1>
+          <p>Pe&ccedil;as comerciais prontas para compra r&aacute;pida.</p>
+        </div>
+        <div class="user-strip">
+          <div><strong>Minha empresa</strong><span>Conta da empresa</span></div>
+          <a class="btn btn-ghost btn-small" href="index.html">Sair</a>
+        </div>
+      </header>
+
+      <section class="summary-grid professional">
+        <article class="card summary-card"><span>Pe&ccedil;as dispon&iacute;veis</span><strong data-stat-pecas-disponiveis>-</strong><small>Cat&aacute;logo comercial</small></article>
+        <article class="card summary-card"><span>Entrega r&aacute;pida</span><strong data-stat-entrega-rapida>-</strong><small>At&eacute; 5 dias</small></article>
+        <article class="card summary-card"><span>Fornecedores</span><strong data-stat-fornecedores>-</strong><small>Usinas no cat&aacute;logo</small></article>
+        <article class="card summary-card"><span>Compras feitas</span><strong data-stat-cotacoes-salvas>-</strong><small>Pe&ccedil;as que voc&ecirc; comprou</small></article>
+      </section>
+
+      <section class="card table-card" data-search-scope>
+        <div class="table-toolbar">
+          <div>
+            <h2>Pe&ccedil;as comerciais prontas</h2>
+            <p>Itens padronizados para solicita&ccedil;&atilde;o imediata pela pessoa jur&iacute;dica.</p>
+          </div>
+          <label class="search-box wide-search"><span>Buscar</span><input class="js-table-search" type="search" placeholder="Pe&ccedil;a, material, aplica&ccedil;&atilde;o"></label>
+        </div>
+        <div class="order-card-grid">
+          <article class="card order-opportunity"><h2>Carregando...</h2></article>
+        </div>
+      </section>
+
+      <section class="card table-card">
+        <div class="table-toolbar">
+          <div>
+            <h2>Minhas compras de pe&ccedil;as</h2>
+            <p>Pe&ccedil;as comerciais que voc&ecirc; j&aacute; solicitou.</p>
+          </div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Pe&ccedil;a</th><th>Fornecedor</th><th>Valor unit&aacute;rio</th><th>Quantidade</th><th>Status</th><th>Data</th><th>A&ccedil;&otilde;es</th></tr></thead>
+            <tbody data-solicitacoes-comerciais-body aria-live="polite"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/auth-guard.js"></script>
+  <script src="assets/js/role-nav.js"></script>
+  <script src="assets/js/pecas-comerciais-empresa.js"></script>
+  <script src="script.js"></script>
+  <script src="assets/js/a11y.js" defer></script>
+</body>
+</html>

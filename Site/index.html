@@ -3,109 +3,217 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Usinalink | Plataforma B2B Industrial</title>
+  <title>Usinalink | Marketplace B2B de peças industriais</title>
+  <meta name="description" content="Usinalink conecta empresas, usinas e compradores de peças industriais: solicite peças, receba propostas comparáveis e acompanhe pedidos em um só painel.">
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+  <link rel="canonical" href="https://usinalink.com.br/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Usinalink">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:url" content="https://usinalink.com.br/">
+  <meta property="og:title" content="Usinalink | Marketplace B2B de peças industriais">
+  <meta property="og:description" content="Solicite peças, receba propostas comparáveis e acompanhe seus pedidos em um só painel.">
+  <meta property="og:image" content="https://usinalink.com.br/assets/img/preview.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Usinalink, marketplace B2B de peças industriais">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Usinalink | Marketplace B2B de peças industriais">
+  <meta name="twitter:description" content="Solicite peças, receba propostas comparáveis e acompanhe seus pedidos em um só painel.">
+  <meta name="twitter:image" content="https://usinalink.com.br/assets/img/preview.png">
+  <meta name="theme-color" content="#1e3a8a">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/motion.css">
+  <link rel="stylesheet" href="assets/css/a11y.css">
+  <script src="assets/js/safe-html.js"></script>
 </head>
 <body>
-  <header class="topbar">
-    <a class="brand" href="index.html" aria-label="Usinalink inicio">
-      <span class="brand-icon" aria-hidden="true">US</span>
+  <header class="topbar lp-topbar">
+    <a class="brand" href="index.html" aria-label="Usinalink, página inicial">
+      <span class="brand-icon" aria-hidden="true"><img class="brand-mark" src="assets/img/logo-mark-branco.svg" alt="" width="26" height="16"></span>
       <span>Usinalink</span>
     </a>
-    <nav class="nav-actions" aria-label="Navegacao principal">
-      <a href="login.html">Entrar</a>
-      <a href="cadastro.html">Criar conta</a>
+    <nav class="nav-actions" aria-label="Navegação principal">
+      <a class="lp-nav-link" href="#como-funciona">Como funciona</a>
+      <a class="lp-nav-link" href="#beneficios">Benefícios</a>
+      <a class="lp-nav-link" href="#perfis">Para quem</a>
+      <a class="lp-nav-login" href="login.html">Entrar</a>
+      <a class="btn btn-small" href="cadastro.html">Criar conta</a>
     </nav>
   </header>
 
   <main>
-    <section class="hero">
+    <section class="hero lp-hero">
       <div class="hero-content">
-        <span class="eyebrow">Marketplace B2B para compras industriais</span>
-        <h1>Conectando empresas e usinas em um s&oacute; lugar</h1>
-        <p>Empresas solicitam pe&ccedil;as industriais com dados t&eacute;cnicos claros, enquanto usinas e fabricantes qualificados enviam propostas para acelerar compras, produ&ccedil;&atilde;o e negocia&ccedil;&atilde;o.</p>
+        <span class="eyebrow">Marketplace B2B de peças industriais</span>
+        <h1>Cote sua peça sob medida com várias usinas de uma vez</h1>
+        <p>Você envia o desenho e a especificação uma vez só. As usinas respondem com preço, prazo e frete no mesmo formato, e você fecha com quem atender melhor.</p>
         <div class="hero-actions">
-          <a class="btn" href="login.html">Entrar</a>
-          <a class="btn btn-ghost" href="cadastro.html">Criar conta</a>
-
+          <a class="btn lp-btn-lg" href="cadastro.html">Criar conta</a>
+          <a class="btn btn-ghost lp-btn-lg" href="#como-funciona">Ver como funciona</a>
         </div>
+        <ul class="lp-checks" aria-label="Destaques">
+          <li>Desenho técnico e especificação anexados ao pedido</li>
+          <li>Preço, prazo e frete de cada usina lado a lado</li>
+          <li>Pagamento e comprovante registrados no pedido</li>
+        </ul>
       </div>
-      <aside class="hero-panel" aria-label="Resumo da plataforma">
-        <div class="metric-card">
-          <span class="metric-value">48h</span>
-          <span class="metric-label">tempo m&eacute;dio para receber propostas</span>
+      <aside class="hero-panel lp-mock" aria-label="Exemplo ilustrativo de comparação de propostas">
+        <span class="lp-tag">Exemplo ilustrativo</span>
+        <h2 class="lp-mock-title">Eixo cementado SAE 1045</h2>
+        <p class="lp-mock-sub">120 unidades &middot; entrega em Sorocaba/SP</p>
+        <div class="lp-prop lp-prop-best">
+          <div><strong>Usina A</strong><small>R$ 184,00/un. &middot; 12 dias &middot; frete incluso</small></div>
+          <span class="lp-chip">Melhor equilíbrio</span>
         </div>
-        <div class="mini-list">
-          <div><span class="dot"></span>Pe&ccedil;as sob demanda</div>
-          <div><span class="dot purple"></span>Propostas compar&aacute;veis</div>
-          <div><span class="dot orange"></span>Usinas verificadas</div>
+        <div class="lp-prop">
+          <div><strong>Usina B</strong><small>R$ 197,50/un. &middot; 9 dias &middot; frete à parte</small></div>
+          <span class="lp-chip lp-chip-neutral">Mais rápida</span>
         </div>
+        <div class="lp-prop">
+          <div><strong>Usina C</strong><small>R$ 171,00/un. &middot; 18 dias &middot; frete incluso</small></div>
+          <span class="lp-chip lp-chip-neutral">Menor valor</span>
+        </div>
+        <p class="lp-mock-note">Usinas e condições fictícias, só para ilustrar a tela de comparação.</p>
       </aside>
     </section>
 
-    <section class="section">
+
+    <section class="section" id="como-funciona">
       <div class="section-heading">
-        <span class="eyebrow">Fluxo simples</span>
-        <h2>Da solicita&ccedil;&atilde;o &agrave; escolha da melhor proposta</h2>
+        <h2>Como funciona, em quatro passos</h2>
+      </div>
+      <ol class="grid four lp-steps">
+        <li class="card step-card">
+          <span class="step-number" aria-hidden="true">1</span>
+          <h3>Você descreve a peça</h3>
+          <p>Material, quantidade, prazo desejado e o desenho técnico em anexo.</p>
+        </li>
+        <li class="card step-card">
+          <span class="step-number" aria-hidden="true">2</span>
+          <h3>As usinas avaliam</h3>
+          <p>Cada usina confere se consegue produzir e em quanto tempo antes de cotar.</p>
+        </li>
+        <li class="card step-card">
+          <span class="step-number" aria-hidden="true">3</span>
+          <h3>As propostas chegam</h3>
+          <p>Valor, prazo e frete de cada uma, todas no mesmo painel.</p>
+        </li>
+        <li class="card step-card">
+          <span class="step-number" aria-hidden="true">4</span>
+          <h3>Você fecha o pedido</h3>
+          <p>Aceita a proposta que fizer mais sentido e acompanha até a entrega.</p>
+        </li>
+      </ol>
+    </section>
+
+    <section class="section" id="beneficios">
+      <div class="section-heading">
+        <h2>O que muda no dia a dia de compras</h2>
       </div>
       <div class="grid four">
-        <article class="card step-card">
-          <span class="step-number">1</span>
-          <h3>Empresa solicita a pe&ccedil;a</h3>
-          <p>Cadastre especifica&ccedil;&otilde;es, quantidade, material, prazo e anexos t&eacute;cnicos.</p>
+        <article class="card benefit-card">
+          <span class="icon-badge" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></span>
+          <h3>Uma cotação, várias usinas</h3>
+          <p>Chega de mandar o mesmo e-mail com desenho para cinco fornecedores e esperar cada um responder de um jeito.</p>
         </article>
-        <article class="card step-card">
-          <span class="step-number">2</span>
-          <h3>Usinas analisam o pedido</h3>
-          <p>Fabricantes avaliam viabilidade, produ&ccedil;&atilde;o e log&iacute;stica antes de cotar.</p>
+        <article class="card benefit-card">
+          <span class="icon-badge" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M12 3l8 3v6c0 4.5-3.2 8-8 9-4.8-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></span>
+          <h3>Você sabe com quem está fechando</h3>
+          <p>Cada usina tem cadastro com CNPJ, avaliações de outros compradores e histórico de pedidos.</p>
         </article>
-        <article class="card step-card">
-          <span class="step-number">3</span>
-          <h3>Propostas s&atilde;o enviadas</h3>
-          <p>Receba valores, prazos, frete e condi&ccedil;&otilde;es comerciais em um s&oacute; painel.</p>
+        <article class="card benefit-card">
+          <span class="icon-badge" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></span>
+          <h3>Propostas no mesmo formato</h3>
+          <p>Preço unitário, prazo de entrega e frete lado a lado, sem planilha paralela.</p>
         </article>
-        <article class="card step-card">
-          <span class="step-number">4</span>
-          <h3>Empresa escolhe a melhor op&ccedil;&atilde;o</h3>
-          <p>Compare alternativas e avance com a usina mais adequada ao pedido.</p>
+        <article class="card benefit-card">
+          <span class="icon-badge" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span>
+          <h3>Pedido acompanhado até a entrega</h3>
+          <p>Solicitação, proposta aceita, pagamento e comprovante ficam registrados no mesmo lugar.</p>
         </article>
       </div>
     </section>
 
-    <section class="section">
+    <section class="section" id="perfis">
       <div class="section-heading">
-        <span class="eyebrow">Benef&iacute;cios</span>
-        <h2>Mais clareza para comprar e vender pe&ccedil;as industriais</h2>
+        <h2>Quem usa a Usinalink</h2>
       </div>
-      <div class="grid four">
-        <article class="card benefit-card">
-          <span class="icon-badge">R</span>
-          <h3>Or&ccedil;amentos r&aacute;pidos</h3>
-          <p>Reduza trocas manuais e receba propostas estruturadas.</p>
+      <div class="grid three">
+        <article class="card lp-profile">
+          <span class="icon-badge" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M4 21V8l8-5 8 5v13"/><path d="M9 21v-6h6v6M8 11h2M14 11h2"/></svg></span>
+          <h3>Empresa</h3>
+          <p>Solicite peças, receba e compare propostas, pague e acompanhe os pedidos da equipe.</p>
+          <a class="lp-link" href="cadastro-empresa.html">Criar conta de empresa <span aria-hidden="true">&rarr;</span></a>
         </article>
-        <article class="card benefit-card">
-          <span class="icon-badge">Q</span>
-          <h3>Fornecedores qualificados</h3>
-          <p>Centralize contatos industriais com dados e hist&oacute;rico.</p>
+        <article class="card lp-profile">
+          <span class="icon-badge lp-badge-orange" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M3 21V10l6 4v-4l6 4V6h3v15z"/><path d="M7 21v-3M12 21v-3"/></svg></span>
+          <h3>Usina</h3>
+          <p>Veja os pedidos abertos, envie propostas e gerencie peças, pedidos e funcionários.</p>
+          <a class="lp-link" href="cadastro-usina.html">Criar conta de usina <span aria-hidden="true">&rarr;</span></a>
         </article>
-        <article class="card benefit-card">
-          <span class="icon-badge">C</span>
-          <h3>Compara&ccedil;&atilde;o de propostas</h3>
-          <p>Analise pre&ccedil;o, prazo, frete e avalia&ccedil;&otilde;es lado a lado.</p>
+        <article class="card lp-profile">
+          <span class="icon-badge lp-badge-teal" aria-hidden="true"><svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg></span>
+          <h3>Pessoa Física</h3>
+          <p>Compre peças de catálogo direto das usinas, salve as que usa sempre e acompanhe a entrega.</p>
+          <a class="lp-link" href="cadastro-pessoa-fisica.html">Criar conta pessoal <span aria-hidden="true">&rarr;</span></a>
         </article>
-        <article class="card benefit-card">
-          <span class="icon-badge">G</span>
-          <h3>Gest&atilde;o centralizada</h3>
-          <p>Acompanhe solicita&ccedil;&otilde;es, propostas e pedidos em andamento.</p>
-        </article>
+      </div>
+    </section>
+
+
+    <section class="section lp-cta" aria-labelledby="titulo-cta">
+      <h2 id="titulo-cta">Tem uma peça para cotar?</h2>
+      <p>Abra a conta, cadastre a solicitação e acompanhe as propostas chegarem.</p>
+      <div class="hero-actions lp-cta-actions">
+        <a class="btn lp-btn-lg lp-btn-light" href="cadastro.html">Criar conta</a>
+        <a class="btn lp-btn-lg lp-btn-outline" href="login.html">Entrar</a>
       </div>
     </section>
   </main>
 
-  <footer class="footer">
-    <span>Usinalink</span>
-    <span>Prot&oacute;tipo front-end B2B industrial</span>
+  <footer class="footer lp-footer">
+    <div class="lp-footer-grid">
+      <div class="lp-footer-brand">
+        <a class="brand" href="index.html" aria-label="Usinalink, página inicial">
+          <span class="brand-icon" aria-hidden="true"><img class="brand-mark" src="assets/img/logo-mark-branco.svg" alt="" width="26" height="16"></span>
+          <span>Usinalink</span>
+        </a>
+        <p>Marketplace B2B que conecta empresas, usinas e compradores de peças industriais.</p>
+      </div>
+      <nav aria-label="Plataforma">
+        <h2 class="lp-footer-title">Plataforma</h2>
+        <ul>
+          <li><a href="#como-funciona">Como funciona</a></li>
+          <li><a href="#beneficios">Benefícios</a></li>
+          <li><a href="#perfis">Para quem</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Entrar">
+        <h2 class="lp-footer-title">Entrar</h2>
+        <ul>
+          <li><a href="login-empresa.html">Empresa</a></li>
+          <li><a href="login-usina.html">Usina</a></li>
+          <li><a href="login-pessoa-fisica.html">Pessoa Física</a></li>
+        </ul>
+      </nav>
+      <nav aria-label="Criar conta">
+        <h2 class="lp-footer-title">Criar conta</h2>
+        <ul>
+          <li><a href="cadastro-empresa.html">Empresa</a></li>
+          <li><a href="cadastro-usina.html">Usina</a></li>
+          <li><a href="cadastro-pessoa-fisica.html">Pessoa Física</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div class="lp-footer-bottom">
+      <span>&copy; 2026 Usinalink</span>
+      <span>Ambiente de demonstração: os dados exibidos são de exemplo.</span>
+    </div>
   </footer>
+  <script src="assets/js/motion.js"></script>
+  <script src="assets/js/chat-contato.js"></script>
   <script src="script.js"></script>
+  <script src="assets/js/a11y.js" defer></script>
 </body>
 </html>

@@ -33,18 +33,26 @@ export class FuncionarioService {
     return funcionario;
   }
 
+  /** SEC-16: só o titular da conta gerencia funcionários; outro funcionário da mesma empresa não. */
+  private async exigirTitular(user: any) {
+    if (!await this.ctx.ehTitular(user.sub)) throw new ForbiddenException('Somente o titular da conta gerencia funcionarios.');
+  }
+
   async create(dto: Partial<Funcionario>, user: any) {
+    await this.exigirTitular(user);
     const { idEmpresa, idUsina } = await this.donoDoChamador(user);
     return this.funcionarios.save(this.funcionarios.create({ ...dto, idEmpresa, idUsina, status: 'pendente' }));
   }
 
   async update(id: number, dto: Partial<Funcionario>, user: any) {
+    await this.exigirTitular(user);
     await this.findOne(id, user);
     await this.funcionarios.update({ idFuncionario: id }, dto);
     return this.findOne(id, user);
   }
 
   async remove(id: number, user: any) {
+    await this.exigirTitular(user);
     const funcionario = await this.findOne(id, user);
     if (funcionario.status !== 'inativo') {
       await this.funcionarios.update({ idFuncionario: id }, { status: 'inativo' });

@@ -24,6 +24,14 @@ export class PessoaFisica {
   @Column({ name: 'cpf', unique: true }) cpf: string;
   @Column({ name: 'email', nullable: true }) email?: string;
   @Column({ name: 'telefone', nullable: true }) telefone?: string;
+  // Endereco de entrega da pessoa fisica (empresa e usina guardam o deles em tabelas proprias).
+  @Column({ name: 'cep', nullable: true }) cep?: string;
+  @Column({ name: 'rua', nullable: true }) rua?: string;
+  @Column({ name: 'numero', nullable: true }) numero?: string;
+  @Column({ name: 'complemento', nullable: true }) complemento?: string;
+  @Column({ name: 'bairro', nullable: true }) bairro?: string;
+  @Column({ name: 'cidade', nullable: true }) cidade?: string;
+  @Column({ name: 'estado', nullable: true }) estado?: string;
   @CreateDateColumn({ name: 'data_criacao' }) dataCriacao: Date;
   @UpdateDateColumn({ name: 'data_atualizacao' }) dataAtualizacao: Date;
   @OneToOne(() => Usuario, u => u.pessoaFisica) @JoinColumn({ name: 'id_usuario' }) usuario: Relation<Usuario>;
@@ -44,6 +52,15 @@ export class Empresa {
   @Column({ name: 'porte', nullable: true }) porte?: string;
   @Column({ name: 'descricao', type: 'text', nullable: true }) descricao?: string;
   @Column({ name: 'status_validacao', default: 'pendente' }) statusValidacao: string;
+  @Column({ name: 'whatsapp', nullable: true }) whatsapp?: string;
+  @Column({ name: 'site', nullable: true }) site?: string;
+  @Column({ name: 'inscricao_estadual', nullable: true }) inscricaoEstadual?: string;
+  @Column({ name: 'contrato_social_arquivo', type: 'text', nullable: true }) contratoSocialArquivo?: string;
+  @Column({ name: 'contrato_social_nome', nullable: true }) contratoSocialNome?: string;
+  @Column({ name: 'alvara_arquivo', type: 'text', nullable: true }) alvaraArquivo?: string;
+  @Column({ name: 'alvara_nome', nullable: true }) alvaraNome?: string;
+  @Column({ name: 'certificacoes', type: 'text', nullable: true }) certificacoes?: string;
+  @Column({ name: 'notificacoes', type: 'simple-json', nullable: true }) notificacoes?: Record<string, boolean>;
   @OneToOne(() => Usuario, u => u.empresa) @JoinColumn({ name: 'id_usuario' }) usuario: Relation<Usuario>;
   @OneToMany(() => EnderecoEmpresa, e => e.empresa) enderecos: Relation<EnderecoEmpresa[]>;
   @OneToMany(() => Pedido, p => p.empresaCompradora) pedidos: Relation<Pedido[]>;
@@ -63,8 +80,15 @@ export class Usina {
   @Column({ name: 'capacidade_producao', nullable: true }) capacidadeProducao?: string;
   @Column({ name: 'descricao', type: 'text', nullable: true }) descricao?: string;
   @Column({ name: 'status_validacao', default: 'pendente' }) statusValidacao: string;
+  @Column({ name: 'maquinas_disponiveis', type: 'text', nullable: true }) maquinasDisponiveis?: string;
+  @Column({ name: 'capacidade_mensal', nullable: true }) capacidadeMensal?: string;
+  @Column({ name: 'turnos', nullable: true }) turnos?: string;
+  @Column({ name: 'prazo_medio', nullable: true }) prazoMedio?: string;
+  @Column({ name: 'certificacoes', type: 'simple-json', nullable: true }) certificacoes?: string[];
+  @Column({ name: 'notificacoes', type: 'simple-json', nullable: true }) notificacoes?: Record<string, boolean>;
   @OneToOne(() => Usuario, u => u.usina) @JoinColumn({ name: 'id_usuario' }) usuario: Relation<Usuario>;
   @OneToMany(() => Proposta, p => p.usina) propostas: Relation<Proposta[]>;
+  @OneToMany(() => PecaComercial, p => p.usina) pecasComerciais: Relation<PecaComercial[]>;
 }
 
 @Entity({ name: 'funcionario' })
@@ -124,13 +148,16 @@ export class Peca {
 @Entity({ name: 'pedido' })
 export class Pedido {
   @PrimaryGeneratedColumn({ name: 'id_pedido' }) idPedido: number;
-  @Column({ name: 'id_empresa_compradora' }) idEmpresaCompradora: number;
+  @Column({ name: 'id_empresa_compradora', nullable: true }) idEmpresaCompradora?: number;
+  @Column({ name: 'id_pessoa_fisica_compradora', nullable: true }) idPessoaFisicaCompradora?: number;
   @Column({ name: 'id_usuario_solicitante', nullable: true }) idUsuarioSolicitante?: number;
+  @Column({ name: 'id_solicitacao', nullable: true }) idSolicitacao?: number;
   @Column({ name: 'numero_pedido', nullable: true }) numeroPedido?: string;
   @Column({ nullable: true }) urgencia?: string;
   @Column({ default: 'aberto' }) status: string;
   @Column({ type: 'text', nullable: true }) observacoes?: string;
   @Column({ name: 'prazo_entrega_dias', nullable: true }) prazoEntregaDias?: number;
+  @Column({ name: 'local_entrega', nullable: true }) localEntrega?: string;
   @Column({ name: 'data_pedido', type: 'timestamp', nullable: true }) dataPedido?: Date;
   @Column({ name: 'data_prevista_entrega', type: 'timestamp', nullable: true }) dataPrevistaEntrega?: Date;
   @Column({ name: 'data_entrega_real', type: 'timestamp', nullable: true }) dataEntregaReal?: Date;
@@ -160,7 +187,7 @@ export class ItemPedido {
 export class ArquivoPedido {
   @PrimaryGeneratedColumn({ name: 'id_arquivo' }) idArquivo: number;
   @Column({ name: 'id_pedido' }) idPedido: number;
-  @Column({ name: 'url_arquivo', nullable: true }) urlArquivo?: string;
+  @Column({ name: 'url_arquivo', type: 'text', nullable: true }) urlArquivo?: string;
   @Column({ name: 'nome_arquivo', nullable: true }) nomeArquivo?: string;
   @ManyToOne(() => Pedido, p => p.arquivos) @JoinColumn({ name: 'id_pedido' }) pedido: Relation<Pedido>;
 }
@@ -173,6 +200,7 @@ export class Proposta {
   @Column({ name: 'id_usuario_responsavel', nullable: true }) idUsuarioResponsavel?: number;
   @Column({ type: 'numeric' }) valor: number;
   @Column({ nullable: true }) prazo?: string;
+  @Column({ type: 'numeric', nullable: true }) frete?: number;
   @Column({ type: 'text', nullable: true }) observacao?: string;
   @Column({ default: 'enviada' }) status: string;
   @CreateDateColumn({ name: 'data_envio' }) dataEnvio: Date;
@@ -186,6 +214,7 @@ export class Pagamento {
   @Column({ name: 'id_pedido' }) idPedido: number;
   @Column({ name: 'id_proposta', nullable: true }) idProposta?: number;
   @Column({ name: 'id_empresa_pagadora', nullable: true }) idEmpresaPagadora?: number;
+  @Column({ name: 'id_pessoa_fisica_pagadora', nullable: true }) idPessoaFisicaPagadora?: number;
   @Column({ name: 'id_usina_recebedora', nullable: true }) idUsinaRecebedora?: number;
   @Column({ type: 'numeric', nullable: true }) valor?: number;
   @Column({ nullable: true }) metodo?: string;
@@ -196,8 +225,10 @@ export class Pagamento {
 @Entity({ name: 'avaliacao_entrega' })
 export class AvaliacaoEntrega {
   @PrimaryGeneratedColumn({ name: 'id_avaliacao' }) idAvaliacao: number;
-  @Column({ name: 'id_pedido' }) idPedido: number;
-  @Column({ name: 'id_empresa_avaliadora' }) idEmpresaAvaliadora: number;
+  @Column({ name: 'id_pedido', nullable: true }) idPedido?: number;
+  @Column({ name: 'id_solicitacao_comercial', nullable: true }) idSolicitacaoComercial?: number;
+  @Column({ name: 'id_empresa_avaliadora', nullable: true }) idEmpresaAvaliadora?: number;
+  @Column({ name: 'id_pessoa_fisica_avaliadora', nullable: true }) idPessoaFisicaAvaliadora?: number;
   @Column({ name: 'id_usina_avaliada' }) idUsinaAvaliada: number;
   @Column({ name: 'nota_geral' }) nota: number;
   @Column({ name: 'nota_qualidade', nullable: true }) qualidade?: number;
@@ -205,6 +236,7 @@ export class AvaliacaoEntrega {
   @Column({ name: 'nota_comunicacao', nullable: true }) comunicacao?: number;
   @Column({ type: 'text', nullable: true }) comentario?: string;
   @Column({ name: 'resposta_usina', type: 'text', nullable: true }) respostaDaUsina?: string;
+  @CreateDateColumn({ name: 'data_avaliacao' }) criadoEm: Date;
 }
 
 export type SolicitacaoBloqueioStatus = 'pendente' | 'em_analise' | 'aprovada' | 'rejeitada' | 'cancelada';
@@ -245,6 +277,76 @@ export class HistoricoStatusPedido {
   @CreateDateColumn({ name: 'data' }) data: Date;
 }
 
+@Entity({ name: 'solicitacao' })
+export class Solicitacao {
+  @PrimaryGeneratedColumn({ name: 'id_solicitacao' }) idSolicitacao: number;
+  @Column({ name: 'id_empresa', nullable: true }) idEmpresa?: number;
+  @Column({ name: 'id_pessoa_fisica', nullable: true }) idPessoaFisica?: number;
+  @Column({ name: 'peca' }) peca: string;
+  @Column({ nullable: true }) categoria?: string;
+  @Column({ nullable: true }) material?: string;
+  @Column({ nullable: true }) quantidade?: number;
+  @Column({ name: 'prazo_desejado', type: 'date', nullable: true }) prazoDesejado?: string;
+  @Column({ nullable: true }) urgencia?: string;
+  @Column({ name: 'local_entrega', nullable: true }) localEntrega?: string;
+  @Column({ type: 'text', nullable: true }) descricao?: string;
+  @Column({ name: 'arquivo_tecnico', type: 'text', nullable: true }) arquivoTecnico?: string;
+  @Column({ name: 'arquivo_tecnico_nome', nullable: true }) arquivoTecnicoNome?: string;
+  @Column({ name: 'id_pedido', nullable: true }) idPedido?: number;
+  @Column({ default: 'aberta' }) status: string;
+  @CreateDateColumn({ name: 'data_criacao' }) criadoEm: Date;
+  @UpdateDateColumn({ name: 'data_atualizacao' }) atualizadoEm: Date;
+}
+
+@Entity({ name: 'peca_comercial' })
+export class PecaComercial {
+  @PrimaryGeneratedColumn({ name: 'id_peca_comercial' }) idPecaComercial: number;
+  @Column({ name: 'id_usina' }) idUsina: number;
+  @Column() nome: string;
+  @Column({ nullable: true }) material?: string;
+  @Column({ nullable: true }) categoria?: string;
+  @Column({ type: 'text', nullable: true }) descricao?: string;
+  @Column({ nullable: true }) estoque?: number;
+  @Column({ name: 'unidade_estoque', nullable: true }) unidadeEstoque?: string;
+  @Column({ name: 'valor_unitario', type: 'numeric', nullable: true }) valorUnitario?: number;
+  @Column({ name: 'prazo_entrega_dias', nullable: true }) prazoEntregaDias?: number;
+  @Column({ name: 'imagem', type: 'text', nullable: true }) imagem?: string;
+  @Column({ default: true }) ativo: boolean;
+  @CreateDateColumn({ name: 'data_criacao' }) criadoEm: Date;
+  @ManyToOne(() => Usina, u => u.pecasComerciais) @JoinColumn({ name: 'id_usina' }) usina: Relation<Usina>;
+}
+
+@Entity({ name: 'solicitacao_comercial' })
+export class SolicitacaoComercial {
+  @PrimaryGeneratedColumn({ name: 'id_solicitacao_comercial' }) idSolicitacaoComercial: number;
+  @Column({ name: 'id_empresa', nullable: true }) idEmpresa?: number;
+  @Column({ name: 'id_pessoa_fisica', nullable: true }) idPessoaFisica?: number;
+  @Column({ name: 'id_usina', nullable: true }) idUsina?: number;
+  @Column({ name: 'id_peca_comercial', nullable: true }) idPecaComercial?: number;
+  @Column() peca: string;
+  @Column({ nullable: true }) fornecedor?: string;
+  @Column({ name: 'valor_unitario', type: 'numeric', nullable: true }) valorUnitario?: number;
+  @Column({ nullable: true }) quantidade?: number;
+  @Column({ default: 'registrada' }) status: string;
+  @Column({ default: false }) pago: boolean;
+  @Column({ name: 'metodo_pagamento', nullable: true }) metodoPagamento?: string;
+  @Column({ name: 'data_pagamento', type: 'timestamp', nullable: true }) dataPagamento?: Date;
+  @Column({ name: 'protocolo_pagamento', nullable: true }) protocoloPagamento?: string;
+  @Column({ name: 'observacao_usina', type: 'text', nullable: true }) observacaoUsina?: string;
+  @Column({ name: 'historico', type: 'simple-json', nullable: true }) historico?: { status: string; em: string }[];
+  @CreateDateColumn({ name: 'data_criacao' }) criadoEm: Date;
+  @UpdateDateColumn({ name: 'data_atualizacao' }) atualizadoEm: Date;
+}
+
+@Entity({ name: 'favorito' })
+export class Favorito {
+  @PrimaryGeneratedColumn({ name: 'id_favorito' }) idFavorito: number;
+  @Column({ name: 'id_usuario' }) idUsuario: number;
+  @Column() tipo: string; // 'peca' | 'usina'
+  @Column({ name: 'id_referencia' }) idReferencia: number;
+  @CreateDateColumn({ name: 'data_criacao' }) criadoEm: Date;
+}
+
 @Entity({ name: 'modelo_contrato' })
 export class ModeloContrato {
   @PrimaryGeneratedColumn({ name: 'id_modelo' }) idModelo: number;
@@ -259,12 +361,39 @@ export class Notificacao {
   @Column({ name: 'id_usuario' }) idUsuario: number;
   @Column() titulo: string;
   @Column({ type: 'text', nullable: true }) mensagem?: string;
+  @Column({ nullable: true }) link?: string;
   @Column({ default: false }) lida: boolean;
+  @CreateDateColumn({ name: 'data_criacao' }) dataCriacao: Date;
+}
+
+/** Códigos de verificação em duas etapas (login): guardados só como HMAC, com validade, limite de tentativas e uso único. */
+@Entity({ name: 'codigo_dois_fatores' })
+export class CodigoDoisFatores {
+  @PrimaryGeneratedColumn({ name: 'id_codigo' }) idCodigo: number;
+  @Column({ name: 'desafio', unique: true }) desafio: string;
+  @Column({ name: 'id_usuario' }) idUsuario: number;
+  @Column({ name: 'area' }) area: string;
+  @Column({ name: 'codigo_hash' }) codigoHash: string;
+  @Column({ name: 'expira_em', type: 'timestamp' }) expiraEm: Date;
+  @Column({ name: 'enviado_em', type: 'timestamp' }) enviadoEm: Date;
+  @Column({ name: 'tentativas', default: 0 }) tentativas: number;
+  @Column({ name: 'reenvios', default: 0 }) reenvios: number;
+  @Column({ name: 'usado_em', type: 'timestamp', nullable: true }) usadoEm?: Date | null;
+  @CreateDateColumn({ name: 'data_criacao' }) dataCriacao: Date;
+}
+
+@Entity({ name: 'redefinicao_senha' })
+export class RedefinicaoSenha {
+  @PrimaryGeneratedColumn({ name: 'id_redefinicao' }) idRedefinicao: number;
+  @Column({ name: 'id_usuario' }) idUsuario: number;
+  @Column({ name: 'token_hash', unique: true }) tokenHash: string;
+  @Column({ name: 'expira_em', type: 'timestamp' }) expiraEm: Date;
+  @Column({ name: 'usado_em', type: 'timestamp', nullable: true }) usadoEm?: Date | null;
   @CreateDateColumn({ name: 'data_criacao' }) dataCriacao: Date;
 }
 
 export const ENTITIES = [
   Usuario, PessoaFisica, Empresa, Usina, Funcionario, EnderecoEmpresa, EnderecoUsina, Peca,
-  Pedido, ItemPedido, ArquivoPedido, Proposta, Pagamento, AvaliacaoEntrega,
-  SolicitacaoBloqueioUsina, BloqueioUsina, HistoricoStatusPedido, ModeloContrato, Notificacao,
+  Pedido, ItemPedido, ArquivoPedido, Proposta, Pagamento, AvaliacaoEntrega, Solicitacao, SolicitacaoComercial,
+  SolicitacaoBloqueioUsina, BloqueioUsina, HistoricoStatusPedido, ModeloContrato, Notificacao, PecaComercial, Favorito, CodigoDoisFatores, RedefinicaoSenha,
 ];

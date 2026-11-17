@@ -1,4 +1,5 @@
 (function () {
+  const esc = (v) => (window.SafeHtml ? window.SafeHtml.escape(v) : String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c])));
   const ui = window.UsinaLinkUi || {};
 
   function session() {
@@ -33,7 +34,7 @@
   // A API devolve nomes com prefixo (idPedido, idUsina...); estas telas foram escritas
   // esperando nomes genericos (pedidoId, usinaId...). As funcoes abaixo fazem essa ponte.
   function normalizeReview(review) {
-    return { ...review, id: review.idAvaliacao, pedidoId: review.idPedido, notaGeral: review.nota };
+    return { ...review, id: review.idAvaliacao, pedidoId: review.idPedido, notaGeral: review.nota, compraId: review.idSolicitacaoComercial };
   }
 
   function normalizeOrder(order) {
@@ -78,9 +79,9 @@
 
   function renderReviewCard(review, canReply = false) {
     return `
-      <article class="card review-card" data-review-id="${review.id}">
+      <article class="card review-card" data-review-id="${esc(review.id)}">
         <div class="review-head">
-          <div><strong>Pedido ${review.pedidoId}</strong><span>${new Date(review.criadoEm).toLocaleDateString("pt-BR")}</span></div>
+          <div><strong>${esc(review.compraId ? "Compra de peça #" + review.compraId : "Pedido " + review.pedidoId)}</strong><span>${new Date(review.criadoEm).toLocaleDateString("pt-BR")}</span></div>
           ${stars(review.notaGeral)}
         </div>
         <div class="review-metrics">
@@ -88,9 +89,9 @@
           <span>Prazo ${stars(review.prazo)}</span>
           <span>Comunicacao ${stars(review.comunicacao)}</span>
         </div>
-        <p>${ui.escapeHtml ? ui.escapeHtml(review.comentario || "Sem comentario.") : review.comentario || "Sem comentario."}</p>
-        ${review.respostaDaUsina ? `<div class="review-reply"><strong>Resposta da usina</strong><span>${ui.escapeHtml ? ui.escapeHtml(review.respostaDaUsina) : review.respostaDaUsina}</span></div>` : ""}
-        ${canReply && !review.respostaDaUsina ? `<form class="review-reply-form"><label class="field">Responder avaliacao<span class="input-wrap"><input name="respostaDaUsina" type="text" minlength="3" required placeholder="Escreva uma resposta profissional"></span></label><button class="btn btn-small" type="submit">Responder</button></form>` : ""}
+        <p>${esc(review.comentario || "Sem comentario.")}</p>
+        ${review.respostaDaUsina ? `<div class="review-reply"><strong>Resposta da usina</strong><span>${esc(review.respostaDaUsina)}</span></div>` : ""}
+        ${canReply ? `<form class="review-reply-form" ${review.respostaDaUsina ? "hidden" : ""}><label class="field">${review.respostaDaUsina ? "Editar resposta" : "Responder avaliacao"}<span class="input-wrap"><input name="respostaDaUsina" type="text" minlength="3" required placeholder="Escreva uma resposta profissional" value="${esc(review.respostaDaUsina || "")}"></span></label><button class="btn btn-small" type="submit">${review.respostaDaUsina ? "Salvar resposta" : "Responder"}</button></form>${review.respostaDaUsina ? `<button class="btn btn-ghost btn-small" type="button" data-editar-resposta>Editar resposta</button>` : ""}` : ""}
       </article>`;
   }
 
@@ -114,11 +115,11 @@
       const orders = ordersRaw.map(normalizeOrder);
       const proposals = proposalsRaw.map(normalizeProposal);
       const reviewed = new Set(reviews.map(item => item.pedidoId));
-      const STATUS_AVALIAVEIS = ["concluido", "concluida", "em_negociacao"];
+      const STATUS_AVALIAVEIS = ["concluido", "concluida"];
       const available = orders.filter(order => STATUS_AVALIAVEIS.includes(order.status) && proposals.some(proposal => proposal.pedidoId === order.id && proposal.status === "aceita") && !reviewed.has(order.id));
       if (select) {
         select.innerHTML = available.length
-          ? `<option value="">Selecione um pedido concluido</option>${available.map(order => `<option value="${order.id}">${order.id} - ${order.peca}</option>`).join("")}`
+          ? `<option value="">Selecione um pedido concluido</option>${available.map(order => `<option value="${esc(order.id)}">${esc(order.id)} - ${esc(order.peca)}</option>`).join("")}`
           : '<option value="">Nenhum pedido concluido disponivel</option>';
       }
       if (list) {
@@ -127,7 +128,7 @@
       if (form) form.hidden = !available.length;
       root.dataset.state = "ready";
     } catch (error) {
-      root.innerHTML = `<div class="empty-state"><strong>Falha ao carregar avaliacoes</strong><span>${error.message}</span></div>`;
+      root.innerHTML = `<div class="empty-state"><strong>Falha ao carregar avaliacoes</strong><span>${esc(error.message)}</span></div>`;
     }
   }
 
@@ -179,18 +180,24 @@
       document.querySelector("[data-review-deadline]").textContent = summary.mediaPrazo || "0";
       document.querySelector("[data-review-communication]").textContent = summary.mediaComunicacao || "0";
       root.innerHTML = reviews.length ? reviews.map(review => renderReviewCard(review, true)).join("") : '<div class="empty-state"><strong>Nenhuma avaliacao recebida</strong><span>As avaliacoes dos pedidos concluidos aparecem aqui.</span></div>';
+      root.querySelectorAll("[data-editar-resposta]").forEach(botao => botao.addEventListener("click", () => {
+        const card = botao.closest("[data-review-id]");
+        card.querySelector(".review-reply-form").hidden = false;
+        botao.hidden = true;
+        card.querySelector(".review-reply-form input").focus();
+      }));
       root.querySelectorAll(".review-reply-form").forEach(form => {
         form.addEventListener("submit", async (event) => {
           event.preventDefault();
           const card = form.closest("[data-review-id]");
           const data = new FormData(form);
           await apiPost(`/avaliacoes/${card.dataset.reviewId}/resposta`, { respostaDaUsina: data.get("respostaDaUsina") });
-          notify("Resposta publicada.", "success");
+          notify("Resposta salva.", "success");
           await loadPlantReviews();
         });
       });
     } catch (error) {
-      root.innerHTML = `<div class="empty-state"><strong>Falha ao carregar avaliacoes</strong><span>${error.message}</span></div>`;
+      root.innerHTML = `<div class="empty-state"><strong>Falha ao carregar avaliacoes</strong><span>${esc(error.message)}</span></div>`;
     }
   }
 
@@ -210,14 +217,14 @@
       const usinas = [...new Map(proposals.map(proposal => [proposal.usinaId, proposal])).values()];
       const usinaSelect = document.querySelector("[data-block-usina]");
       const pedidoSelect = document.querySelector("[data-block-pedido]");
-      if (usinaSelect) usinaSelect.innerHTML = usinas.length ? usinas.map(item => `<option value="${item.usinaId}">${item.usina || item.usinaId}</option>`).join("") : '<option value="">Nenhuma usina disponivel</option>';
-      if (pedidoSelect) pedidoSelect.innerHTML = proposals.map(item => `<option value="${item.pedidoId}">${item.pedidoId} - ${item.peca}</option>`).join("");
+      if (usinaSelect) usinaSelect.innerHTML = usinas.length ? usinas.map(item => `<option value="${esc(item.usinaId)}">${esc(item.usina || item.usinaId)}</option>`).join("") : '<option value="">Nenhuma usina disponivel</option>';
+      if (pedidoSelect) pedidoSelect.innerHTML = proposals.map(item => `<option value="${esc(item.pedidoId)}">${esc(item.pedidoId)} - ${esc(item.peca)}</option>`).join("");
       root.innerHTML = requests.length ? requests.map(request => `
         <article class="card block-request-card">
-          <div><strong>${request.motivo}</strong><span>${request.usinaId} / ${request.pedidoId || "Sem pedido vinculado"}</span></div>
-          ${ui.statusBadge ? ui.statusBadge(request.status) : `<span class="badge">${request.status}</span>`}
-          <p>${ui.escapeHtml ? ui.escapeHtml(request.descricao) : request.descricao}</p>
-          ${request.status === "pendente" ? `<button class="table-action" type="button" data-cancel-block="${request.id}">Cancelar solicitacao</button>` : ""}
+          <div><strong>${esc(request.motivo)}</strong><span>${esc(request.usinaId)} / ${esc(request.pedidoId || "Sem pedido vinculado")}</span></div>
+          ${ui.statusBadge ? ui.statusBadge(request.status) : `<span class="badge">${esc(request.status)}</span>`}
+          <p>${esc(request.descricao)}</p>
+          ${request.status === "pendente" ? `<button class="table-action" type="button" data-cancel-block="${esc(request.id)}">Cancelar solicitacao</button>` : ""}
         </article>`).join("") : '<div class="empty-state"><strong>Nenhuma solicitacao aberta</strong><span>Use o formulario para enviar uma solicitacao de moderacao.</span></div>';
       root.querySelectorAll("[data-cancel-block]").forEach(button => button.addEventListener("click", async () => {
         await apiPatch(`/solicitacoes-bloqueio-usina/${button.dataset.cancelBlock}/cancelar`, {});
@@ -226,7 +233,7 @@
       }));
       if (form) form.hidden = false;
     } catch (error) {
-      root.innerHTML = `<div class="empty-state"><strong>Falha ao carregar solicitacoes</strong><span>${error.message}</span></div>`;
+      root.innerHTML = `<div class="empty-state"><strong>Falha ao carregar solicitacoes</strong><span>${esc(error.message)}</span></div>`;
     }
   }
 

@@ -7,7 +7,10 @@
 
   function parseCurrency(value) {
     if (typeof value === "number") return value;
-    const clean = String(value || "").replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", ".");
+    const bruto = String(value || "").trim();
+    // A API devolve números como "1500.50" (ponto decimal); em texto brasileiro a vírgula é o decimal e o ponto é milhar.
+    if (/^-?\d+(\.\d+)?$/.test(bruto) && !/^-?\d{1,3}(\.\d{3})+$/.test(bruto)) return Number(bruto);
+    const clean = bruto.replace(/[^\d,.-]/g, "").replace(/\./g, "").replace(",", ".");
     const number = Number(clean);
     return Number.isFinite(number) ? number : 0;
   }
@@ -56,14 +59,10 @@
     return `USL-${raw}`;
   }
 
+  // Mesma formula do backend (pagamento.service.ts): o total cobrado e o valor da proposta, sem taxa extra.
   function calculateTotals(order, proposal, payment) {
-    const value = parseCurrency(payment?.valorTotal || proposal?.valor || order?.valor || 18500);
-    const freight = parseCurrency(proposal?.frete || order?.frete || 0);
-    const discount = parseCurrency(payment?.desconto || 0);
-    const taxes = Math.round((value + freight - discount) * 0.035 * 100) / 100;
-    const subtotal = value + freight;
-    const total = Math.max(0, subtotal - discount + taxes);
-    return { subtotal, discount, taxes, total };
+    const value = parseCurrency(payment?.valor ?? payment?.valorTotal ?? proposal?.valor ?? order?.valor ?? 0);
+    return { subtotal: value, discount: 0, taxes: 0, total: value };
   }
 
   function showFeedback(message, type = "info") {
@@ -71,12 +70,15 @@
     if (!toast) {
       toast = document.createElement("div");
       toast.className = "toast";
+      toast.setAttribute("role", "status");
+      toast.setAttribute("aria-live", "polite");
+      toast.setAttribute("aria-atomic", "true");
       document.body.appendChild(toast);
     }
     toast.textContent = message;
     toast.dataset.type = type;
     toast.classList.add("show");
-    window.setTimeout(() => toast.classList.remove("show"), 2800);
+    window.setTimeout(() => toast.classList.remove("show"), 7000);
   }
 
   window.UsinaLinkUi = {

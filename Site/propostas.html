@@ -4,22 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Propostas | Usinalink</title>
+  <meta name="description" content="Propostas na Usinalink, marketplace B2B de peças industriais que conecta empresas, usinas e compradores.">
+  <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="assets/css/a11y.css">
+  <script src="assets/js/safe-html.js"></script>
 </head>
-<body data-user-role="empresa">
+<body data-user-role="empresa,pessoa_fisica">
   <div class="app-layout">
     <aside class="sidebar">
-      <a class="brand" href="index.html"><span class="brand-icon">US</span><span>Usinalink</span></a>
+      <a class="brand" href="index.html"><span class="brand-icon"><img class="brand-mark" src="assets/img/logo-mark-branco.svg" alt="" width="26" height="16"></span><span>Usinalink</span></a>
       <nav class="side-nav" data-role-nav="empresa">
-        <a href="dashboard-empresa.html" data-icon="D">Dashboard empresa</a>
-        <a href="dashboard-pessoa-juridica.html" data-icon="P">Pe&ccedil;as comerciais</a>
+        <a href="dashboard-empresa.html" data-icon="D">Início</a>
+        <a href="pecas-comerciais-empresa.html" data-icon="P">Pe&ccedil;as comerciais</a>
         <a href="perfil-empresa.html" data-icon="I">Perfil</a>
-        <a href="funcionarios.html" data-icon="F">Funcion&aacute;rios</a>
-        <a href="solicitacoes.html" data-icon="S">Solicita&ccedil;&otilde;es</a>
+        <a href="funcionarios-empresa.html" data-icon="F">Funcion&aacute;rios</a>
+        <a href="pedidos-sob-medida.html" data-icon="S">Pedido sob medida</a>
         <a class="active" href="propostas.html" data-icon="R">Propostas recebidas</a>
         <a href="historico-pedidos.html" data-icon="H">Hist&oacute;rico de pedidos</a>
-        <a href="avaliacoes.html" data-icon="A">Avalia&ccedil;&otilde;es</a>
-        <a href="solicitacoes-bloqueio-usina.html" data-icon="B">Usinas bloqueadas</a>
+        <a href="avaliacoes-empresa.html" data-icon="A">Avalia&ccedil;&otilde;es</a>
+        <a href="usinas-bloqueadas.html" data-icon="B">Usinas bloqueadas</a>
         <a href="index.html" data-icon="X">Sair</a>
       </nav>
     </aside>
@@ -29,35 +33,16 @@
       </div>
       <section data-search-scope>
         <label class="search-box wide-search proposal-search"><span>Buscar</span><input class="js-table-search" type="search" placeholder="Usina, valor, prazo ou observa&ccedil;&atilde;o"></label>
-        <div class="proposal-grid">
-          <article class="card proposal-card best" data-search-row data-usina-id="usina-1">
-            <span class="best-label">Melhor proposta</span>
-            <h2>Usina Atlas Metais</h2>
-            <strong class="price">R$ 18.450,00</strong>
-            <dl><div><dt>Prazo de fabrica&ccedil;&atilde;o</dt><dd>18 dias</dd></div><div><dt>Frete</dt><dd>R$ 940,00</dd></div><div><dt>Avalia&ccedil;&atilde;o</dt><dd>4,9/5</dd></div></dl>
-            <p>Inclui inspe&ccedil;&atilde;o dimensional e embalagem refor&ccedil;ada para transporte.</p>
-            <div class="card-actions"><button class="btn btn-ghost js-alert" type="button">Ver detalhes</button><a class="btn" href="pagamento-pedido.html?pedidoId=pedido-1">Aceitar e pagar</a></div>
-          </article>
-          <article class="card proposal-card" data-search-row data-usina-id="usina-2">
-            <h2>Industrial Nova Linha</h2>
-            <strong class="price">R$ 19.200,00</strong>
-            <dl><div><dt>Prazo de fabrica&ccedil;&atilde;o</dt><dd>22 dias</dd></div><div><dt>Frete</dt><dd>R$ 780,00</dd></div><div><dt>Avalia&ccedil;&atilde;o</dt><dd>4,7/5</dd></div></dl>
-            <p>Condi&ccedil;&atilde;o especial para pagamento em duas parcelas sem juros.</p>
-            <div class="card-actions"><button class="btn btn-ghost js-alert" type="button">Ver detalhes</button><a class="btn" href="pagamento-pedido.html?pedidoId=pedido-1">Aceitar e pagar</a></div>
-          </article>
-          <article class="card proposal-card" data-search-row data-usina-id="usina-3">
-            <h2>Fundi&ccedil;&atilde;o Serra Sul</h2>
-            <strong class="price">R$ 17.980,00</strong>
-            <dl><div><dt>Prazo de fabrica&ccedil;&atilde;o</dt><dd>28 dias</dd></div><div><dt>Frete</dt><dd>R$ 1.150,00</dd></div><div><dt>Avalia&ccedil;&atilde;o</dt><dd>4,5/5</dd></div></dl>
-            <p>Prazo maior por agenda de produ&ccedil;&atilde;o, com garantia t&eacute;cnica de 90 dias.</p>
-            <div class="card-actions"><button class="btn btn-ghost js-alert" type="button">Ver detalhes</button><a class="btn" href="pagamento-pedido.html?pedidoId=pedido-1">Aceitar e pagar</a></div>
-          </article>
+        <div class="proposal-grid" data-proposals-grid>
+          <article class="card proposal-card"><p>Carregando propostas...</p></article>
         </div>
       </section>
     </main>
   </div>
   <script src="assets/js/api.js"></script>
   <script src="assets/js/auth-guard.js"></script>
+  <script src="assets/js/role-nav.js"></script>
   <script src="script.js"></script>
+  <script src="assets/js/a11y.js" defer></script>
 </body>
 </html>

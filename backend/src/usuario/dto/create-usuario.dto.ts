@@ -1,9 +1,9 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString, MinLength, MaxLength } from 'class-validator';
 
 export class CreateUsuarioDto {
   @IsOptional() @IsString() tipo?: string;
   @IsOptional() @IsString() type?: string;
-  @IsNotEmpty({ message: 'Nome e obrigatorio.' }) @IsString() nome: string;
+  @IsNotEmpty({ message: 'Nome e obrigatorio.' }) @IsString() @MaxLength(200) nome: string;
   @IsEmail({}, { message: 'E-mail invalido.' }) email: string;
   @MinLength(6, { message: 'Senha deve ter no minimo 6 caracteres.' }) senha: string;
   @IsOptional() @IsString() confirmarSenha?: string;
@@ -11,7 +11,10 @@ export class CreateUsuarioDto {
   @IsOptional() @IsString() cpf?: string;
   @IsOptional() @IsString() cnpj?: string;
   @IsOptional() @IsString() telefone?: string;
-  @IsOptional() @IsString() cargo?: string;
-  @IsOptional() @IsString() responsavel?: string;
+  @IsOptional() @IsString() @MaxLength(200) cargo?: string;
+  @IsOptional() @IsString() @MaxLength(200) responsavel?: string;
   @IsOptional() @IsString() especialidade?: string;
+  @IsOptional() @IsString() @MaxLength(12) cep?: string;
+  @IsOptional() @IsString() @MaxLength(120) cidade?: string;
+  @IsOptional() @IsString() @MaxLength(4) estado?: string;
 }
