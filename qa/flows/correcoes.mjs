@@ -97,7 +97,7 @@ const nav = (page) => page.locator('.side-nav a').allInnerTexts();
     const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
     const page = await ctx.newPage();
     await loginAs(page, 'empresa');
-    await page.goto(`${SITE}/propostas.html`); await page.waitForSelector('.proposal-card');
+    await page.goto(`${SITE}/propostas.html`); await page.waitForSelector('.proposal-card:has-text("Campinas")', { timeout: 15000 });
     const textos = await page.locator('.proposal-card').allInnerTexts();
     t.ok(textos.some((x) => /Entrega em/.test(x) && /Campinas/.test(x)), 'cartão da proposta deveria mostrar o local de entrega');
     t.ok(textos.every((x) => !/Aceitar proposta/.test(x) || /Recusar proposta/.test(x)), 'proposta com Aceitar deveria ter Recusar ao lado');
