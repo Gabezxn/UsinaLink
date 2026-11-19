@@ -48,6 +48,7 @@ export class RedefinicaoSenhaService {
     const base = origemPermitida(this.config, origem) ? (origem as string) : 'https://usinalink.com.br';
     // O tipo da conta vai no link para a tela de "nova senha" levar depois ao login certo (empresa, usina ou pessoa física).
     const tipo = ['empresa', 'usina', 'pessoa_fisica'].includes(String(usuario.tipoUsuario)) ? `&tipo=${usuario.tipoUsuario}` : '';
+    const cor = ({ usina: '#c2410c', pessoa_fisica: '#0f766e' } as Record<string, string>)[String(usuario.tipoUsuario)] || '#1e3a8a';
     const link = `${base}/redefinir-senha.html#token=${token}${tipo}`;
     try {
       await this.mailer.enviar({
@@ -55,9 +56,9 @@ export class RedefinicaoSenhaService {
         subject: 'Criar nova senha na Usinalink',
         text: `Recebemos um pedido para criar uma nova senha na Usinalink.\n\nAbra o link (vale por 30 minutos e só funciona uma vez):\n${link}\n\nSe não foi você, ignore este e-mail: sua senha continua a mesma.`,
         html: `<div style="font-family:Segoe UI,Arial,sans-serif;max-width:460px;margin:auto;padding:24px;color:#0f172a">
-          <h2 style="margin:0 0 8px;color:#1e3a8a">Usinalink</h2>
+          <h2 style="margin:0 0 8px;color:${cor}">Usinalink</h2>
           <p style="margin:0 0 16px">Recebemos um pedido para criar uma nova senha.</p>
-          <p style="margin:0 0 20px"><a href="${link}" style="display:inline-block;padding:12px 20px;background:#1e3a8a;color:#fff;border-radius:8px;text-decoration:none;font-weight:600">Criar nova senha</a></p>
+          <p style="margin:0 0 20px"><a href="${link}" style="display:inline-block;padding:12px 20px;background:${cor};color:#fff;border-radius:8px;text-decoration:none;font-weight:600">Criar nova senha</a></p>
           <p style="margin:0 0 8px;color:#475569">O link vale por 30 minutos e só funciona uma vez.</p>
           <p style="margin:0;color:#475569">Se não foi você, ignore este e-mail: sua senha continua a mesma.</p></div>`,
       });

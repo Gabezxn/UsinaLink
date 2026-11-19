@@ -3555,3 +3555,8 @@ dd,
 .proposal-group-head span { color: var(--muted, #5b6b86); font-size: 0.9rem; }
 
 .payment-methods[hidden] { display: none; }
+
+/* "Esqueci minha senha": o aviso segue a cor do tipo de conta */
+.usina-auth .form-notice { border-color: #f1cfb6; border-left-color: #c2410c; background: #fff7ed; }
+body.pf-mode .form-notice { border-color: #bfe0da; border-left-color: #0f766e; background: #ecf8f5; }
+.auth-card > h1 + .form-notice { margin-top: 18px; }

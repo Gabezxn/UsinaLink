@@ -16,6 +16,9 @@
     var p = document.getElementById(id);
     p.textContent = texto;
     p.hidden = false;
+    // O texto de apresentação ("Digite o e-mail...") não faz mais sentido junto do resultado.
+    var intro = p.parentElement ? p.parentElement.querySelector(":scope > h1 + p") : null;
+    if (intro) intro.hidden = true;
   }
 
   var pedido = document.getElementById("form-esqueci");
