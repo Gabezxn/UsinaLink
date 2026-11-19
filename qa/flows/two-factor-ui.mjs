@@ -25,9 +25,12 @@ try {
 
   await page.goto(`${SITE}/login-empresa.html`);
   await page.fill('input[name="email"]', 'empresa@demo.com'); await page.fill('input[name="senha"]', 'Demo@123');
-  await page.click('form.js-login-form [type="submit"]');
+  await page.locator('form.js-login-form [type="submit"]').dblclick(); // duplo clique: um painel e um e-mail só
   await page.waitForSelector('.two-factor', { timeout: 15000 }).catch(() => t.ok(false, 'tela do código não apareceu'));
   t.ok(await page.locator('form.js-login-form').isHidden(), 'formulário de senha deveria sumir');
+  await page.waitForTimeout(1500);
+  t.ok(await page.locator('.two-factor').count() === 1 && await page.locator('input[name="codigo"]').count() === 1, 'duplo clique não deveria criar dois campos de código');
+  t.ok(readdirSync(outbox).length === 1, `duplo clique deveria mandar 1 e-mail (mandou ${readdirSync(outbox).length})`);
   t.ok(/em\*+@demo\.com/.test(await page.locator('.two-factor-intro').innerText()), 'e-mail mascarado não apareceu na tela');
   t.ok(!(await page.evaluate(() => sessionStorage.getItem('accessToken'))), 'token foi guardado antes do código');
   t.ok(await page.evaluate(() => document.activeElement?.name === 'codigo'), 'campo do código deveria estar em foco');

@@ -4,6 +4,14 @@
   "use strict";
   var api = window.UsinaLinkApi;
 
+  // Cada tipo de conta tem a sua tela de login; o "tipo" vem do login de onde a pessoa chegou (esqueci) ou do link do e-mail (nova senha).
+  var LOGIN_POR_TIPO = { empresa: "login-empresa.html", usina: "login-usina.html", pessoa_fisica: "login-pessoa-fisica.html" };
+  function loginDo(tipo) { return LOGIN_POR_TIPO[tipo] || "login.html"; }
+  function ajustarVoltar(tipo) {
+    var voltar = document.querySelector("a.text-link.centered[href='login.html']");
+    if (voltar) voltar.setAttribute("href", loginDo(tipo));
+  }
+
   function aviso(id, texto) {
     var p = document.getElementById(id);
     p.textContent = texto;
@@ -12,6 +20,7 @@
 
   var pedido = document.getElementById("form-esqueci");
   if (pedido) {
+    ajustarVoltar(new URLSearchParams(window.location.search).get("tipo"));
     pedido.addEventListener("submit", async function (event) {
       event.preventDefault();
       var campo = document.getElementById("esqueci-email");
@@ -34,6 +43,9 @@
   if (nova) {
     var m = /(?:^|[#&])token=([a-f0-9]{64})/.exec(window.location.hash);
     var token = m ? m[1] : "";
+    var tm = /(?:^|[#&])tipo=([a-z_]+)/.exec(window.location.hash);
+    var tipo = tm ? tm[1] : "";
+    ajustarVoltar(tipo);
     if (window.location.hash) history.replaceState(null, "", window.location.pathname);
     if (!token) {
       nova.hidden = true;
@@ -52,7 +64,7 @@
         var r = await api.post("/auth/senha/redefinir", { token: token, novaSenha: senha.value, confirmarSenha: confirmar.value });
         nova.hidden = true;
         aviso("redefinir-resultado", r.mensagem);
-        window.setTimeout(function () { window.location.href = "login.html"; }, 2500);
+        window.setTimeout(function () { window.location.href = loginDo(tipo); }, 2500);
       } catch (erro) {
         botao.disabled = false;
         setFieldState(senha, erro instanceof TypeError ? "Não foi possível conectar ao servidor." : erro.message);

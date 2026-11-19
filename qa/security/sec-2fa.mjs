@@ -12,7 +12,7 @@ const t = checker();
 const WIN = process.platform === 'win32';
 
 const subir = (extra) => {
-  const env = backendEnv({ PORT: '3002', TWO_FACTOR_ENABLED: 'true', TWO_FACTOR_SKIP_EMAILS: 'pessoa@demo.com', TWO_FACTOR_RESEND_SECONDS: '2', ...extra });
+  const env = backendEnv({ PORT: '3002', TWO_FACTOR_ENABLED: 'true', TWO_FACTOR_SKIP_EMAILS: 'pessoa@demo.com', TWO_FACTOR_RESEND_SECONDS: '2', TWO_FACTOR_DEDUP_SECONDS: '0', ...extra });
   delete env.LOGIN_THROTTLE_LIMIT; env.LOGIN_THROTTLE_LIMIT = '1000';
   return spawn(WIN ? 'npx.cmd' : 'npx', ['ts-node', '--transpile-only', 'src/main.ts'], { cwd: join(ROOT, 'backend'), env, stdio: 'ignore', detached: !WIN, shell: WIN });
 };
@@ -141,6 +141,25 @@ try {
 } finally {
   parar(be);
   await dormir(500);
+}
+
+// 14b) Duplo clique no login: pedidos repetidos em seguida valem como um só (mesmo desafio, um único e-mail)
+const outbox2 = mkdtempSync(join(tmpdir(), 'usinalink-mail-dup-'));
+be = subir({ MAIL_TRANSPORT: 'file', MAIL_OUTBOX_DIR: outbox2, TWO_FACTOR_DEDUP_SECONDS: '8' });
+try {
+  await esperar();
+  const [d1, d2] = await Promise.all([post('/api/auth/login/usina', { email: 'usina@demo.com', senha: 'Demo@123' }), post('/api/auth/login/usina', { email: 'usina@demo.com', senha: 'Demo@123' })]);
+  const d3 = await post('/api/auth/login/usina', { email: 'usina@demo.com', senha: 'Demo@123' });
+  t.ok(d1.json?.desafio && d1.json.desafio === d2.json?.desafio && d2.json.desafio === d3.json?.desafio, `logins repetidos em seguida deveriam devolver o mesmo desafio (${d1.json?.desafio} / ${d2.json?.desafio} / ${d3.json?.desafio})`);
+  await dormir(500);
+  t.ok(emails(outbox2).length === 1, `logins repetidos em seguida deveriam mandar 1 e-mail (mandaram ${emails(outbox2).length})`);
+  // o código do e-mail único serve
+  const ok = await post('/api/auth/2fa/verificar', { desafio: d1.json.desafio, codigo: codigoDe(emails(outbox2)[0]) });
+  t.ok(ok.status < 300 && ok.json?.accessToken, `o código do e-mail único deveria entrar (${ok.status})`);
+} finally {
+  parar(be);
+  await dormir(500);
+  try { rmSync(outbox2, { recursive: true, force: true }); } catch {}
 }
 
 // 15) 2FA ligado SEM e-mail configurado: falha fechada (sem login, sem token)

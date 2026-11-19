@@ -40,6 +40,7 @@ try {
   let lista = emails(outbox);
   t.ok(lista.length === 1 && lista[0].to === email, `deveria enviar 1 e-mail para a conta (enviou ${lista.length})`);
   const token1 = tokenDe(lista[0] || { text: '' });
+  t.ok(/#token=[a-f0-9]{64}&tipo=empresa/.test((lista[0] || { text: '' }).text), 'o link do e-mail deveria levar o tipo da conta (&tipo=empresa)');
   t.ok(!!token1, 'e-mail sem link de nova senha');
   t.ok(lista[0].text.includes('https://usinalink.com.br/redefinir-senha.html#token='), `origem de fora deveria cair no site oficial (${(lista[0].text.match(/https?:\/\/\S+/) || [])[0]})`);
   t.ok(!r.texto.includes(token1), 'a resposta do pedido revelou o codigo');

@@ -364,6 +364,7 @@ if (signupForm) {
 // Segunda etapa do login (verificação em duas etapas por e-mail): o servidor mandou um código de 6 dígitos.
 function showTwoFactorStep(loginForm, desafioInfo, onSuccess) {
   let desafio = desafioInfo.desafio;
+  document.querySelectorAll("form.two-factor").forEach((antigo) => antigo.remove()); // nunca dois campos de código
   const panel = document.createElement("form");
   panel.className = "form two-factor";
   panel.setAttribute("novalidate", "");
@@ -451,6 +452,7 @@ function showTwoFactorStep(loginForm, desafioInfo, onSuccess) {
 }
 
 document.querySelectorAll(".js-login-form").forEach((form) => {
+  let enviando = false;
   const concluirLogin = (result) => {
     const redirect = form.dataset.redirect || "index.html";
     // Sessao por aba (sessionStorage): logar como usina em uma aba nao derruba a empresa logada em outra.
@@ -469,6 +471,7 @@ document.querySelectorAll(".js-login-form").forEach((form) => {
   };
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
+    if (enviando) return; // duplo clique / Enter + clique: um único pedido (e um único e-mail de código)
     const emailInput = form.querySelector('input[name="email"], input[id$="-email"]');
     const passwordInput = form.querySelector('input[name="senha"], input[id$="-senha"]');
     const tipo = form.dataset.loginType || "empresa";
@@ -493,6 +496,9 @@ document.querySelectorAll(".js-login-form").forEach((form) => {
     }
     if (hasError) return;
 
+    enviando = true;
+    const botaoEntrar = form.querySelector('[type="submit"]');
+    if (botaoEntrar) botaoEntrar.disabled = true;
     try {
       if (!window.UsinaLinkApi) throw new Error("Não foi possível conectar ao servidor. Verifique se o backend esta rodando.");
       const result = await window.UsinaLinkApi.post(`/auth/login/${tipo}`, {
@@ -509,6 +515,9 @@ document.querySelectorAll(".js-login-form").forEach((form) => {
         setFieldState(emailInput, error.message);
         showToast(error.message);
       }
+    } finally {
+      enviando = false;
+      if (botaoEntrar) botaoEntrar.disabled = false;
     }
   });
 });

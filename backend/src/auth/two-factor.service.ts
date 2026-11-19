@@ -50,6 +50,12 @@ export class TwoFactorService {
     return (configurado !== undefined && configurado !== '' && Number.isFinite(Number(configurado)) ? Number(configurado) : 60) * 1000;
   }
 
+  /** Pedidos de código da mesma pessoa dentro desta janela reaproveitam o desafio já enviado (padrão 8 s; 0 desliga). */
+  private janelaRepeticaoMs() {
+    const c = this.config.get<string>('TWO_FACTOR_DEDUP_SECONDS');
+    return (c !== undefined && c !== '' && Number.isFinite(Number(c)) ? Number(c) : 8) * 1000;
+  }
+
   exigido(email: string) {
     if (!this.ligado()) return false;
     const dispensados = (this.config.get<string>('TWO_FACTOR_SKIP_EMAILS') || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
@@ -80,8 +86,26 @@ export class TwoFactorService {
     });
   }
 
-  /** Cria o desafio e envia o código. Falha fechada: sem e-mail enviado, não há login. */
-  async iniciar(usuario: { idUsuario: number; email: string }, area: string) {
+  private readonly iniciando = new Map<number, Promise<ReturnType<TwoFactorService['respostaDesafio']>>>();
+
+  /**
+   * Cria o desafio e envia o código. Falha fechada: sem e-mail enviado, não há login.
+   * Pedidos repetidos da mesma pessoa em seguida (duplo clique, Enter e clique) valem como um só: um único e-mail.
+   */
+  iniciar(usuario: { idUsuario: number; email: string }, area: string) {
+    const emCurso = this.iniciando.get(usuario.idUsuario);
+    if (emCurso) return emCurso;
+    const tarefa = this.iniciarUmaVez(usuario, area).finally(() => this.iniciando.delete(usuario.idUsuario));
+    this.iniciando.set(usuario.idUsuario, tarefa);
+    return tarefa;
+  }
+
+  private async iniciarUmaVez(usuario: { idUsuario: number; email: string }, area: string) {
+    // Já saiu um código há poucos segundos: devolve o mesmo desafio, sem mandar outro e-mail.
+    const recente = await this.codigos.findOne({ where: { idUsuario: usuario.idUsuario, usadoEm: IsNull() }, order: { enviadoEm: 'DESC' } });
+    if (recente && recente.area === area && Date.now() - recente.enviadoEm.getTime() < this.janelaRepeticaoMs() && recente.expiraEm.getTime() > Date.now()) {
+      return this.respostaDesafio(recente.desafio, usuario.email, recente.expiraEm);
+    }
     await this.codigos.delete({ idUsuario: usuario.idUsuario, usadoEm: IsNull() }); // um desafio aberto por pessoa
     await this.codigos.delete({ expiraEm: LessThan(new Date(Date.now() - 24 * 3600 * 1000)) }); // faxina de antigos
     const desafio = randomBytes(24).toString('hex');

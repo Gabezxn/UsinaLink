@@ -435,6 +435,15 @@ Publicado direto na main a pedido do dono do projeto.
 
 A imagem de compartilhamento em redes sociais (`Site/assets/img/preview.png`, 1200×630) foi refeita com a logo nova, no mesmo texto de antes e com fundo azul liso.
 
+## Pedido 50 (19/11): 2 e-mails de código, campo de código duplicado e "esqueci minha senha" sempre no mesmo login
+
+| Problema | Causa | Correção | Onde |
+|---|---|---|---|
+| A verificação em duas etapas às vezes mandava 2 e-mails ao mesmo tempo | Duplo clique em "Entrar" (ou Enter e clique) mandava dois pedidos de login, e cada um gerava e enviava um código | O botão fica desligado enquanto o pedido está em andamento. No servidor, pedidos repetidos da mesma pessoa em seguida (mesmo ao mesmo tempo) valem como um só: mesmo desafio e um único e-mail (janela de 8 s, ajustável por `TWO_FACTOR_DEDUP_SECONDS`) | `Site/script.js`, `backend/src/auth/two-factor.service.ts` |
+| Na tela do código aparecia um segundo campo embaixo, principalmente depois de errar | Os dois pedidos do duplo clique criavam dois painéis de código | A tela remove qualquer painel de código anterior antes de criar o novo; com o botão travado não surgem dois | `Site/script.js` |
+| "Esqueci minha senha" levava sempre ao mesmo login (empresa) | O "voltar" e o fim da troca de senha iam para o login geral, onde "Empresa" vem destacada | O tipo da conta acompanha o caminho: cada tela de login manda `?tipo=...` para o "esqueci", o e-mail de nova senha leva o tipo no link, e o "voltar" e o fim da troca de senha vão para o login da própria conta (empresa, usina ou pessoa física) | `Site/login-*.html`, `Site/assets/js/senha.js`, `backend/src/auth/redefinicao-senha.service.ts` |
+| Testes | | Duplo clique (um painel, um e-mail), logins repetidos no servidor (um desafio, um e-mail, o código serve), tipo no link do e-mail e caminho do "esqueci" para cada login | `qa/flows/two-factor-ui.mjs`, `qa/security/sec-2fa.mjs`, `sec-senha.mjs`, `qa/flows/esqueci-senha-ui.mjs` (novo) |
+
 ## Pedido 49 (17/11): pagamento por PIX que não atualizava e limpeza de registros de teste de segurança
 
 | Problema | Correção | Onde |

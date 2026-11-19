@@ -46,7 +46,9 @@ export class RedefinicaoSenhaService {
     const token = randomBytes(32).toString('hex');
     const registro = await this.pedidos.save(this.pedidos.create({ idUsuario: usuario.idUsuario, tokenHash: this.resumo(token), expiraEm: new Date(Date.now() + VALIDADE_MS), usadoEm: null }));
     const base = origemPermitida(this.config, origem) ? (origem as string) : 'https://usinalink.com.br';
-    const link = `${base}/redefinir-senha.html#token=${token}`;
+    // O tipo da conta vai no link para a tela de "nova senha" levar depois ao login certo (empresa, usina ou pessoa física).
+    const tipo = ['empresa', 'usina', 'pessoa_fisica'].includes(String(usuario.tipoUsuario)) ? `&tipo=${usuario.tipoUsuario}` : '';
+    const link = `${base}/redefinir-senha.html#token=${token}${tipo}`;
     try {
       await this.mailer.enviar({
         to: usuario.email,

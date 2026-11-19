@@ -31,6 +31,7 @@ const passos = [
   ['flows/motion', 'node', ['qa/flows/motion.mjs']],
   ['flows/two-factor-ui', 'node', ['qa/flows/two-factor-ui.mjs']],
   ['flows/stripe-ui', 'node', ['qa/flows/stripe-ui.mjs']],
+  ['flows/esqueci-senha-ui', 'node', ['qa/flows/esqueci-senha-ui.mjs']],
   ['flows/correcoes', 'node', ['qa/flows/correcoes.mjs']],
   ['checks/axe', 'node', ['qa/checks/axe.mjs']],
   ['checks/console', 'node', ['qa/checks/console.mjs']],
