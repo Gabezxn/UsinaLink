@@ -12,6 +12,8 @@ for (const [login, tipo] of casos) {
   await page.click('text=Esqueci minha senha');
   await page.waitForURL(`**/esqueci-senha.html?tipo=${tipo}`);
   t.ok((await page.getAttribute('a.text-link.centered', 'href')) === login, `${login}: "Voltar para o login" deveria voltar para ${login}`);
+  const classe = await page.evaluate(() => document.body.className);
+  t.ok(tipo === 'usina' ? /usina-auth/.test(classe) : tipo === 'pessoa_fisica' ? /pf-mode/.test(classe) : !/usina-auth|pf-mode/.test(classe), `${login}: a tela de esqueci deveria seguir o padrão do tipo (${tipo}); classes do body: ${classe}`);
 }
 // Entrando pelo login geral, volta para o login geral
 await page.goto(`${SITE}/login.html`);

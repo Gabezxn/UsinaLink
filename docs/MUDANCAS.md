@@ -435,6 +435,12 @@ Publicado direto na main a pedido do dono do projeto.
 
 A imagem de compartilhamento em redes sociais (`Site/assets/img/preview.png`, 1200×630) foi refeita com a logo nova, no mesmo texto de antes e com fundo azul liso.
 
+## Pedido 51 (19/11): "esqueci minha senha" com o visual de cada conta
+
+| Problema | Correção | Onde |
+|---|---|---|
+| As telas "Esqueci minha senha" e "Criar nova senha" eram sempre azuis, sem seguir o padrão dos logins de usina (laranja, fundo bege, botão laranja) e de pessoa física (verde-água) | Seguem o tipo da conta: usina em laranja (logo, título, campos, botão e fundo), pessoa física em verde-água, empresa em azul. O tipo vem do login de onde a pessoa chegou e do link do e-mail. Vale também no modo escuro | `Site/assets/js/tipo-conta.js` (novo), `esqueci-senha.html`, `redefinir-senha.html`, `qa/flows/esqueci-senha-ui.mjs` |
+
 ## Pedido 50 (19/11): 2 e-mails de código, campo de código duplicado e "esqueci minha senha" sempre no mesmo login
 
 | Problema | Causa | Correção | Onde |
